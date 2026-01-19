@@ -1,18 +1,19 @@
+'use client';
+
 import React from 'react';
-import { ViewState } from '../types';
-import { LayoutDashboard, BarChart2, Tag, Sun, Moon, Zap } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { LayoutDashboard, BarChart2 } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
-  currentView: ViewState;
-  onChangeView: (view: ViewState) => void;
 }
 
-export const Layout: React.FC<LayoutProps> = ({ 
-  children, 
-  currentView, 
-  onChangeView,
-}) => {
+export const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const pathname = usePathname();
+
+  const isActive = (path: string) => pathname?.startsWith(path);
+
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background-light dark:bg-background-dark text-slate-900 dark:text-white">
       <aside className="w-20 lg:w-72 flex-shrink-0 flex flex-col border-r border-slate-200 dark:border-white/10 bg-white dark:bg-background-dark transition-all duration-300 z-20">
@@ -20,35 +21,28 @@ export const Layout: React.FC<LayoutProps> = ({
             <div className="flex flex-col gap-8">
                 {/* Navigation */}
                 <nav className="lg:p-2 flex flex-col gap-2">
-                    <button 
-                      onClick={() => onChangeView(ViewState.DASHBOARD)}
+                    <Link 
+                      href="/dashboard"
                       className={`flex items-center gap-3 px-3 py-3 rounded-lg group transition-colors w-full text-left ${
-                        currentView === ViewState.DASHBOARD 
+                        isActive('/dashboard')
                         ? 'bg-primary text-white' 
                         : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
                       }`}
                     >
                         <LayoutDashboard size={24} />
                         <p className="hidden lg:block text-sm font-medium leading-normal">Dashboard</p>
-                    </button>
-                    <button 
-                      onClick={() => onChangeView(ViewState.ANALYTICS)}
+                    </Link>
+                    <Link 
+                      href="/reports"
                       className={`flex items-center gap-3 px-3 py-3 rounded-lg group transition-colors w-full text-left ${
-                        currentView === ViewState.ANALYTICS 
+                        isActive('/reports')
                         ? 'bg-primary text-white' 
                         : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
                       }`}
                     >
                         <BarChart2 size={24} />
                         <p className="hidden lg:block text-sm font-medium leading-normal">Reports</p>
-                    </button>
-                    <button 
-                      className="flex items-center gap-3 px-3 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors w-full text-left"
-                    >
-                        <Tag size={24} />
-                        <p className="hidden lg:block text-sm font-medium leading-normal">Tags</p>
-                    </button>
-
+                    </Link>
                 </nav>
             </div>
         </div>

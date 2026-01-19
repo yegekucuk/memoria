@@ -45,7 +45,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions }) => {
 
   // Chart Data Calculation
   const { chartData, totalPeriodHours, maxVal } = useMemo(() => {
-    let data: { label: string; value: number; fullDate?: string; isFuture?: boolean }[] = [];
+    const data: { label: string; value: number; fullDate?: string; isFuture?: boolean }[] = [];
     let total = 0;
     const now = new Date();
     

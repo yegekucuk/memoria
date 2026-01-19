@@ -2,15 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Timer, Pause, Clock, StopCircle } from 'lucide-react';
 
 interface ActiveSessionProps {
+  startTime: Date;
   onEndSession: (durationSeconds: number, startTime: Date) => void;
 }
 
-export const ActiveSession: React.FC<ActiveSessionProps> = ({ onEndSession }) => {
-  const [seconds, setSeconds] = useState(0);
+export const ActiveSession: React.FC<ActiveSessionProps> = ({ startTime, onEndSession }) => {
+  const [seconds, setSeconds] = useState(() => {
+    const now = new Date();
+    const diff = Math.floor((now.getTime() - startTime.getTime()) / 1000);
+    return Math.max(0, diff);
+  });
   const [isActive, setIsActive] = useState(true);
-  const [startTime] = useState(new Date());
-  
-
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval> | null = null;
@@ -22,6 +24,7 @@ export const ActiveSession: React.FC<ActiveSessionProps> = ({ onEndSession }) =>
     }
     return () => { if (interval) clearInterval(interval); };
   }, [isActive]);
+
 
 
 
