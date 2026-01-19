@@ -66,7 +66,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession }
                     </div>
                     <div className="h-px bg-slate-100 dark:bg-white/10 w-full mb-4"></div>
                     <div className="flex flex-col gap-4">
-                        <p className="text-xs font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wider">Last 3 Sessions</p>
+                        <div className="flex items-center justify-between">
+                            <p className="text-xs font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wider">Last 3 Sessions</p>
+                        </div>
                         {todaysSessions.slice().reverse().slice(0, 3).map((session, i) => (
                            <div key={i} className="flex items-center gap-3">
                                 <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${

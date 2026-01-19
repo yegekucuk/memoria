@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Session } from '../types';
 import { ChevronLeft, ChevronRight, Download, Clock, Tag, Sigma, TrendingUp } from 'lucide-react';
 import { formatDuration } from '../utils/format';
+import { ViewAllSessionsModal } from './ViewAllSessionsModal';
 
 interface AnalyticsProps {
   sessions: Session[];
@@ -124,6 +125,8 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions }) => {
   // Calculate average daily hours based on distinct days worked
   const distinctDays = new Set(sessions.map(s => new Date(s.startTime).toDateString())).size;
   const avgDailyHours = distinctDays > 0 ? totalHoursAllTime / distinctDays : 0;
+
+  const [isViewAllModalOpen, setIsViewAllModalOpen] = useState(false);
 
   return (
     <div className="w-full max-w-[1200px] mx-auto p-4 md:p-8 lg:p-10 flex flex-col gap-8 animate-in slide-in-from-bottom-4 duration-500">
@@ -269,7 +272,12 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions }) => {
         <div className="pt-4 pb-12">
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">Recent Sessions</h3>
-                <button className="text-sm font-medium text-primary hover:text-primary/80 cursor-pointer">View all</button>
+                <button 
+                    onClick={() => setIsViewAllModalOpen(true)}
+                    className="text-sm font-medium text-primary hover:text-primary/80 cursor-pointer"
+                >
+                    View all
+                </button>
             </div>
             <div className="overflow-x-auto rounded-lg border border-[#e5e7eb] dark:border-[#283039]">
                 <table className="w-full text-left text-sm text-[#6b7280] dark:text-[#9dabb9]">
@@ -282,7 +290,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions }) => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-[#e5e7eb] dark:divide-[#283039] bg-white dark:bg-[#111418]">
-                        {sessions.slice().reverse().map((session) => (
+                        {sessions.slice().reverse().slice(0, 5).map((session) => (
                             <tr key={session.id} className="hover:bg-gray-50 dark:hover:bg-[#1c232d]/50 transition-colors">
                                 <td className="px-6 py-4 font-medium text-[#111418] dark:text-white">
                                   {new Date(session.startTime).toLocaleDateString()}
@@ -307,6 +315,12 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions }) => {
                 </table>
             </div>
         </div>
+
+        <ViewAllSessionsModal 
+            sessions={sessions}
+            isOpen={isViewAllModalOpen}
+            onClose={() => setIsViewAllModalOpen(false)}
+        />
     </div>
   );
 };
