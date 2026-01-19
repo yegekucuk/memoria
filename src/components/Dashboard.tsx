@@ -42,7 +42,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession }
                         Hit the button below and start new working session.
                     </p>
                 </div>
-                <button onClick={onStartSession} className="flex items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 whitespace-nowrap">
+                <button onClick={onStartSession} className="flex items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 whitespace-nowrap cursor-pointer">
                     <Play size={20} fill="currentColor" />
                     <span>Start New Working Session</span>
                 </button>

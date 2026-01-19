@@ -134,11 +134,11 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions }) => {
             </div>
             <div className="flex flex-col gap-3 items-start md:items-end">
                 <div className="flex items-center gap-2 mb-1 text-slate-900 dark:text-white select-none">
-                    <button onClick={handlePrev} className="size-8 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+                    <button onClick={handlePrev} className="size-8 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer">
                         <ChevronLeft size={20} />
                     </button>
                     <span className="text-lg font-bold min-w-[160px] text-center">{dateLabel}</span>
-                    <button onClick={handleNext} className="size-8 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+                    <button onClick={handleNext} className="size-8 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer">
                         <ChevronRight size={20} />
                     </button>
                 </div>
@@ -151,7 +151,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions }) => {
                     </button> */}
                     <button 
                         onClick={() => setViewMode('weekly')}
-                        className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === 'weekly' ? 'bg-white dark:bg-[#111418] text-[#111418] dark:text-white shadow-sm' : 'text-[#6b7280] dark:text-[#9dabb9]'}`}
+                        className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all cursor-pointer ${viewMode === 'weekly' ? 'bg-white dark:bg-[#111418] text-[#111418] dark:text-white shadow-sm' : 'text-[#6b7280] dark:text-[#9dabb9]'}`}
                     >
                         Weekly
                     </button>
@@ -172,7 +172,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions }) => {
                         </span>
                     </div>
                 </div>
-                <button className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors">
+                <button className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors cursor-pointer">
                     <Download size={20} />
                     Export Report
                 </button>
@@ -269,7 +269,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions }) => {
         <div className="pt-4 pb-12">
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">Recent Sessions</h3>
-                <button className="text-sm font-medium text-primary hover:text-primary/80">View all</button>
+                <button className="text-sm font-medium text-primary hover:text-primary/80 cursor-pointer">View all</button>
             </div>
             <div className="overflow-x-auto rounded-lg border border-[#e5e7eb] dark:border-[#283039]">
                 <table className="w-full text-left text-sm text-[#6b7280] dark:text-[#9dabb9]">

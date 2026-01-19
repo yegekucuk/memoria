@@ -116,7 +116,7 @@ export const ActiveSession: React.FC<ActiveSessionProps> = ({ startTime, onEndSe
 
                 {/* Controls */}
                 <div className="flex flex-col items-center gap-6 w-full">
-                    <button onClick={() => onEndSession(seconds, startTime)} className="group relative flex w-full max-w-[280px] items-center justify-center gap-3 overflow-hidden rounded-full bg-red-600 px-8 py-4 text-white shadow-lg transition-all hover:bg-red-700 hover:shadow-red-600/25 active:scale-95">
+                    <button onClick={() => onEndSession(seconds, startTime)} className="group relative flex w-full max-w-[280px] items-center justify-center gap-3 overflow-hidden rounded-full bg-red-600 px-8 py-4 text-white shadow-lg transition-all hover:bg-red-700 hover:shadow-red-600/25 active:scale-95 cursor-pointer">
                         <StopCircle size={24} fill="currentColor" />
                         <span className="text-lg font-bold">End Session</span>
                     </button>

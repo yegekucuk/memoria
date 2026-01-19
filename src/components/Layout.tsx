@@ -23,7 +23,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <nav className="lg:p-2 flex flex-col gap-2">
                     <Link 
                       href="/dashboard"
-                      className={`flex items-center gap-3 px-3 py-3 rounded-lg group transition-colors w-full text-left ${
+                      className={`flex items-center gap-3 px-3 py-3 rounded-lg group transition-colors w-full text-left cursor-pointer ${
                         isActive('/dashboard')
                         ? 'bg-primary text-white' 
                         : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
@@ -34,7 +34,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                     </Link>
                     <Link 
                       href="/reports"
-                      className={`flex items-center gap-3 px-3 py-3 rounded-lg group transition-colors w-full text-left ${
+                      className={`flex items-center gap-3 px-3 py-3 rounded-lg group transition-colors w-full text-left cursor-pointer ${
                         isActive('/reports')
                         ? 'bg-primary text-white' 
                         : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'

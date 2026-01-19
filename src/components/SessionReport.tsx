@@ -103,7 +103,7 @@ export const SessionReport: React.FC<SessionReportProps> = ({
                         </div>
                         <div className="flex gap-2 mt-1 overflow-x-auto pb-1 scrollbar-hide">
                             {getMockTags().filter(t => !selectedTags.includes(t.name)).slice(0, 4).map(tag => (
-                                <button key={tag.id} onClick={() => toggleTag(tag.name)} className="text-[#9dabb9] hover:text-white text-xs px-2 py-1 rounded-md bg-[#283039] hover:bg-[#3e4856] transition-colors whitespace-nowrap flex items-center gap-1">
+                                <button key={tag.id} onClick={() => toggleTag(tag.name)} className="text-[#9dabb9] hover:text-white text-xs px-2 py-1 rounded-md bg-[#283039] hover:bg-[#3e4856] transition-colors whitespace-nowrap flex items-center gap-1 cursor-pointer">
                                     <Plus size={14} /> {tag.name}
                                 </button>
                             ))}
@@ -120,10 +120,10 @@ export const SessionReport: React.FC<SessionReportProps> = ({
                     </div>
                 </div>
                 <div className="flex gap-3 mt-2">
-                    <button onClick={onDiscard} className="flex-1 h-12 rounded-lg bg-transparent border border-[#3e4856] text-[#9dabb9] font-bold text-sm hover:text-white hover:bg-[#283039] transition-colors">
+                    <button onClick={onDiscard} className="flex-1 h-12 rounded-lg bg-transparent border border-[#3e4856] text-[#9dabb9] font-bold text-sm hover:text-white hover:bg-[#283039] transition-colors cursor-pointer">
                         Discard
                     </button>
-                    <button onClick={() => onSave({ tags: selectedTags, notes })} className="flex-[2] h-12 rounded-lg bg-primary text-white font-bold text-sm shadow-lg shadow-primary/20 hover:bg-blue-600 hover:shadow-primary/40 transition-all flex items-center justify-center gap-2">
+                    <button onClick={() => onSave({ tags: selectedTags, notes })} className="flex-[2] h-12 rounded-lg bg-primary text-white font-bold text-sm shadow-lg shadow-primary/20 hover:bg-blue-600 hover:shadow-primary/40 transition-all flex items-center justify-center gap-2 cursor-pointer">
                         <CheckCircle size={20} />
                         Save Session
                     </button>
