@@ -25,3 +25,9 @@ export interface ChartDataPoint {
   name: string;
   value: number;
 }
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+}

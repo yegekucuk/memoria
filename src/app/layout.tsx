@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from '@/context/SessionContext';
+import { AuthProvider } from '@/context/AuthContext';
 import { Layout } from '@/components/Layout';
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -21,11 +22,13 @@ export default function RootLayout({
       <head>
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
-        <SessionProvider>
-          <Layout>
-            {children}
-          </Layout>
-        </SessionProvider>
+        <AuthProvider>
+          <SessionProvider>
+            <Layout>
+              {children}
+            </Layout>
+          </SessionProvider>
+        </AuthProvider>
       </body>
     </html>
   );

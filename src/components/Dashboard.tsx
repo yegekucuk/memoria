@@ -8,7 +8,10 @@ interface DashboardProps {
   onStartSession: () => void;
 }
 
+import { useAuth } from '@/context/AuthContext';
+
 export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession }) => {
+  const { user } = useAuth();
   // Calculate today's stats
   const today = new Date();
   const todayString = today.toDateString();
@@ -24,7 +27,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession }
         {/* Header Section */}
         <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div className="flex flex-col gap-1">
-                <h1 className="text-slate-900 dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">Welcome back!</h1>
+                <h1 className="text-slate-900 dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">Welcome back, {user?.name}!</h1>
                 <p className="text-slate-500 dark:text-slate-400 text-base font-normal">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
             </div>
         </header>

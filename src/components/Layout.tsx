@@ -3,7 +3,10 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, BarChart2 } from 'lucide-react';
+import { LayoutDashboard, BarChart2, LogIn, LogOut } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { AuthModal } from '@/components/AuthModal';
+import { useState } from 'react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -11,6 +14,8 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const pathname = usePathname();
+  const { user, isAuthenticated, logout } = useAuth();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const isActive = (path: string) => pathname?.startsWith(path);
 
@@ -45,8 +50,36 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                     </Link>
                 </nav>
             </div>
+
+            <div className="lg:p-2 lg:mb-4">
+               {isAuthenticated && user ? (
+                 <div className="flex flex-col gap-2">
+                    <div className="hidden lg:block px-3 py-2">
+                        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Signed in as</p>
+                        <p className="text-sm font-semibold truncate text-slate-900 dark:text-white" title={user.email}>{user.name || user.email}</p>
+                    </div>
+                    <button
+                        onClick={logout}
+                        className="flex items-center gap-3 px-3 py-3 rounded-lg group transition-colors w-full text-left cursor-pointer text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10"
+                    >
+                        <LogOut size={24} />
+                        <p className="hidden lg:block text-sm font-medium leading-normal">Logout</p>
+                    </button>
+                 </div>
+               ) : (
+                <button
+                    onClick={() => setIsAuthModalOpen(true)}
+                    className="flex items-center gap-3 px-3 py-3 rounded-lg group transition-colors w-full text-left cursor-pointer text-primary hover:bg-primary/10"
+                >
+                    <LogIn size={24} />
+                    <p className="hidden lg:block text-sm font-medium leading-normal">Login / Register</p>
+                </button>
+               )}
+            </div>
         </div>
       </aside>
+      
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col h-full overflow-y-auto relative bg-background-light dark:bg-background-dark">
