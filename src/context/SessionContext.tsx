@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Session } from '@/types';
+import { useAuth } from './AuthContext';
 
 interface SessionContextType {
   sessions: Session[];
@@ -20,21 +21,31 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   const [activeSessionStartTime, setActiveSessionStartTime] = useState<string | null>(null);
   const [reportData, setReportData] = useState<{ duration: number; startTime: string } | null>(null);
 
-  // Load from local storage
-  useEffect(() => {
-    const savedSessions = localStorage.getItem('ft_sessions');
-    if (savedSessions) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSessions(JSON.parse(savedSessions));
-    }
-  }, []);
+  const { user, loading: authLoading } = useAuth();
 
-  // Save to local storage
+  // Load from API
   useEffect(() => {
-    if (sessions.length > 0) {
-       localStorage.setItem('ft_sessions', JSON.stringify(sessions));
+    if (!authLoading && user) {
+       fetch(`/api/sessions?userId=${user.id}`)
+         .then(res => res.json())
+         .then(data => {
+            if (Array.isArray(data)) {
+              setSessions(data);
+            }
+         })
+         .catch(err => console.error('Failed to load sessions', err));
+         
+       // Clear local storage legacy data
+       localStorage.removeItem('ft_sessions');
     }
-  }, [sessions]);
+  }, [user, authLoading]);
+
+  // Remove the save-to-localStorage useEffect
+  // useEffect(() => {
+  //   if (sessions.length > 0) {
+  //      localStorage.setItem('ft_sessions', JSON.stringify(sessions));
+  //   }
+  // }, [sessions]);
 
   const startSession = () => {
     setActiveSessionStartTime(new Date().toISOString());
@@ -45,19 +56,33 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     setReportData({ duration: durationSeconds, startTime: startTime.toISOString() });
   };
 
-  const saveSession = (data: Pick<Session, 'tags' | 'notes'>) => {
-    if (!reportData) return;
+  const saveSession = async (data: Pick<Session, 'tags' | 'notes'>) => {
+    if (!reportData || !user) return;
 
-    const newSession: Session = {
-      id: crypto.randomUUID(),
-      startTime: reportData.startTime,
-      endTime: new Date().toISOString(),
-      durationSeconds: reportData.duration,
-      tags: data.tags,
-      notes: data.notes,
-    };
+    try {
+        const payload = {
+          userId: user.id,
+          startTime: reportData.startTime,
+          endTime: new Date().toISOString(),
+          durationSeconds: reportData.duration,
+          tags: data.tags,
+          notes: data.notes,
+        };
 
-    setSessions(prev => [...prev, newSession]);
+        const res = await fetch('/api/sessions', {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify(payload)
+        });
+        
+        if (res.ok) {
+            const newSession = await res.json();
+             setSessions(prev => [...prev, newSession]);
+        }
+    } catch (e) {
+        console.error("Failed to save session", e);
+    }
+    
     setReportData(null);
   };
 

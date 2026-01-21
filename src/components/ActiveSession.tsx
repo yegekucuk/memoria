@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Timer, Pause, Clock, StopCircle } from 'lucide-react';
+import { Timer, Clock, StopCircle } from 'lucide-react';
 
 interface ActiveSessionProps {
   startTime: Date;
@@ -12,18 +12,13 @@ export const ActiveSession: React.FC<ActiveSessionProps> = ({ startTime, onEndSe
     const diff = Math.floor((now.getTime() - startTime.getTime()) / 1000);
     return Math.max(0, diff);
   });
-  const [isActive, setIsActive] = useState(true);
 
   useEffect(() => {
-    let interval: ReturnType<typeof setInterval> | null = null;
-    if (isActive) {
-      interval = setInterval(() => {
-        setSeconds((s) => s + 1);
-
-      }, 1000);
-    }
-    return () => { if (interval) clearInterval(interval); };
-  }, [isActive]);
+    const interval = setInterval(() => {
+      setSeconds((s) => s + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
 
 
@@ -66,9 +61,9 @@ export const ActiveSession: React.FC<ActiveSessionProps> = ({ startTime, onEndSe
                 </div>
                 
                 {/* Timer Display */}
-                <div className="relative group cursor-pointer" onClick={() => setIsActive(!isActive)}>
-                    <div className={`absolute -inset-4 rounded-full border border-slate-200 dark:border-slate-800 transition-all duration-700 ${isActive ? 'opacity-50 scale-95' : 'opacity-20 scale-90'}`}></div>
-                    <div className={`absolute -inset-8 rounded-full border border-slate-200 dark:border-slate-800 transition-all duration-1000 ${isActive ? 'opacity-20 scale-90' : 'opacity-10 scale-85'}`}></div>
+                <div className="relative group">
+                    <div className="absolute -inset-4 rounded-full border border-slate-200 dark:border-slate-800 transition-all duration-700 opacity-50 scale-95"></div>
+                    <div className="absolute -inset-8 rounded-full border border-slate-200 dark:border-slate-800 transition-all duration-1000 opacity-20 scale-90"></div>
                     
                     <div className="flex items-baseline gap-2 sm:gap-4 font-mono font-bold text-slate-900 dark:text-white tabular-nums tracking-tight leading-none">
                         <div className="flex flex-col items-center gap-2">
@@ -86,30 +81,15 @@ export const ActiveSession: React.FC<ActiveSessionProps> = ({ startTime, onEndSe
                             <span className="text-xs sm:text-sm font-medium text-slate-400 dark:text-slate-500 uppercase tracking-widest">Seconds</span>
                         </div>
                     </div>
-                    {!isActive && (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <Pause size={80} className="text-slate-900 dark:text-white opacity-50" />
-                        </div>
-                    )}
                 </div>
 
-                {/* Status Box */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-lg bg-white/5 dark:bg-slate-800/30 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 backdrop-blur-sm">
-                    <div className="flex flex-col items-center sm:items-start gap-1">
+                {/* Status Box - Start Time Only */}
+                <div className="flex justify-center w-full max-w-lg bg-white/5 dark:bg-slate-800/30 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 backdrop-blur-sm">
+                    <div className="flex flex-col items-center gap-1">
                         <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Start Time</span>
                         <div className="flex items-center gap-2 text-slate-900 dark:text-white">
                             <Clock size={20} className="text-slate-400" />
                             <span className="text-lg font-medium">{startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit'})}</span>
-                        </div>
-                    </div>
-                    <div className="flex flex-col items-center sm:items-end gap-1">
-                        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Current Status</span>
-                        <div className="flex items-center gap-2">
-                            <span className="relative flex h-3 w-3">
-                                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isActive ? 'bg-green-400' : 'bg-yellow-400'}`}></span>
-                                <span className={`relative inline-flex rounded-full h-3 w-3 ${isActive ? 'bg-green-500' : 'bg-yellow-500'}`}></span>
-                            </span>
-                            <span className="text-lg font-medium text-slate-900 dark:text-white">{isActive ? 'Active' : 'Paused'}</span>
                         </div>
                     </div>
                 </div>
