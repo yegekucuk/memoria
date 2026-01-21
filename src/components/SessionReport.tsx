@@ -110,12 +110,12 @@ export const SessionReport: React.FC<SessionReportProps> = ({
                                 value={customTag}
                                 onChange={(e) => setCustomTag(e.target.value)}
                                 onKeyDown={handleCustomTagKey}
-                                readOnly={isSaving}
-                                disabled={isSaving}
+                                readOnly
+                                disabled
                             />
                         </div>
                         <div className="flex gap-2 mt-1 overflow-x-auto pb-1 scrollbar-hide">
-                            {getMockTags().filter(t => !selectedTags.includes(t.name)).slice(0, 4).map(tag => (
+                            {getMockTags().filter(t => !selectedTags.includes(t.name)).map(tag => (
                                 <button key={tag.id} onClick={() => toggleTag(tag.name)} disabled={isSaving} className="text-[#9dabb9] hover:text-white text-xs px-2 py-1 rounded-md bg-[#283039] hover:bg-[#3e4856] transition-colors whitespace-nowrap flex items-center gap-1 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                                     <Plus size={14} /> {tag.name}
                                 </button>
