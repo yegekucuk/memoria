@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  sessions  Session[]
+  tags      Tag[]
+}
+
+model Session {
+  id              String   @id @default(cuid())
+  startTime       DateTime
+  endTime         DateTime?
+  durationSeconds Int      @default(0)
+  notes           String?  @default("")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  
+  tags            Tag[]
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String
+  color     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  
+  sessions  Session[]
+
+  @@unique([name, userId])
+}
