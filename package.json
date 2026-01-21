@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "npx prisma generate && next dev",
+    "build": "npx prisma generate && next build",
+    "start": "npx prisma generate && next start",
     "lint": "eslint"
   },
   "dependencies": {
