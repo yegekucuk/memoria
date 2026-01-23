@@ -41,7 +41,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   // Load from API
   useEffect(() => {
     if (!authLoading && user) {
-        // Fetch history
+       // Fetch history
        refreshSessions();
 
        // Fetch active session
@@ -51,6 +51,20 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
              if (data && data.id) {
                  setActiveSessionId(data.id);
                  setActiveSessionStartTime(data.startTime);
+             } else {
+                 // If no active session, check for pending session (ended but not saved)
+                 fetch(`/api/sessions/pending?userId=${user.id}`)
+                    .then(res => res.json())
+                    .then(pendingData => {
+                        if (pendingData && pendingData.id) {
+                            setReportData({
+                                duration: pendingData.durationSeconds,
+                                startTime: pendingData.startTime,
+                                sessionId: pendingData.id
+                            });
+                        }
+                    })
+                    .catch(err => console.error('Failed to load pending session', err));
              }
          })
          .catch(err => console.error('Failed to load active session', err));

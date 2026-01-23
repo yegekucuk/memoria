@@ -7,7 +7,7 @@ interface SessionReportProps {
   durationSeconds: number;
   startTime: Date;
   onSave: (sessionData: Pick<Session, 'tags' | 'notes'>) => Promise<void> | void;
-  onDiscard: () => void;
+  onDiscard: () => Promise<void> | void;
 }
 
 export const SessionReport: React.FC<SessionReportProps> = ({ 
@@ -19,6 +19,10 @@ export const SessionReport: React.FC<SessionReportProps> = ({
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [customTag, setCustomTag] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [isDiscarding, setIsDiscarding] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
+  const isProcessing = isSaving || isDiscarding;
 
   const toggleTag = (tagName: string) => {
     if (selectedTags.includes(tagName)) {
@@ -38,7 +42,19 @@ export const SessionReport: React.FC<SessionReportProps> = ({
   };
 
   const handleSave = async () => {
-    if (isSaving) return;
+    if (isProcessing) return;
+    setError(null);
+
+    if (selectedTags.length === 0) {
+      setError("Please add at least one tag to categorize your session.");
+      return;
+    }
+
+    if (!notes.trim()) {
+      setError("Please add some notes about your session.");
+      return;
+    }
+
     setIsSaving(true);
     try {
         await onSave({ tags: selectedTags, notes });
@@ -48,12 +64,23 @@ export const SessionReport: React.FC<SessionReportProps> = ({
     }
   };
 
+  const handleDiscard = async () => {
+      if (isProcessing) return;
+      setIsDiscarding(true);
+      try {
+          await onDiscard();
+      } catch (error) {
+          console.error("Error discarding session:", error);
+          setIsDiscarding(false);
+      }
+  };
+
   const hours = Math.floor(durationSeconds / 3600);
   const minutes = Math.floor((durationSeconds % 3600) / 60);
   const seconds = durationSeconds % 60;
 
   return (
-    <div className="fixed inset-0 z-[60] font-display flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-60 font-display flex items-center justify-center p-4">
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-0"></div>
         <div className="relative z-10 w-full max-w-lg bg-[#111418] dark:bg-[#1a2027] rounded-xl shadow-2xl border border-[#283039] overflow-hidden flex flex-col animate-in zoom-in-95">
             <div className="flex justify-end p-4 absolute top-0 right-0 z-20">
@@ -94,10 +121,10 @@ export const SessionReport: React.FC<SessionReportProps> = ({
                 </div>
                 <div className="flex flex-col gap-6">
                     <div className="flex flex-col gap-2">
-                        <label className="text-white text-sm font-medium leading-normal">Categorize Session</label>
+                        <label className="text-white text-sm font-medium leading-normal">Categorize Session <span className="text-red-500">*</span></label>
                         <div className="flex flex-wrap gap-2 p-2 rounded-lg bg-[#222831] border border-[#283039] focus-within:ring-1 focus-within:ring-primary/50 focus-within:border-primary/50 transition-all min-h-[50px]">
                             {selectedTags.map(tag => (
-                                <div key={tag} className="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-primary/20 border border-primary/30 pl-2 pr-2 cursor-pointer group hover:bg-primary/30 transition-colors" onClick={() => !isSaving && toggleTag(tag)}>
+                                <div key={tag} className="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-primary/20 border border-primary/30 pl-2 pr-2 cursor-pointer group hover:bg-primary/30 transition-colors" onClick={() => !isProcessing && toggleTag(tag)}>
                                     <Tag size={18} className="text-primary" />
                                     <p className="text-primary text-xs font-semibold leading-normal">{tag}</p>
                                     <X size={16} className="text-primary/70 hover:text-white ml-1" />
@@ -116,31 +143,36 @@ export const SessionReport: React.FC<SessionReportProps> = ({
                         </div>
                         <div className="flex gap-2 mt-1 overflow-x-auto pb-1 scrollbar-hide">
                             {getMockTags().filter(t => !selectedTags.includes(t.name)).map(tag => (
-                                <button key={tag.id} onClick={() => toggleTag(tag.name)} disabled={isSaving} className="text-[#9dabb9] hover:text-white text-xs px-2 py-1 rounded-md bg-[#283039] hover:bg-[#3e4856] transition-colors whitespace-nowrap flex items-center gap-1 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                                <button key={tag.id} onClick={() => toggleTag(tag.name)} disabled={isProcessing} className="text-[#9dabb9] hover:text-white text-xs px-2 py-1 rounded-md bg-[#283039] hover:bg-[#3e4856] transition-colors whitespace-nowrap flex items-center gap-1 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                                     <Plus size={14} /> {tag.name}
                                 </button>
                             ))}
                         </div>
                     </div>
                     <div className="flex flex-col gap-2">
-                        <label className="text-white text-sm font-medium leading-normal">Session Notes</label>
+                        <label className="text-white text-sm font-medium leading-normal">Session Notes <span className="text-red-500">*</span></label>
                         <textarea 
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
                             className="form-input w-full resize-none rounded-lg text-white placeholder:text-[#6b7280] bg-[#222831] border border-[#283039] focus:border-primary focus:ring-1 focus:ring-primary min-h-[140px] p-4 text-sm font-normal leading-relaxed transition-all outline-none disabled:opacity-50" 
                             placeholder="Describe what you accomplished..."
-                            disabled={isSaving}
+                            disabled={isProcessing}
                         ></textarea>
                     </div>
                 </div>
+                {error && (
+                    <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium text-center">
+                        {error}
+                    </div>
+                )}
                 <div className="flex gap-3 mt-2">
-                    <button onClick={onDiscard} disabled={isSaving} className="flex-1 h-12 rounded-lg bg-transparent border border-[#3e4856] text-[#9dabb9] font-bold text-sm hover:text-white hover:bg-[#283039] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
-                        Discard
+                    <button onClick={handleDiscard} disabled={isProcessing} className="flex-1 h-12 rounded-lg bg-transparent border border-[#3e4856] text-[#9dabb9] font-bold text-sm hover:text-white hover:bg-[#283039] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                        {isDiscarding ? <Loader2 size={20} className="animate-spin mx-auto" /> : 'Discard'}
                     </button>
                     <button 
                         onClick={handleSave} 
-                        disabled={isSaving}
-                        className="flex-[2] h-12 rounded-lg bg-primary text-white font-bold text-sm shadow-lg shadow-primary/20 hover:bg-blue-600 hover:shadow-primary/40 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                        disabled={isProcessing}
+                        className="flex-2 h-12 rounded-lg bg-primary text-white font-bold text-sm shadow-lg shadow-primary/20 hover:bg-blue-600 hover:shadow-primary/40 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:shadow-none"
                     >
                         {isSaving ? <Loader2 size={20} className="animate-spin" /> : <CheckCircle size={20} />}
                         {isSaving ? 'Saving...' : 'Save Session'}
