@@ -12,6 +12,17 @@ export const ActiveSession: React.FC<ActiveSessionProps> = ({ startTime, onEndSe
     const diff = Math.floor((now.getTime() - startTime.getTime()) / 1000);
     return Math.max(0, diff);
   });
+  const [isEnding, setIsEnding] = useState(false);
+
+  const handleEndSession = () => {
+      if (isEnding) return;
+      setIsEnding(true);
+      onEndSession(seconds, startTime);
+
+      setTimeout(() => {
+          setIsEnding(false);
+      }, 10000);
+  };
 
   useEffect(() => {
     // Determine the path to the worker script.
@@ -108,9 +119,13 @@ export const ActiveSession: React.FC<ActiveSessionProps> = ({ startTime, onEndSe
 
                 {/* Controls */}
                 <div className="flex flex-col items-center gap-6 w-full">
-                    <button onClick={() => onEndSession(seconds, startTime)} className="group relative flex w-full max-w-[280px] items-center justify-center gap-3 overflow-hidden rounded-full bg-red-600 px-8 py-4 text-white shadow-lg transition-all hover:bg-red-700 hover:shadow-red-600/25 active:scale-95 cursor-pointer">
+                    <button 
+                        onClick={handleEndSession} 
+                        disabled={isEnding}
+                        className="group relative flex w-full max-w-[280px] items-center justify-center gap-3 overflow-hidden rounded-full bg-red-600 px-8 py-4 text-white shadow-lg transition-all hover:bg-red-700 hover:shadow-red-600/25 active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 disabled:hover:bg-red-600"
+                    >
                         <StopCircle size={24} fill="currentColor" />
-                        <span className="text-lg font-bold">End Session</span>
+                        <span className="text-lg font-bold">{isEnding ? 'Ending...' : 'End Session'}</span>
                     </button>
 
                 </div>

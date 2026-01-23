@@ -21,6 +21,19 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession }
   const hoursToday = Math.floor(totalSecondsToday / 3600);
   const minutesToday = Math.floor((totalSecondsToday % 3600) / 60);
 
+  const [isStarting, setIsStarting] = React.useState(false);
+
+  const handleStartSession = () => {
+      if (isStarting) return;
+      setIsStarting(true);
+      onStartSession();
+      
+      // Re-enable after 10 seconds to prevent double clicks
+      setTimeout(() => {
+          setIsStarting(false);
+      }, 10000);
+  };
+
 
   return (
     <div className="w-full max-w-[1200px] mx-auto p-4 md:p-8 flex flex-col gap-8 animate-in fade-in duration-500">
@@ -45,9 +58,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession }
                         Hit the button below and start new working session.
                     </p>
                 </div>
-                <button onClick={onStartSession} className="flex items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 whitespace-nowrap cursor-pointer">
+                <button 
+                    onClick={handleStartSession} 
+                    disabled={isStarting}
+                    className="flex items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 whitespace-nowrap cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-md"
+                >
                     <Play size={20} fill="currentColor" />
-                    <span>Start New Working Session</span>
+                    <span>{isStarting ? 'Starting...' : 'Start New Working Session'}</span>
                 </button>
             </div>
         </section>
