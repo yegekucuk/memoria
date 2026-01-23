@@ -14,11 +14,23 @@ export const ActiveSession: React.FC<ActiveSessionProps> = ({ startTime, onEndSe
   });
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setSeconds((s) => s + 1);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
+    // Determine the path to the worker script.
+    // In production/Next.js, static files in 'public' are served at root.
+    const worker = new Worker('/timer.worker.js');
+
+    worker.onmessage = () => {
+      const now = new Date();
+      const diff = Math.floor((now.getTime() - startTime.getTime()) / 1000);
+      setSeconds(Math.max(0, diff));
+    };
+
+    // Start the worker
+    worker.postMessage('start');
+
+    return () => {
+      worker.terminate();
+    };
+  }, [startTime]);
 
 
 
