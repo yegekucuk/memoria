@@ -10,6 +10,9 @@ interface AnalyticsProps {
 
 type ViewMode = 'daily' | 'weekly';
 
+import { PageLayout } from './layout/PageLayout';
+import { PageHeader } from './layout/PageHeader';
+
 export const Analytics: React.FC<AnalyticsProps> = ({ sessions }) => {
   const [viewMode, setViewMode] = useState<ViewMode>('weekly');
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -128,48 +131,43 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions }) => {
 
   const [isViewAllModalOpen, setIsViewAllModalOpen] = useState(false);
 
-  return (
-    <div className="w-full max-w-[1200px] mx-auto p-4 md:p-8 lg:p-10 flex flex-col gap-8 animate-in slide-in-from-bottom-4 duration-500">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div className="flex flex-col gap-2">
-                <h1 className="text-4xl font-black leading-tight tracking-[-0.033em] text-slate-900 dark:text-white">Analytics</h1>
-                <p className="text-[#6b7280] dark:text-[#9dabb9] text-base font-normal">Detailed productivity reports and trends</p>
-            </div>
-            <div className="flex flex-col gap-3 items-start md:items-end">
-                <div className="flex items-center gap-2 mb-1 text-slate-900 dark:text-white select-none">
-                    <button onClick={handlePrev} className="size-8 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer">
-                        <ChevronLeft size={20} />
-                    </button>
-                    <span className="text-lg font-bold min-w-[160px] text-center">{dateLabel}</span>
-                    <button onClick={handleNext} className="size-8 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer">
-                        <ChevronRight size={20} />
-                    </button>
-                </div>
-                <div className="bg-[#e5e7eb] dark:bg-[#283039] p-1 rounded-lg inline-flex">
-                    {/* <button 
-                        onClick={() => setViewMode('daily')}
-                        className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === 'daily' ? 'bg-white dark:bg-[#111418] text-[#111418] dark:text-white shadow-sm' : 'text-[#6b7280] dark:text-[#9dabb9]'}`}
-                    >
-                        Daily
-                    </button> */}
-                    <button 
-                        onClick={() => setViewMode('weekly')}
-                        className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all cursor-pointer ${viewMode === 'weekly' ? 'bg-white dark:bg-[#111418] text-[#111418] dark:text-white shadow-sm' : 'text-[#6b7280] dark:text-[#9dabb9]'}`}
-                    >
-                        Weekly
-                    </button>
-                    {/* Monthly view removed */}
-                </div>
-            </div>
+  const renderHeaderActions = () => (
+    <div className="flex flex-col gap-3 items-start md:items-end">
+        <div className="flex items-center gap-2 mb-1 text-slate-900 dark:text-white select-none">
+            <button onClick={handlePrev} className="size-8 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer">
+                <ChevronLeft size={20} />
+            </button>
+            <span className="text-lg font-bold min-w-[160px] text-center">{dateLabel}</span>
+            <button onClick={handleNext} className="size-8 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer">
+                <ChevronRight size={20} />
+            </button>
         </div>
+        <div className="bg-[#e5e7eb] dark:bg-[#283039] p-1 rounded-lg inline-flex">
+            <button 
+                onClick={() => setViewMode('weekly')}
+                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all cursor-pointer ${viewMode === 'weekly' ? 'bg-white dark:bg-[#111418] text-[#111418] dark:text-white shadow-sm' : 'text-[#6b7280] dark:text-[#9dabb9]'}`}
+            >
+                Weekly
+            </button>
+        </div>
+    </div>
+  );
+
+  return (
+    <PageLayout className="animate-in slide-in-from-bottom-4 duration-500">
+        <PageHeader 
+            title="Analytics"
+            description="Detailed productivity reports and trends"
+            actions={renderHeaderActions()}
+        />
         
         {/* Main Chart Card */}
         <div className="bg-white dark:bg-[#1c232d] rounded-xl border border-[#e5e7eb] dark:border-[#283039] p-6 lg:p-8 shadow-sm">
             <div className="flex justify-between items-start mb-8">
                 <div>
                     <h3 className="text-lg font-bold mb-1 text-slate-900 dark:text-white capitalize">{viewMode} Activity</h3>
-                    <div className="flex items-baseline gap-2 text-slate-900 dark:text-white">
-                        <span className="text-3xl font-bold tracking-tight">{formatDuration(totalPeriodHours)}</span>
+                    <div className="flex flex-col sm:flex-row items-baseline gap-2 text-slate-900 dark:text-white">
+                        <span className="text-2xl sm:text-3xl font-bold tracking-tight">{formatDuration(totalPeriodHours)}</span>
                         <span className="text-sm font-medium text-slate-500 flex items-center">
                             Total for selected period
                         </span>
@@ -212,7 +210,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions }) => {
                             <div className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold py-1 px-2 rounded shadow-xl whitespace-nowrap">
                                 {formatDuration(bar.value)}
                             </div>
-                            <div className="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[4px] border-t-slate-900 dark:border-t-white"></div>
+                            <div className="w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-t-4 border-t-slate-900 dark:border-t-white"></div>
                         </div>
                    </div>
                 ))}
@@ -321,6 +319,6 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions }) => {
             isOpen={isViewAllModalOpen}
             onClose={() => setIsViewAllModalOpen(false)}
         />
-    </div>
+    </PageLayout>
   );
 };

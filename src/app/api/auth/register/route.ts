@@ -39,6 +39,15 @@ export async function POST(req: Request) {
         email,
         name,
         password: hashedPassword,
+        tags: {
+          create: [
+            { name: 'Reading', color: '#EF4444' }, // Red
+            { name: 'Writing', color: '#8B5CF6' }, // Violet
+            { name: 'Coding', color: '#EC4899' },  // Pink
+            { name: 'Math', color: '#10B981' },    // Emerald
+            { name: 'Meeting', color: '#8B5CF6' }, // Violet
+          ]
+        }
       },
     });
 

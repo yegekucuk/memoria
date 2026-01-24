@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, BarChart2, LogIn, LogOut } from 'lucide-react';
+import { LayoutDashboard, BarChart2, LogIn, LogOut, Settings } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { AuthModal } from '@/components/AuthModal';
 import { useState } from 'react';
@@ -21,7 +21,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background-light dark:bg-background-dark text-slate-900 dark:text-white">
-      <aside className="w-20 lg:w-72 flex-shrink-0 flex flex-col border-r border-slate-200 dark:border-white/10 bg-white dark:bg-background-dark transition-all duration-300 z-20">
+      <aside className="w-20 lg:w-72 shrink-0 flex flex-col border-r border-slate-200 dark:border-white/10 bg-white dark:bg-background-dark transition-all duration-300 z-20">
         <div className="flex flex-col h-full p-4 justify-between">
             <div className="flex flex-col gap-8">
                 {/* Navigation */}
@@ -47,6 +47,17 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                     >
                         <BarChart2 size={24} />
                         <p className="hidden lg:block text-sm font-medium leading-normal">Reports</p>
+                    </Link>
+                    <Link 
+                      href="/settings"
+                      className={`flex items-center gap-3 px-3 py-3 rounded-lg group transition-colors w-full text-left cursor-pointer ${
+                        isActive('/settings')
+                        ? 'bg-primary text-white' 
+                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
+                      }`}
+                    >
+                        <Settings size={24} />
+                        <p className="hidden lg:block text-sm font-medium leading-normal">Settings</p>
                     </Link>
                 </nav>
             </div>

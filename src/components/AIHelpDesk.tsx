@@ -52,7 +52,7 @@ export const AIHelpDesk: React.FC<AIHelpDeskProps> = ({ sessions }) => {
       {/* Floating Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 p-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full shadow-2xl hover:scale-105 transition-transform z-50 group cursor-pointer"
+        className="fixed bottom-6 right-6 p-4 bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-full shadow-2xl hover:scale-105 transition-transform z-50 group cursor-pointer"
       >
         {isOpen ? <X className="w-6 h-6" /> : <Sparkles className="w-6 h-6" />}
         <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
@@ -64,7 +64,7 @@ export const AIHelpDesk: React.FC<AIHelpDeskProps> = ({ sessions }) => {
       {isOpen && (
         <div className="fixed bottom-24 right-6 w-[350px] md:w-[400px] h-[500px] bg-white dark:bg-carddark rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col z-50 animate-in slide-in-from-bottom-10 fade-in duration-300 overflow-hidden">
           {/* Header */}
-          <div className="p-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white flex items-center gap-3">
+          <div className="p-4 bg-linear-to-r from-blue-600 to-purple-600 text-white flex items-center gap-3">
              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
                <Sparkles className="w-4 h-4" />
              </div>

@@ -33,7 +33,7 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center h-screen w-full bg-background-light dark:bg-background-dark p-4">
       <div className="text-center max-w-4xl">
-        <h1 className="text-4xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-900 mb-6">
+        <h1 className="text-4xl md:text-6xl font-bold bg-clip-text text-transparent bg-linear-to-r from-primary to-purple-900 mb-6">
           How many hours do you work <span className='italic'>productively</span>?
         </h1>
         <p className="text-xl text-slate-600 dark:text-slate-300 mb-8">

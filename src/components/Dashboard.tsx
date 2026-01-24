@@ -9,6 +9,8 @@ interface DashboardProps {
 }
 
 import { useAuth } from '@/context/AuthContext';
+import { PageLayout } from './layout/PageLayout';
+import { PageHeader } from './layout/PageHeader';
 
 export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession }) => {
   const { user } = useAuth();
@@ -36,25 +38,23 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession }
 
 
   return (
-    <div className="w-full max-w-[1200px] mx-auto p-4 md:p-8 flex flex-col gap-8 animate-in fade-in duration-500">
+    <PageLayout>
         {/* Header Section */}
-        <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div className="flex flex-col gap-1">
-                <h1 className="text-slate-900 dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">Welcome back, {user?.name}!</h1>
-                <p className="text-slate-500 dark:text-slate-400 text-base font-normal">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
-            </div>
-        </header>
+        <PageHeader 
+            title={`Welcome back, ${user?.name}!`}
+            description={new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+        />
         
         {/* CTA Section */}
         <section className="relative overflow-hidden rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 shadow-lg group">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent opacity-50 pointer-events-none"></div>
+            <div className="absolute inset-0 bg-linear-to-r from-primary/20 to-transparent opacity-50 pointer-events-none"></div>
             <div className="absolute -right-20 -top-20 w-64 h-64 bg-primary/20 rounded-full blur-[80px] pointer-events-none"></div>
             <div className="relative z-10 flex flex-col items-center justify-center gap-6 px-6 py-10">
                 <div className="flex flex-col gap-3 text-center">
-                    <h2 className="text-slate-900 dark:text-white text-2xl md:text-3xl font-bold leading-tight">
+                    <h2 className="text-slate-900 dark:text-white text-xl sm:text-3xl font-bold leading-tight">
                         Ready to focus?
                     </h2>
-                    <p className="text-slate-600 dark:text-slate-300 text-base font-normal leading-relaxed">
+                    <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-base font-normal leading-relaxed">
                         Hit the button below and start new working session.
                     </p>
                 </div>
@@ -64,7 +64,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession }
                     className="flex items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 whitespace-nowrap cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-md"
                 >
                     <Play size={20} fill="currentColor" />
-                    <span>{isStarting ? 'Starting...' : 'Start New Working Session'}</span>
+                    <span className='text-xs sm:text-base'>{isStarting ? 'Starting...' : 'Start New Working Session'}</span>
                 </button>
             </div>
         </section>
@@ -82,7 +82,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession }
                     </div>
                     <div className="flex flex-col gap-1 mb-6">
                         <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Total Hours Today</p>
-                        <p className="text-4xl font-black text-slate-900 dark:text-white">{formatDuration(totalSecondsToday / 3600)}</p>
+                        <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{formatDuration(totalSecondsToday / 3600)}</p>
                     </div>
                     <div className="h-px bg-slate-100 dark:bg-white/10 w-full mb-4"></div>
                     <div className="flex flex-col gap-4">
@@ -109,6 +109,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession }
                 </div>
             </div>
         </div>
-    </div>
+    </PageLayout>
   );
 };

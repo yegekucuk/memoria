@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Session } from '../types';
-import { getMockTags } from '../mocks/tags';
+import React, { useState, useEffect } from 'react';
+import { Session, Tag as TagType } from '../types';
 import { X, Tag, Plus, CheckCircle, Loader2 } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 interface SessionReportProps {
   durationSeconds: number;
@@ -15,14 +15,32 @@ export const SessionReport: React.FC<SessionReportProps> = ({
   onSave, 
   onDiscard 
 }) => {
+  const { user } = useAuth();
   const [notes, setNotes] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [customTag, setCustomTag] = useState('');
+  const [availableTags, setAvailableTags] = useState<TagType[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [isDiscarding, setIsDiscarding] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
   const isProcessing = isSaving || isDiscarding;
+
+  useEffect(() => {
+    const fetchTags = async () => {
+        if (!user) return;
+        try {
+            const res = await fetch(`/api/tags?userId=${user.id}`);
+            if (res.ok) {
+                const data = await res.json();
+                setAvailableTags(data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch tags", error);
+        }
+    };
+    fetchTags();
+  }, [user]);
 
   const toggleTag = (tagName: string) => {
     if (selectedTags.includes(tagName)) {
@@ -123,13 +141,17 @@ export const SessionReport: React.FC<SessionReportProps> = ({
                     <div className="flex flex-col gap-2">
                         <label className="text-white text-sm font-medium leading-normal">Categorize Session <span className="text-red-500">*</span></label>
                         <div className="flex flex-wrap gap-2 p-2 rounded-lg bg-[#222831] border border-[#283039] focus-within:ring-1 focus-within:ring-primary/50 focus-within:border-primary/50 transition-all min-h-[50px]">
-                            {selectedTags.map(tag => (
-                                <div key={tag} className="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-primary/20 border border-primary/30 pl-2 pr-2 cursor-pointer group hover:bg-primary/30 transition-colors" onClick={() => !isProcessing && toggleTag(tag)}>
-                                    <Tag size={18} className="text-primary" />
-                                    <p className="text-primary text-xs font-semibold leading-normal">{tag}</p>
-                                    <X size={16} className="text-primary/70 hover:text-white ml-1" />
+                            {selectedTags.map(tag => {
+                                const tagColor = availableTags.find(t => t.name === tag)?.color;
+                                return (
+                                <div key={tag} className="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg pl-2 pr-2 cursor-pointer group transition-colors"
+                                     style={{ backgroundColor: tagColor ? tagColor + '33' : 'rgba(59, 130, 246, 0.2)', border: `1px solid ${tagColor ? tagColor + '4D' : 'rgba(59, 130, 246, 0.3)'}` }} 
+                                     onClick={() => !isProcessing && toggleTag(tag)}>
+                                    <Tag size={18} style={{ color: tagColor || '#3b82f6' }} />
+                                    <p className="text-xs font-semibold leading-normal" style={{ color: tagColor || '#3b82f6' }}>{tag}</p>
+                                    <X size={16} className="text-primary/70 hover:text-white ml-1" style={{ color: tagColor ? tagColor + 'B3' : '' }} />
                                 </div>
-                            ))}
+                            )})}
                             <input 
                                 className="bg-transparent border-none text-white text-sm placeholder:text-[#6b7280] focus:ring-0 grow min-w-[120px] h-8 outline-none" 
                                 placeholder="Add a tag..." 
@@ -142,11 +164,15 @@ export const SessionReport: React.FC<SessionReportProps> = ({
                             />
                         </div>
                         <div className="flex gap-2 mt-1 overflow-x-auto pb-1 scrollbar-hide">
-                            {getMockTags().filter(t => !selectedTags.includes(t.name)).map(tag => (
+                            {availableTags.filter(t => !selectedTags.includes(t.name)).map(tag => (
                                 <button key={tag.id} onClick={() => toggleTag(tag.name)} disabled={isProcessing} className="text-[#9dabb9] hover:text-white text-xs px-2 py-1 rounded-md bg-[#283039] hover:bg-[#3e4856] transition-colors whitespace-nowrap flex items-center gap-1 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
-                                    <Plus size={14} /> {tag.name}
+                                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: tag.color }}></div>
+                                    {tag.name}
                                 </button>
                             ))}
+                            {availableTags.length === 0 && (
+                                <p className="text-gray-500 text-xs italic">No tags found. Go to Settings to add some!</p>
+                            )}
                         </div>
                     </div>
                     <div className="flex flex-col gap-2">
