@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { useSession } from '@/context/SessionContext';
 import { Dashboard } from '@/components/Dashboard';
 import { ActiveSession } from '@/components/ActiveSession';
@@ -14,7 +13,8 @@ export default function DashboardPage() {
     startSession, 
     endSession, 
     saveSession, 
-    discardSession 
+    discardSession,
+    isLoading
   } = useSession();
 
   if (activeSessionStartTime) {
@@ -36,7 +36,7 @@ export default function DashboardPage() {
             onDiscard={discardSession}
         />
       )}
-      <Dashboard sessions={sessions} onStartSession={startSession} />
+      <Dashboard sessions={sessions} onStartSession={startSession} isLoading={isLoading} />
     </>
   );
 }

@@ -6,6 +6,7 @@ import { formatDuration } from '../utils/format';
 interface DashboardProps {
   sessions: Session[];
   onStartSession: () => void;
+  isLoading?: boolean;
 }
 
 import { useAuth } from '@/context/AuthContext';
@@ -13,8 +14,9 @@ import { PageLayout } from './layout/PageLayout';
 import { PageHeader } from './layout/PageHeader';
 import { useTags } from '@/hooks/useTags';
 import toast from 'react-hot-toast';
+import { Loader2 } from 'lucide-react';
 
-export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession, isLoading }) => {
   const { user } = useAuth();
   // Calculate today's stats
   const today = new Date();
@@ -82,39 +84,47 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession }
         <div className="flex flex-col gap-6">
             {/* Daily Summary */}
             <div className="flex flex-col gap-6">
-                <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/5 p-6 shadow-sm">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="p-2 bg-primary/10 rounded-lg text-primary">
-                            <Timer size={24} />
-                        </div>
-                        <h3 className="text-slate-900 dark:text-white text-lg font-bold">Daily Summary</h3>
-                    </div>
-                    <div className="flex flex-col gap-1 mb-6">
-                        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Total Hours Today</p>
-                        <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{formatDuration(totalSecondsToday / 3600)}</p>
-                    </div>
-                    <div className="h-px bg-slate-100 dark:bg-white/10 w-full mb-4"></div>
-                    <div className="flex flex-col gap-4">
-                        <div className="flex items-center justify-between">
-                            <p className="text-xs font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wider">Last 3 Sessions</p>
-                        </div>
-                        {todaysSessions.slice().reverse().slice(0, 3).map((session, i) => (
-                           <div key={i} className="flex items-center gap-3">
-                                <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-                                  i === 0 ? 'bg-purple-500/10 text-purple-500' : 
-                                  i === 1 ? 'bg-orange-500/10 text-orange-500' : 'bg-pink-500/10 text-pink-500'
-                                }`}>
-                                    {session.tags[0] === 'Math' ? <FlaskConical size={20} /> : <Tag size={20} />}
+                <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/5 p-6 shadow-sm min-h-[200px] flex flex-col justify-center">
+                    {isLoading ? (
+                         <div className="flex items-center justify-center h-full w-full py-12">
+                            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                         </div>
+                    ) : (
+                        <>
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                                    <Timer size={24} />
                                 </div>
-                                <div className="flex flex-col flex-1 min-w-0">
-                                    <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{session.tags[0] || 'Uncategorized'}</p>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{session.notes || 'No notes'}</p>
-                                </div>
-                                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">{Math.floor(session.durationSeconds / 60)}m</p>
+                                <h3 className="text-slate-900 dark:text-white text-lg font-bold">Daily Summary</h3>
                             </div>
-                        ))}
-                        {todaysSessions.length === 0 && <p className="text-sm text-slate-500">No sessions today.</p>}
-                    </div>
+                            <div className="flex flex-col gap-1 mb-6">
+                                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Total Hours Today</p>
+                                <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{formatDuration(totalSecondsToday / 3600)}</p>
+                            </div>
+                            <div className="h-px bg-slate-100 dark:bg-white/10 w-full mb-4"></div>
+                            <div className="flex flex-col gap-4">
+                                <div className="flex items-center justify-between">
+                                    <p className="text-xs font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wider">Last 3 Sessions</p>
+                                </div>
+                                {todaysSessions.slice().reverse().slice(0, 3).map((session, i) => (
+                                   <div key={i} className="flex items-center gap-3">
+                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
+                                          i === 0 ? 'bg-purple-500/10 text-purple-500' : 
+                                          i === 1 ? 'bg-orange-500/10 text-orange-500' : 'bg-pink-500/10 text-pink-500'
+                                        }`}>
+                                            {session.tags[0] === 'Math' ? <FlaskConical size={20} /> : <Tag size={20} />}
+                                        </div>
+                                        <div className="flex flex-col flex-1 min-w-0">
+                                            <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{session.tags[0] || 'Uncategorized'}</p>
+                                            <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{session.notes || 'No notes'}</p>
+                                        </div>
+                                        <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">{Math.floor(session.durationSeconds / 60)}m</p>
+                                    </div>
+                                ))}
+                                {todaysSessions.length === 0 && <p className="text-sm text-slate-500">No sessions today.</p>}
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
         </div>

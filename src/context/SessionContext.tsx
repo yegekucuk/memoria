@@ -12,7 +12,8 @@ interface SessionContextType {
   endSession: (durationSeconds: number, startTime: Date) => void;
   saveSession: (data: Pick<Session, 'tags' | 'notes'>) => void;
   discardSession: () => void;
-  refreshSessions: () => Promise<void>;
+  refreshSessions: (updateLoading?: boolean) => Promise<void>;
+  isLoading: boolean;
 }
 
 const SessionContext = createContext<SessionContextType | undefined>(undefined);
@@ -22,11 +23,13 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   const [activeSessionStartTime, setActiveSessionStartTime] = useState<string | null>(null);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [reportData, setReportData] = useState<{ duration: number; startTime: string; sessionId: string } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { user, loading: authLoading } = useAuth();
 
-  const refreshSessions = async () => {
+  const refreshSessions = async (updateLoading = true) => {
     if (!user) return;
+    if (updateLoading) setIsLoading(true);
     try {
        const res = await fetch(`/api/sessions?userId=${user.id}`);
        const data = await res.json();
@@ -35,42 +38,52 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
        }
     } catch (err) {
        console.error('Failed to load sessions', err);
+    } finally {
+       if (updateLoading) setIsLoading(false);
     }
   };
 
   // Load from API
   useEffect(() => {
     if (!authLoading && user) {
-       // Fetch history
-       refreshSessions();
+       const init = async () => {
+          setIsLoading(true);
+          try {
+             await refreshSessions(false);
 
-       // Fetch active session
-       fetch(`/api/sessions/active?userId=${user.id}`)
-         .then(res => res.json())
-         .then(data => {
-             if (data && data.id) {
-                 setActiveSessionId(data.id);
-                 setActiveSessionStartTime(data.startTime);
+             // Fetch active session
+             const activeRes = await fetch(`/api/sessions/active?userId=${user.id}`);
+             const activeData = await activeRes.json();
+             
+             if (activeData && activeData.id) {
+                 setActiveSessionId(activeData.id);
+                 setActiveSessionStartTime(activeData.startTime);
              } else {
                  // If no active session, check for pending session (ended but not saved)
-                 fetch(`/api/sessions/pending?userId=${user.id}`)
-                    .then(res => res.json())
-                    .then(pendingData => {
-                        if (pendingData && pendingData.id) {
-                            setReportData({
-                                duration: pendingData.durationSeconds,
-                                startTime: pendingData.startTime,
-                                sessionId: pendingData.id
-                            });
-                        }
-                    })
-                    .catch(err => console.error('Failed to load pending session', err));
+                 const pendingRes = await fetch(`/api/sessions/pending?userId=${user.id}`);
+                 const pendingData = await pendingRes.json();
+                 
+                 if (pendingData && pendingData.id) {
+                     setReportData({
+                         duration: pendingData.durationSeconds,
+                         startTime: pendingData.startTime,
+                         sessionId: pendingData.id
+                     });
+                 }
              }
-         })
-         .catch(err => console.error('Failed to load active session', err));
+          } catch (err) {
+             console.error('Failed to load session data', err);
+          } finally {
+             setIsLoading(false);
+          }
+       };
+
+       init();
          
        // Clear local storage legacy data
        localStorage.removeItem('ft_sessions');
+    } else if (!authLoading) {
+        setIsLoading(false);
     }
   }, [user, authLoading]);
 
@@ -162,6 +175,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
       sessions,
       activeSessionStartTime,
       reportData,
+      isLoading,
       startSession,
       endSession,
       saveSession,
