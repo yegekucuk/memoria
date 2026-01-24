@@ -1,9 +1,9 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Tag } from '@/types';
+import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useTags } from '@/hooks/useTags';
 import { Plus, X, Loader2, Trash2 } from 'lucide-react';
 
 const COLORS = [
@@ -29,63 +29,26 @@ const COLORS = [
 
 export const TagsSettings: React.FC = () => {
   const { user } = useAuth();
-  const [tags, setTags] = useState<Tag[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { tags, isLoading, error: hookError, addTag, deleteTag } = useTags();
+  
   const [newTagName, setNewTagName] = useState('');
   const [selectedColor, setSelectedColor] = useState(COLORS[10].value); // Default to Blue
   const [isCreating, setIsCreating] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (user) {
-      fetchTags();
-    }
-  }, [user]);
-
-  const fetchTags = async () => {
-    try {
-      if (!user) return;
-      const response = await fetch(`/api/tags?userId=${user.id}`);
-      if (!response.ok) throw new Error('Failed to fetch tags');
-      const data = await response.json();
-      setTags(data);
-    } catch (err) {
-      console.error(err);
-      setError('Failed to load tags');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [formError, setFormError] = useState<string | null>(null);
 
   const handleCreateTag = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTagName.trim() || !user) return;
 
     setIsCreating(true);
-    setError(null);
+    setFormError(null);
 
     try {
-      const response = await fetch('/api/tags', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: user.id,
-          name: newTagName.trim(),
-          color: selectedColor,
-        }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to create tag');
-      }
-
-      const newTag = await response.json();
-      setTags([...tags, newTag]);
+      await addTag(newTagName.trim(), selectedColor);
       setNewTagName('');
     } catch (err: any) {
-      setError(err.message);
+      setFormError(err.message);
     } finally {
       setIsCreating(false);
     }
@@ -95,17 +58,10 @@ export const TagsSettings: React.FC = () => {
     if (!user) return;
     setDeletingId(tagId);
     try {
-      const response = await fetch(`/api/tags/${tagId}?userId=${user.id}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete tag');
-      }
-
-      setTags(tags.filter(t => t.id !== tagId));
+      await deleteTag(tagId);
     } catch (err: any) {
-      setError(err.message);
+        // Error handling if needed, though useTags handles internal error state
+        console.error("Failed to delete", err);
     } finally {
       setDeletingId(null);
     }
@@ -157,7 +113,7 @@ export const TagsSettings: React.FC = () => {
                     key={color.value}
                     type="button"
                     onClick={() => setSelectedColor(color.value)}
-                    className={`w-8 h-8 rounded-full transition-all border-2 ${
+                    className={`w-8 h-8 rounded-full transition-all border-2 cursor-pointer ${
                       selectedColor === color.value
                         ? 'border-slate-900 dark:border-white scale-110'
                         : 'border-transparent hover:scale-110'
@@ -170,15 +126,15 @@ export const TagsSettings: React.FC = () => {
             </div>
           </div>
 
-          {error && (
-            <p className="text-red-500 text-sm">{error}</p>
+          {(formError || hookError) && (
+            <p className="text-red-500 text-sm">{formError || hookError}</p>
           )}
 
           <div className="flex justify-end">
             <button
               type="submit"
               disabled={isCreating || !newTagName.trim()}
-              className="px-6 py-2 bg-primary text-white font-medium rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-6 py-2 bg-primary text-white font-medium rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center gap-2"
             >
               {isCreating ? <Loader2 size={18} className="animate-spin" /> : <Plus size={18} />}
               Add Tag
@@ -206,7 +162,7 @@ export const TagsSettings: React.FC = () => {
             <button
               onClick={() => handleDeleteTag(tag.id)}
               disabled={deletingId === tag.id}
-              className="text-slate-400 hover:text-red-500 p-2 rounded-md hover:bg-slate-100 dark:hover:bg-white/5 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+              className="text-slate-400 hover:text-red-500 p-2 rounded-md hover:bg-slate-100 dark:hover:bg-white/5 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 cursor-pointer"
               title="Delete tag"
             >
               {deletingId === tag.id ? (

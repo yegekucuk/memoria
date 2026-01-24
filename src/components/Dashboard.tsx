@@ -11,6 +11,8 @@ interface DashboardProps {
 import { useAuth } from '@/context/AuthContext';
 import { PageLayout } from './layout/PageLayout';
 import { PageHeader } from './layout/PageHeader';
+import { useTags } from '@/hooks/useTags';
+import toast from 'react-hot-toast';
 
 export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession }) => {
   const { user } = useAuth();
@@ -23,9 +25,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession }
   const hoursToday = Math.floor(totalSecondsToday / 3600);
   const minutesToday = Math.floor((totalSecondsToday % 3600) / 60);
 
+  const { tags } = useTags();
   const [isStarting, setIsStarting] = React.useState(false);
 
   const handleStartSession = () => {
+      // Check if user has any tags
+      if (tags.length === 0) {
+          toast.error('Please create tags first!');
+          return;
+      }
+
       if (isStarting) return;
       setIsStarting(true);
       onStartSession();
