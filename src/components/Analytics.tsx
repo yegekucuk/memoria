@@ -1,166 +1,44 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Session } from '../types';
-import { ChevronLeft, ChevronRight, Download, Clock, Tag, Sigma, TrendingUp } from 'lucide-react';
+import { Clock, Tag, Sigma, Loader2 } from 'lucide-react';
 import { formatDuration } from '../utils/format';
 import { ViewAllSessionsModal } from './ViewAllSessionsModal';
+import { PageLayout } from './layout/PageLayout';
+import { useAnalyticsData } from '../hooks/useAnalyticsData';
+import { AnalyticsHeader } from './analytics/AnalyticsHeader';
+import { ActivityChart } from './analytics/ActivityChart';
 
 interface AnalyticsProps {
   sessions: Session[];
   isLoading?: boolean;
 }
 
-type ViewMode = 'daily' | 'weekly';
-
-import { PageLayout } from './layout/PageLayout';
-import { PageHeader } from './layout/PageHeader';
-import { Loader2 } from 'lucide-react';
-
 export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => {
-  const [viewMode, setViewMode] = useState<ViewMode>('weekly');
-  const [currentDate, setCurrentDate] = useState(new Date());
-
-  // Navigation Handlers
-  const handlePrev = () => {
-    const newDate = new Date(currentDate);
-    if (viewMode === 'daily') newDate.setDate(newDate.getDate() - 1);
-    else if (viewMode === 'weekly') newDate.setDate(newDate.getDate() - 7);
-    setCurrentDate(newDate);
-  };
-
-  const handleNext = () => {
-    const newDate = new Date(currentDate);
-    if (viewMode === 'daily') newDate.setDate(newDate.getDate() + 1);
-    else if (viewMode === 'weekly') newDate.setDate(newDate.getDate() + 7);
-    setCurrentDate(newDate);
-  };
-
-  const dateLabel = useMemo(() => {
-    if (viewMode === 'daily') return currentDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-    if (viewMode === 'weekly') {
-        const curr = new Date(currentDate);
-        const day = curr.getDay();
-        const diff = curr.getDate() - day + (day === 0 ? -6 : 1);
-        const start = new Date(curr);
-        start.setDate(diff);
-        const end = new Date(start);
-        end.setDate(start.getDate() + 6);
-        return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
-    }
-    return currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-  }, [currentDate, viewMode]);
-
-  // Chart Data Calculation
-  const { chartData, totalPeriodHours, maxVal } = useMemo(() => {
-    const data: { label: string; value: number; fullDate?: string; isFuture?: boolean }[] = [];
-    let total = 0;
-    const now = new Date();
-    
-    // Normalize currentDate to remove time component for safe comparison if needed
-    const selectedDate = new Date(currentDate);
-
-    if (viewMode === 'daily') { // viewMode is narrowed to 'daily' | 'weekly'
-      const startOfDay = new Date(selectedDate);
-      startOfDay.setHours(0, 0, 0, 0);
-      const endOfDay = new Date(selectedDate);
-      endOfDay.setHours(23, 59, 59, 999);
-
-      for (let i = 0; i < 24; i++) {
-        data.push({ label: `${i}`, value: 0 });
-      }
-
-      sessions.forEach(session => {
-        const sTime = new Date(session.startTime);
-        if (sTime >= startOfDay && sTime <= endOfDay) {
-          const hour = sTime.getHours();
-          const duration = session.durationSeconds / 3600;
-          if (data[hour]) {
-             data[hour].value += duration;
-             total += duration;
-          }
-        }
-      });
-    } else {
-      // viewMode is 'weekly'
-      const cur = new Date(selectedDate);
-      const day = cur.getDay();
-      const diff = cur.getDate() - day + (day === 0 ? -6 : 1); // Monday start
-      const monday = new Date(cur);
-      monday.setDate(diff);
-      monday.setHours(0,0,0,0);
-
-      for (let i = 0; i < 7; i++) {
-        const d = new Date(monday);
-        d.setDate(monday.getDate() + i);
-        data.push({ 
-            label: d.toLocaleDateString('en-US', { weekday: 'short' }), 
-            value: 0, 
-            fullDate: d.toDateString(),
-            isFuture: d > now
-        });
-      }
-
-      sessions.forEach(session => {
-        const sTime = new Date(session.startTime);
-        const sDateStr = sTime.toDateString();
-        const entry = data.find(d => d.fullDate === sDateStr);
-        if (entry) {
-          const duration = session.durationSeconds / 3600;
-          entry.value += duration;
-          total += duration;
-        }
-      });
-    }
-
-    const max = Math.max(...data.map(d => d.value), 0);
-    // Dynamic scaling: min maxVal is 4h, otherwise max + buffer
-    const displayMax = Math.max(Math.ceil(max), 4); 
-
-    return { chartData: data, totalPeriodHours: total, maxVal: displayMax };
-  }, [viewMode, currentDate, sessions]);
-
-  // Overall Stats
-  const totalHoursAllTime = sessions.reduce((acc, s) => acc + s.durationSeconds, 0) / 3600;
-  
-  const tagCounts: Record<string, number> = {};
-  sessions.forEach(s => s.tags.forEach(t => tagCounts[t] = (tagCounts[t] || 0) + s.durationSeconds));
-  const topTagEntry = Object.entries(tagCounts).sort((a, b) => b[1] - a[1])[0];
-  const topTagName = topTagEntry ? topTagEntry[0] : 'None';
-  const topTagPct = topTagEntry ? Math.round((topTagEntry[1] / 3600 / (totalHoursAllTime || 1)) * 100) : 0;
-  
-  // Calculate average daily hours based on distinct days worked
-  const distinctDays = new Set(sessions.map(s => new Date(s.startTime).toDateString())).size;
-  const avgDailyHours = distinctDays > 0 ? totalHoursAllTime / distinctDays : 0;
+  const {
+    viewMode,
+    setViewMode,
+    dateLabel,
+    handlePrev,
+    handleNext,
+    chartData,
+    totalPeriodHours,
+    maxVal,
+    totalHoursAllTime,
+    topTagName,
+    topTagPct,
+    avgDailyHours
+  } = useAnalyticsData(sessions);
 
   const [isViewAllModalOpen, setIsViewAllModalOpen] = useState(false);
 
-  const renderHeaderActions = () => (
-    <div className="flex flex-col gap-3 items-start md:items-end">
-        <div className="flex items-center gap-2 mb-1 text-slate-900 dark:text-white select-none">
-            <button onClick={handlePrev} className="size-8 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer">
-                <ChevronLeft size={20} />
-            </button>
-            <span className="text-lg font-bold min-w-[160px] text-center">{dateLabel}</span>
-            <button onClick={handleNext} className="size-8 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer">
-                <ChevronRight size={20} />
-            </button>
-        </div>
-        <div className="bg-[#e5e7eb] dark:bg-[#283039] p-1 rounded-lg inline-flex">
-            <button 
-                onClick={() => setViewMode('weekly')}
-                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all cursor-pointer ${viewMode === 'weekly' ? 'bg-white dark:bg-[#111418] text-[#111418] dark:text-white shadow-sm' : 'text-[#6b7280] dark:text-[#9dabb9]'}`}
-            >
-                Weekly
-            </button>
-        </div>
-    </div>
-  );
-
   return (
     <PageLayout className="animate-in slide-in-from-bottom-4 duration-500">
-        <PageHeader 
-            title="Analytics"
-            description="Detailed productivity reports and trends"
-            actions={renderHeaderActions()}
+        <AnalyticsHeader 
+            dateLabel={dateLabel}
+            viewMode={viewMode}
+            setViewMode={setViewMode}
+            onPrev={handlePrev}
+            onNext={handleNext}
         />
         
         {/* Content Wrapper */}
@@ -172,66 +50,12 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => 
         ) : (
             <>
                 {/* Main Chart Card */}
-                <div className="bg-white dark:bg-[#1c232d] rounded-xl border border-[#e5e7eb] dark:border-[#283039] p-6 lg:p-8 shadow-sm">
-                    <div className="flex justify-between items-start mb-8">
-                        <div>
-                            <h3 className="text-lg font-bold mb-1 text-slate-900 dark:text-white capitalize">{viewMode} Activity</h3>
-                            <div className="flex flex-col sm:flex-row items-baseline gap-2 text-slate-900 dark:text-white">
-                                <span className="text-2xl sm:text-3xl font-bold tracking-tight">{formatDuration(totalPeriodHours)}</span>
-                                <span className="text-sm font-medium text-slate-500 flex items-center">
-                                    Total for selected period
-                                </span>
-                            </div>
-                        </div>
-                        <button className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors cursor-pointer">
-                            <Download size={20} />
-                            Export Report
-                        </button>
-                    </div>
-                    
-                    {/* Custom Visual Bar Chart */}
-                    <div className="relative h-[300px] w-full flex items-end gap-1 sm:gap-2 md:gap-3 justify-between px-2 pb-6 border-b border-[#e5e7eb] dark:border-[#283039] pl-10">
-                        {/* Y-Axis Labels */}
-                        <div className="absolute left-0 top-0 bottom-6 flex flex-col justify-between text-xs text-[#9dabb9] font-medium text-right pr-2 h-full w-10">
-                            <span>{maxVal}h</span>
-                            <span>{(maxVal * 0.75).toFixed(1)}h</span>
-                            <span>{(maxVal * 0.5).toFixed(1)}h</span>
-                            <span>{(maxVal * 0.25).toFixed(1)}h</span>
-                            <span>0h</span>
-                        </div>
-                        
-                        {/* Generated Bars */}
-                        {chartData.map((bar, i) => (
-                           <div 
-                             key={i} 
-                             className="group relative flex-1 h-full flex items-end"
-                           >
-                                <div 
-                                    className={`w-full rounded-t-sm transition-all duration-300 ${
-                                        bar.isFuture 
-                                            ? 'bg-slate-100 dark:bg-white/5' 
-                                            : 'bg-primary hover:bg-primary/90'
-                                    }`}
-                                    style={{ height: `${(bar.value / maxVal) * 100}%` }}
-                                ></div>
-                                
-                                {/* Tooltip */}
-                                <div className="absolute bottom-[calc(100%+8px)] left-1/2 -translate-x-1/2 hidden group-hover:flex flex-col items-center z-20 pointer-events-none transition-opacity">
-                                    <div className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold py-1 px-2 rounded shadow-xl whitespace-nowrap">
-                                        {formatDuration(bar.value)}
-                                    </div>
-                                    <div className="w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-t-4 border-t-slate-900 dark:border-t-white"></div>
-                                </div>
-                           </div>
-                        ))}
-                    </div>
-                    
-                    {/* X-Axis Labels */}
-                    <div className="flex justify-between px-2 pt-2 text-[#9dabb9] text-xs font-medium pl-10">
-                        {viewMode === 'weekly' && chartData.map((d, i) => <span key={i} className="flex-1 text-center">{d.label}</span>)}
-                        {viewMode === 'daily' && [0, 4, 8, 12, 16, 20, 24].map((h) => <span key={h}>{h}:00</span>)}
-                    </div>
-                </div>
+                <ActivityChart 
+                    chartData={chartData}
+                    maxVal={maxVal}
+                    viewMode={viewMode}
+                    totalPeriodHours={totalPeriodHours}
+                />
 
                 {/* Insights Grid */}
                 <div className="flex flex-col gap-4">
