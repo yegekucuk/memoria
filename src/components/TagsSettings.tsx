@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useTags } from '@/hooks/useTags';
-import { Plus, X, Loader2, Trash2 } from 'lucide-react';
+import { Plus, X, Loader2, Trash2, Pencil, Check } from 'lucide-react';
 
 const COLORS = [
   { name: 'Red', value: '#EF4444' },
@@ -29,12 +29,19 @@ const COLORS = [
 
 export const TagsSettings: React.FC = () => {
   const { user } = useAuth();
-  const { tags, isLoading, error: hookError, addTag, deleteTag } = useTags();
+  const { tags, isLoading, error: hookError, addTag, deleteTag, updateTag } = useTags();
   
   const [newTagName, setNewTagName] = useState('');
   const [selectedColor, setSelectedColor] = useState(COLORS[10].value); // Default to Blue
   const [isCreating, setIsCreating] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  
+  // Edit state
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editColor, setEditColor] = useState('');
+  const [isUpdating, setIsUpdating] = useState(false);
+
   const [formError, setFormError] = useState<string | null>(null);
 
   const handleCreateTag = async (e: React.FormEvent) => {
@@ -64,6 +71,36 @@ export const TagsSettings: React.FC = () => {
         console.error("Failed to delete", err);
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  const handleStartEdit = (tag: any) => {
+    setEditingId(tag.id);
+    setEditName(tag.name);
+    setEditColor(tag.color);
+    setFormError(null);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditName('');
+    setEditColor('');
+    setFormError(null);
+  };
+
+  const handleUpdateTag = async () => {
+    if (!editingId || !editName.trim() || !user) return;
+    
+    setIsUpdating(true);
+    setFormError(null);
+
+    try {
+        await updateTag(editingId, editName.trim(), editColor);
+        handleCancelEdit();
+    } catch (err: any) {
+        setFormError(err.message);
+    } finally {
+        setIsUpdating(false);
     }
   };
 
@@ -150,27 +187,94 @@ export const TagsSettings: React.FC = () => {
             key={tag.id}
             className="flex items-center justify-between p-3 rounded-lg bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/5 shadow-sm group hover:border-primary/30 transition-all"
           >
-            <div className="flex items-center gap-3">
-              <div 
-                className="w-4 h-4 rounded-full" 
-                style={{ backgroundColor: tag.color }}
-              />
-              <span className="font-medium text-slate-700 dark:text-slate-200">
-                {tag.name}
-              </span>
-            </div>
-            <button
-              onClick={() => handleDeleteTag(tag.id)}
-              disabled={deletingId === tag.id}
-              className="text-slate-400 hover:text-red-500 p-2 rounded-md hover:bg-slate-100 dark:hover:bg-white/5 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 cursor-pointer"
-              title="Delete tag"
-            >
-              {deletingId === tag.id ? (
-                <Loader2 size={16} className="animate-spin" />
-              ) : (
-                <Trash2 size={16} />
-              )}
-            </button>
+            {editingId === tag.id ? (
+                <div className="flex-1 flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="text"
+                            value={editName}
+                            onChange={(e) => setEditName(e.target.value)}
+                            className="flex-1 px-2 py-1 text-sm rounded bg-slate-100 dark:bg-black/20 border border-slate-200 dark:border-white/10 outline-none focus:border-primary"
+                            autoFocus
+                        />
+                        <div className="flex gap-1">
+                             <button
+                                onClick={handleUpdateTag}
+                                disabled={isUpdating || !editName.trim()}
+                                className="p-1 text-green-500 hover:bg-green-50 dark:hover:bg-green-500/10 rounded"
+                             >
+                                {isUpdating ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
+                             </button>
+                             <button
+                                onClick={handleCancelEdit}
+                                disabled={isUpdating}
+                                className="p-1 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded"
+                             >
+                                <X size={16} />
+                             </button>
+                        </div>
+                    </div>
+                    {/* Simple Color Picker for Edit */}
+                    <div className="flex flex-wrap gap-1">
+                        {COLORS.slice(0, 7).map(c => ( // Show a subset for compactness, or all if we want
+                             <button
+                                key={c.value}
+                                onClick={() => setEditColor(c.value)}
+                                className={`w-4 h-4 rounded-full ${editColor === c.value ? 'ring-2 ring-offset-1 ring-slate-900 dark:ring-white' : ''}`}
+                                style={{ backgroundColor: c.value }}
+                             />
+                        ))}
+                         {/* Show remaining colors if needed? let's just show all but smaller */}
+                    </div>
+                     <div className="flex flex-wrap gap-1 mt-1">
+                        {COLORS.slice(7).map(c => (
+                             <button
+                                key={c.value}
+                                onClick={() => setEditColor(c.value)}
+                                className={`w-4 h-4 rounded-full ${editColor === c.value ? 'ring-2 ring-offset-1 ring-slate-900 dark:ring-white' : ''}`}
+                                style={{ backgroundColor: c.value }}
+                             />
+                        ))}
+                    </div>
+                     {formError && editingId === tag.id && (
+                        <p className="text-xs text-red-500">{formError}</p>
+                    )}
+                </div>
+            ) : (
+                <>
+                    <div className="flex items-center gap-3">
+                    <div 
+                        className="w-4 h-4 rounded-full" 
+                        style={{ backgroundColor: tag.color }}
+                    />
+                    <span className="font-medium text-slate-700 dark:text-slate-200">
+                        {tag.name}
+                    </span>
+                    </div>
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                        onClick={() => handleStartEdit(tag)}
+                        disabled={deletingId === tag.id}
+                        className="text-slate-400 hover:text-primary p-2 rounded-md hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                        title="Edit tag"
+                        >
+                        <Pencil size={16} />
+                        </button>
+                        <button
+                        onClick={() => handleDeleteTag(tag.id)}
+                        disabled={deletingId === tag.id}
+                        className="text-slate-400 hover:text-red-500 p-2 rounded-md hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                        title="Delete tag"
+                        >
+                        {deletingId === tag.id ? (
+                            <Loader2 size={16} className="animate-spin" />
+                        ) : (
+                            <Trash2 size={16} />
+                        )}
+                        </button>
+                    </div>
+                </>
+            )}
           </div>
         ))}
         {tags.length === 0 && !isLoading && (

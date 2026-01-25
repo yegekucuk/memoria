@@ -81,5 +81,34 @@ export const useTags = () => {
       }
   };
 
-  return { tags, isLoading, error, fetchTags, addTag, deleteTag };
+  const updateTag = async (tagId: string, name: string, color: string) => {
+    if (!user) return;
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/tags/${tagId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          name: name.trim(),
+          color,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to update tag');
+      }
+
+      const updatedTag = await response.json();
+      setTags(prev => prev.map(t => t.id === tagId ? updatedTag : t));
+      return updatedTag;
+    } catch (err: any) {
+        setError(err.message);
+        throw err;
+    }
+  };
+
+  return { tags, isLoading, error, fetchTags, addTag, deleteTag, updateTag };
 };
