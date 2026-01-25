@@ -32,7 +32,7 @@ export const TagsSettings: React.FC = () => {
   const { tags, isLoading, error: hookError, addTag, deleteTag, updateTag } = useTags();
   
   const [newTagName, setNewTagName] = useState('');
-  const [selectedColor, setSelectedColor] = useState(COLORS[10].value); // Default to Blue
+  const [selectedColor, setSelectedColor] = useState(COLORS[0].value); // Default to Red
   const [isCreating, setIsCreating] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   
@@ -181,7 +181,7 @@ export const TagsSettings: React.FC = () => {
       </div>
 
       {/* Tags List */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         {tags.map((tag) => (
           <div
             key={tag.id}
@@ -189,7 +189,7 @@ export const TagsSettings: React.FC = () => {
           >
             {editingId === tag.id ? (
                 <div className="flex-1 flex flex-col gap-2">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-between gap-2">
                         <input
                             type="text"
                             value={editName}
@@ -201,14 +201,14 @@ export const TagsSettings: React.FC = () => {
                              <button
                                 onClick={handleUpdateTag}
                                 disabled={isUpdating || !editName.trim()}
-                                className="p-1 text-green-500 hover:bg-green-50 dark:hover:bg-green-500/10 rounded"
+                                className="p-1 text-green-500 hover:bg-green-50 dark:hover:bg-green-500/10 rounded cursor-pointer"
                              >
                                 {isUpdating ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
                              </button>
                              <button
                                 onClick={handleCancelEdit}
                                 disabled={isUpdating}
-                                className="p-1 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded"
+                                className="p-1 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded cursor-pointer"
                              >
                                 <X size={16} />
                              </button>
@@ -216,22 +216,22 @@ export const TagsSettings: React.FC = () => {
                     </div>
                     {/* Simple Color Picker for Edit */}
                     <div className="flex flex-wrap gap-1">
-                        {COLORS.slice(0, 7).map(c => ( // Show a subset for compactness, or all if we want
+                        {COLORS.slice(0,9).map(c => ( // Show a subset for compactness, or all if we want
                              <button
                                 key={c.value}
                                 onClick={() => setEditColor(c.value)}
-                                className={`w-4 h-4 rounded-full ${editColor === c.value ? 'ring-2 ring-offset-1 ring-slate-900 dark:ring-white' : ''}`}
+                                className={`w-4 h-4 rounded-full ${editColor === c.value ? 'ring-2 ring-offset-1 ring-slate-900 dark:ring-white cursor-pointer' : 'cursor-pointer'}`}
                                 style={{ backgroundColor: c.value }}
                              />
                         ))}
                          {/* Show remaining colors if needed? let's just show all but smaller */}
                     </div>
                      <div className="flex flex-wrap gap-1 mt-1">
-                        {COLORS.slice(7).map(c => (
+                        {COLORS.slice(9).map(c => (
                              <button
                                 key={c.value}
                                 onClick={() => setEditColor(c.value)}
-                                className={`w-4 h-4 rounded-full ${editColor === c.value ? 'ring-2 ring-offset-1 ring-slate-900 dark:ring-white' : ''}`}
+                                className={`w-4 h-4 rounded-full ${editColor === c.value ? 'ring-2 ring-offset-1 ring-slate-900 dark:ring-white cursor-pointer' : 'cursor-pointer'}`}
                                 style={{ backgroundColor: c.value }}
                              />
                         ))}
@@ -251,7 +251,7 @@ export const TagsSettings: React.FC = () => {
                         {tag.name}
                     </span>
                     </div>
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center gap-1 opacity-100 xl:opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
                         onClick={() => handleStartEdit(tag)}
                         disabled={deletingId === tag.id}
