@@ -32,6 +32,8 @@ model Session {
   user            User     @relation(fields: [userId], references: [id])
   
   tags            Tag[]
+
+  @@index([userId])
 }
 
 model Tag {
@@ -47,4 +49,5 @@ model Tag {
   sessions  Session[]
 
   @@unique([name, userId])
+  @@index([userId, name])
 }
