@@ -1,23 +1,15 @@
 import { NextResponse } from 'next/server';
-// Trigger HMR update
 import prisma from '@/lib/prisma';
 
-// Helper to get userId (mocked or from headers/cookies in real app)
-// For now, we'll assume it's passed in query param or body as per current context usage pattern
-// But ideally should be from a secure session/token.
-// Given the existing context uses `useAuth` and passes `userId` in query for GET,
-// we will look for userId in logical places.
-
-// GET /api/sessions/active
-// Returns the currently active session (endTime is null)
 export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
+    const { getCurrentUser } = await import('@/lib/auth');
+    const user = await getCurrentUser();
 
-    if (!userId) {
-      return NextResponse.json({ error: 'User ID required' }, { status: 400 });
+    if (!user) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    const userId = user.id;
 
     const activeSession = await prisma.session.findFirst({
       where: {
@@ -25,13 +17,11 @@ export async function GET(request: Request) {
         endTime: null,
       },
       include: {
-        tags: true, // Include tags if any
+        tags: true,
       },
     });
 
     if (!activeSession) {
-        // Return 200 with null or 404? 
-        // 200 with null is often easier for frontend to handle "no active session" without throwing
         return NextResponse.json(null);
     }
 
@@ -42,18 +32,20 @@ export async function GET(request: Request) {
   }
 }
 
-// POST /api/sessions/active
-// Starts a new session
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { userId } = body;
+    const { getCurrentUser } = await import('@/lib/auth');
+    const user = await getCurrentUser();
 
-    if (!userId) {
-      return NextResponse.json({ error: 'User ID required' }, { status: 400 });
+    if (!user) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    const userId = user.id;
 
-    // Check if there is already an active session
+    try {
+        await request.json(); 
+    } catch {} 
+
     const existingActive = await prisma.session.findFirst({
         where: {
             userId,
@@ -69,7 +61,6 @@ export async function POST(request: Request) {
       data: {
         userId,
         startTime: new Date(),
-        // endTime is null by default
         durationSeconds: 0,
       },
     });

@@ -3,18 +3,19 @@ import prisma from '@/lib/prisma';
 
 export async function GET(req: Request) {
   try {
-    const { searchParams } = new URL(req.url);
-    const userId = searchParams.get('userId');
+    const { getCurrentUser } = await import('@/lib/auth');
+    const user = await getCurrentUser();
 
-    if (!userId) {
+    if (!user) {
       return NextResponse.json(
-        { error: 'User ID is required' },
-        { status: 400 }
+        { error: 'Unauthorized' },
+        { status: 401 }
       );
     }
-
+    
+    // Original logic with user.id
     const sessions = await prisma.session.findMany({
-      where: { userId },
+      where: { userId: user.id },
       include: {
         tags: true,
       },
@@ -45,15 +46,19 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { userId, startTime, endTime, durationSeconds, notes, tags } = body;
+    const { getCurrentUser } = await import('@/lib/auth');
+    const user = await getCurrentUser();
 
-    if (!userId) {
+    if (!user) {
       return NextResponse.json(
-        { error: 'User ID is required' },
-        { status: 400 }
+        { error: 'Unauthorized' },
+        { status: 401 }
       );
     }
+
+    const body = await req.json();
+    const { startTime, endTime, durationSeconds, notes, tags } = body;
+    const userId = user.id;
 
     // Default colors for new tags
     const DEFAULT_COLORS = [

@@ -3,12 +3,13 @@ import prisma from '@/lib/prisma';
 
 export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
+    const { getCurrentUser } = await import('@/lib/auth');
+    const user = await getCurrentUser();
 
-    if (!userId) {
-      return NextResponse.json({ error: 'User ID required' }, { status: 400 });
+    if (!user) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    const userId = user.id;
 
     const pendingSession = await prisma.session.findFirst({
       where: {

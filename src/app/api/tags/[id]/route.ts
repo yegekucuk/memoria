@@ -7,9 +7,20 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { getCurrentUser } = await import('@/lib/auth');
+    const user = await getCurrentUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const { id: tagId } = await params;
     const body = await req.json();
-    const { userId, name, color } = body;
+    const { name, color } = body;
+    const userId = user.id;
 
     if (!tagId) {
       return NextResponse.json(
@@ -18,9 +29,9 @@ export async function PUT(
       );
     }
 
-    if (!userId || !name || !color) {
+    if (!name || !color) {
       return NextResponse.json(
-        { error: 'Missing required fields: userId, name, color' },
+        { error: 'Missing required fields: name, color' },
         { status: 400 }
       );
     }
@@ -79,20 +90,19 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { getCurrentUser } = await import('@/lib/auth');
+    const user = await getCurrentUser();
+
+    if (!user) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { id: tagId } = await params;
-    const { searchParams } = new URL(req.url);
-    const userId = searchParams.get('userId'); // Ensure the user owns the tag
+    const userId = user.id;
 
     if (!tagId) {
       return NextResponse.json(
         { error: 'Tag ID is required' },
-        { status: 400 }
-      );
-    }
-
-    if (!userId) {
-       return NextResponse.json(
-        { error: 'User ID is required for verification' },
         { status: 400 }
       );
     }

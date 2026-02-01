@@ -9,7 +9,29 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> } // Type definition might need update too if strict
 ) {
   try {
+    const { getCurrentUser } = await import('@/lib/auth');
+    const user = await getCurrentUser();
+
+    if (!user) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { id } = await params;
+    
+    // Security check: ensure session belongs to user
+    const currentSession = await prisma.session.findUnique({
+        where: { id },
+        select: { userId: true }
+    });
+
+    if (!currentSession) {
+         return NextResponse.json({ error: 'Session not found' }, { status: 404 });
+    }
+
+    if (currentSession.userId !== user.id) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     const body = await request.json();
     const { endTime, durationSeconds, notes, tags } = body;
 
@@ -28,17 +50,8 @@ export async function PATCH(
     
     // Handle tags update if provided
     if (tags && Array.isArray(tags)) {
-        // Fetch session to get userId
-        const currentSession = await prisma.session.findUnique({
-            where: { id },
-            select: { userId: true }
-        });
-        
-        if (!currentSession) {
-             return NextResponse.json({ error: 'Session not found' }, { status: 404 });
-        }
-        
-        const userId = currentSession.userId;
+        // We already have userId from user.id
+        const userId = user.id;
         const DEFAULT_COLORS = ['#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#EC4899'];
 
         // Upsert all tags first to ensure they exist
@@ -87,7 +100,28 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { getCurrentUser } = await import('@/lib/auth');
+    const user = await getCurrentUser();
+
+    if (!user) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { id } = await params;
+
+    // Verify ownership
+    const session = await prisma.session.findUnique({
+        where: { id },
+        select: { userId: true },
+    });
+
+    if (!session) {
+        return NextResponse.json({ error: 'Session not found' }, { status: 404 });
+    }
+
+    if (session.userId !== user.id) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
     await prisma.session.delete({
       where: { id },

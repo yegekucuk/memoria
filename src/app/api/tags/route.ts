@@ -4,18 +4,18 @@ import prisma from '@/lib/prisma';
 
 export async function GET(req: Request) {
   try {
-    const { searchParams } = new URL(req.url);
-    const userId = searchParams.get('userId');
+    const { getCurrentUser } = await import('@/lib/auth');
+    const user = await getCurrentUser();
 
-    if (!userId) {
+    if (!user) {
       return NextResponse.json(
-        { error: 'User ID is required' },
-        { status: 400 }
+        { error: 'Unauthorized' },
+        { status: 401 }
       );
     }
 
     const tags = await prisma.tag.findMany({
-      where: { userId },
+      where: { userId: user.id },
       orderBy: {
         name: 'asc',
       },
@@ -33,12 +33,23 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { userId, name, color } = body;
+    const { getCurrentUser } = await import('@/lib/auth');
+    const user = await getCurrentUser();
 
-    if (!userId || !name || !color) {
+    if (!user) {
       return NextResponse.json(
-        { error: 'Missing required fields: userId, name, color' },
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const body = await req.json();
+    const { name, color } = body;
+    const userId = user.id;
+
+    if (!name || !color) {
+      return NextResponse.json(
+        { error: 'Missing required fields: name, color' },
         { status: 400 }
       );
     }

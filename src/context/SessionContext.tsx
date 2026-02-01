@@ -31,7 +31,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     if (!user) return;
     if (updateLoading) setIsLoading(true);
     try {
-       const res = await fetch(`/api/sessions?userId=${user.id}`);
+       const res = await fetch('/api/sessions');
        const data = await res.json();
        if (Array.isArray(data)) {
          setSessions(data);
@@ -52,7 +52,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
              await refreshSessions(false);
 
              // Fetch active session
-             const activeRes = await fetch(`/api/sessions/active?userId=${user.id}`);
+             const activeRes = await fetch('/api/sessions/active');
              const activeData = await activeRes.json();
              
              if (activeData && activeData.id) {
@@ -60,7 +60,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
                  setActiveSessionStartTime(activeData.startTime);
              } else {
                  // If no active session, check for pending session (ended but not saved)
-                 const pendingRes = await fetch(`/api/sessions/pending?userId=${user.id}`);
+                 const pendingRes = await fetch('/api/sessions/pending');
                  const pendingData = await pendingRes.json();
                  
                  if (pendingData && pendingData.id) {
@@ -93,7 +93,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
         const res = await fetch('/api/sessions/active', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: user.id })
+            body: JSON.stringify({})
         });
         if (res.ok) {
             const session = await res.json();

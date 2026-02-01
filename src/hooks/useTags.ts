@@ -17,7 +17,7 @@ export const useTags = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/tags?userId=${user.id}`);
+      const response = await fetch('/api/tags');
       if (!response.ok) throw new Error('Failed to fetch tags');
       const data = await response.json();
       setTags(data);
@@ -42,7 +42,6 @@ export const useTags = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: user.id,
           name: newTagName.trim(),
           color: selectedColor,
         }),
@@ -66,7 +65,7 @@ export const useTags = () => {
       if (!user) return;
       setError(null);
       try {
-        const response = await fetch(`/api/tags/${tagId}?userId=${user.id}`, {
+        const response = await fetch(`/api/tags/${tagId}`, {
           method: 'DELETE',
         });
 
@@ -90,7 +89,6 @@ export const useTags = () => {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: user.id,
           name: name.trim(),
           color,
         }),

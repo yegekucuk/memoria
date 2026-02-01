@@ -30,7 +30,7 @@ export const SessionReport: React.FC<SessionReportProps> = ({
     const fetchTags = async () => {
         if (!user) return;
         try {
-            const res = await fetch(`/api/tags?userId=${user.id}`);
+            const res = await fetch('/api/tags');
             if (res.ok) {
                 const data = await res.json();
                 setAvailableTags(data);

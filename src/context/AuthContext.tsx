@@ -18,27 +18,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check local storage for existing session on mount
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
+    // Check session on mount
+    const checkSession = async () => {
       try {
-        setUser(JSON.parse(storedUser));
+        const res = await fetch('/api/auth/me');
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data.user);
+        } else {
+            console.error('Session check failed', res.statusText);
+            setUser(null);
+        }
       } catch (error) {
-        console.error('Failed to parse stored user', error);
-        localStorage.removeItem('user');
+        console.error('Failed to check session', error);
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
-    }
-    setLoading(false);
+    };
+
+    checkSession();
   }, []);
 
   const login = (userData: User) => {
     setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
+    // Cookie is set by API
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('user');
+  const logout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      setUser(null);
+    } catch (error) {
+        console.error("Logout failed", error);
+    }
   };
 
   return (

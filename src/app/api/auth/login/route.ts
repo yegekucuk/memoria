@@ -43,7 +43,28 @@ export async function POST(req: Request) {
     // Return user without password
     const { password: _, ...userWithoutPassword } = user;
 
-    return NextResponse.json({ user: userWithoutPassword });
+    // Generate JWT
+    const { signToken } = await import('@/lib/auth');
+    const token = signToken({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+    });
+
+    const response = NextResponse.json({ user: userWithoutPassword });
+
+    // Set cookie
+    response.cookies.set({
+      name: 'token',
+      value: token,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+    });
+
+    return response;
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(
