@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { changePasswordSchema, ChangePasswordInput } from '@/lib/validations/auth';
 import { toast } from 'react-hot-toast';
 import { Lock, Loader2 } from 'lucide-react';
+import { SubSetting } from './SubSetting';
 
 export const ChangePassword = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,11 +52,7 @@ export const ChangePassword = () => {
   };
 
   return (
-    <div className="w-full">
-      <div>
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Change Password</h2>
-      </div>
-
+    <SubSetting title="Change Password">
       <div className="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-sm">
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <div className="flex flex-col sm:flex-row gap-4">
@@ -123,6 +120,6 @@ export const ChangePassword = () => {
           </div>
         </form>
       </div>
-    </div>
+    </SubSetting>
   );
 };

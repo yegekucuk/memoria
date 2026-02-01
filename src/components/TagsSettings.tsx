@@ -9,6 +9,7 @@ import { Tag } from '@/types';
 import { TagForm } from './tags/TagForm';
 import { TagList } from './tags/TagList';
 import { ConfirmationModal } from './ConfirmationModal';
+import { SubSetting } from './SubSetting';
 
 export const TagsSettings: React.FC = () => {
   const { user } = useAuth();
@@ -66,14 +67,10 @@ export const TagsSettings: React.FC = () => {
   }
 
   return (
-    <div className="w-full">
-      <div className="mb-2">
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">My Tags</h2>
-        <p className="text-slate-500 dark:text-slate-400">
-          Manage tags for categorizing your time
-        </p>
-      </div>
-
+    <SubSetting 
+      title="My Tags" 
+      subtitle="Manage tags for categorizing your time"
+    >
       <div className='w-full space-y-8'>
         <TagForm 
           onAddTag={handleCreateTag} 
@@ -105,6 +102,6 @@ export const TagsSettings: React.FC = () => {
         variant="danger"
         isLoading={!!deletingId}
       />
-    </div>
+    </SubSetting>
   );
 };
