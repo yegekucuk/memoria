@@ -39,3 +39,7 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.bg-mesh {
+  @apply not-dark:bg-linear-to-br not-dark:from-blue-200 not-dark:via-yellow-50 not-dark:to-purple-200 dark:bg-background-dark
+}

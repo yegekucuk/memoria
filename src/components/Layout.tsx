@@ -18,9 +18,11 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const isActive = (path: string) => pathname?.startsWith(path);
+  const isLandingPage = pathname === '/';
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background-light dark:bg-background-dark text-slate-900 dark:text-white">
+      {!isLandingPage && (
       <aside className="w-20 lg:w-72 shrink-0 flex flex-col border-r border-slate-200 dark:border-white/10 bg-white dark:bg-background-dark transition-all duration-300 z-20">
         <div className="flex flex-col h-full p-4 justify-between">
             <div className="flex flex-col gap-8">
@@ -89,6 +91,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             </div>
         </div>
       </aside>
+      )}
       
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
 

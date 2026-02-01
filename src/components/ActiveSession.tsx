@@ -60,22 +60,8 @@ export const ActiveSession: React.FC<ActiveSessionProps> = ({ startTime, onEndSe
   const { h, m, s } = formatTime(seconds);
 
   return (
-    <div className="fixed inset-0 z-50 bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased overflow-x-hidden min-h-screen flex flex-col">
-        {/* Header Overlay */}
-        <header className="absolute top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md">
-            <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex h-16 items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="flex items-center justify-center size-8 rounded bg-primary text-white">
-                            <Timer size={20} />
-                        </div>
-                        <h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">howmanyhours?</h2>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <main className="flex-grow flex flex-col items-center justify-center py-12 px-4 relative">
+    <div className="fixed inset-0 z-50 bg-mesh font-display text-slate-900 dark:text-white antialiased overflow-x-hidden min-h-screen flex flex-col">
+        <main className="grow flex flex-col items-center justify-center py-12 px-4 relative">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
             <div className="w-full max-w-3xl flex flex-col items-center gap-12 z-10 animate-in zoom-in-95 duration-700">
                 <div className="text-center space-y-2">

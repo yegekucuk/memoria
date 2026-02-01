@@ -57,8 +57,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession, 
         />
         
         {/* CTA Section */}
-        <section className="relative overflow-hidden rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 shadow-lg group">
-            <div className="absolute inset-0 bg-linear-to-r from-primary/20 to-transparent opacity-50 pointer-events-none"></div>
+        <section className="relative overflow-hidden rounded-2xl bg-mesh border border-slate-200 dark:border-white/10 shadow-lg group">
+            <div className="absolute inset-0 bg-mesh opacity-50 pointer-events-none"></div>
             <div className="absolute -right-20 -top-20 w-64 h-64 bg-primary/20 rounded-full blur-[80px] pointer-events-none"></div>
             <div className="relative z-10 flex flex-col items-center justify-center gap-6 px-6 py-10">
                 <div className="flex flex-col gap-3 text-center">
