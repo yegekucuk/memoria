@@ -58,34 +58,33 @@ export const TagsSettings: React.FC = () => {
     await updateTag(id, name, color);
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
   return (
     <SubSetting 
       title="My Tags" 
       subtitle="Manage tags for categorizing your time"
     >
       <div className='w-full space-y-8'>
-        <TagForm 
-          onAddTag={handleCreateTag} 
-          isLoading={isCreating} 
-          error={error || hookError} 
-        />
-      
-
-      <TagList 
-        tags={tags} 
-        onUpdateTag={handleUpdateTag} 
-        onDeleteTag={handleDeleteClick} 
-        deletingId={deletingId}
-        isLoading={isLoading}
-      />
+        {isLoading ? (
+          <div className="flex h-32 items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : (
+          <>
+            <TagForm 
+              onAddTag={handleCreateTag} 
+              isLoading={isCreating} 
+              error={error || hookError} 
+            />
+            
+            <TagList 
+              tags={tags} 
+              onUpdateTag={handleUpdateTag} 
+              onDeleteTag={handleDeleteClick} 
+              deletingId={deletingId}
+              isLoading={isLoading}
+            />
+          </>
+        )}
       </div>
 
       <ConfirmationModal

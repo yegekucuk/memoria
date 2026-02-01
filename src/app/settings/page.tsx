@@ -12,7 +12,7 @@ export default function SettingsPage() {
       <PageLayout>
         <PageHeader 
             title="Settings" 
-            description="Manage your preferences and configurations"
+            description="Manage your preferences and configurations. Click on the settings to open them."
         />
         
         <div className="flex flex-col gap-6">
