@@ -1,14 +1,9 @@
 import { useState, useMemo } from 'react';
 import { Session } from '../types';
+import { calculateChartData, ChartBar } from '../utils/analyticsHelpers';
 
 export type ViewMode = 'daily' | 'weekly';
-
-export interface ChartBar {
-  label: string;
-  value: number;
-  fullDate?: string;
-  isFuture?: boolean;
-}
+export type { ChartBar }; // Re-export for compatibility
 
 export const useAnalyticsData = (sessions: Session[]) => {
   const [viewMode, setViewMode] = useState<ViewMode>('weekly');
@@ -44,67 +39,7 @@ export const useAnalyticsData = (sessions: Session[]) => {
   }, [currentDate, viewMode]);
 
   const { chartData, totalPeriodHours, maxVal } = useMemo(() => {
-    const data: ChartBar[] = [];
-    let total = 0;
-    const now = new Date();
-    const selectedDate = new Date(currentDate);
-
-    if (viewMode === 'daily') {
-      const startOfDay = new Date(selectedDate);
-      startOfDay.setHours(0, 0, 0, 0);
-      const endOfDay = new Date(selectedDate);
-      endOfDay.setHours(23, 59, 59, 999);
-
-      for (let i = 0; i < 24; i++) {
-        data.push({ label: `${i}`, value: 0 });
-      }
-
-      sessions.forEach(session => {
-        const sTime = new Date(session.startTime);
-        if (sTime >= startOfDay && sTime <= endOfDay) {
-          const hour = sTime.getHours();
-          const duration = session.durationSeconds / 3600;
-          if (data[hour]) {
-             data[hour].value += duration;
-             total += duration;
-          }
-        }
-      });
-    } else {
-      const cur = new Date(selectedDate);
-      const day = cur.getDay();
-      const diff = cur.getDate() - day + (day === 0 ? -6 : 1);
-      const monday = new Date(cur);
-      monday.setDate(diff);
-      monday.setHours(0,0,0,0);
-
-      for (let i = 0; i < 7; i++) {
-        const d = new Date(monday);
-        d.setDate(monday.getDate() + i);
-        data.push({ 
-            label: d.toLocaleDateString('en-US', { weekday: 'short' }), 
-            value: 0, 
-            fullDate: d.toDateString(),
-            isFuture: d > now
-        });
-      }
-
-      sessions.forEach(session => {
-        const sTime = new Date(session.startTime);
-        const sDateStr = sTime.toDateString();
-        const entry = data.find(d => d.fullDate === sDateStr);
-        if (entry) {
-          const duration = session.durationSeconds / 3600;
-          entry.value += duration;
-          total += duration;
-        }
-      });
-    }
-
-    const max = Math.max(...data.map(d => d.value), 0);
-    const displayMax = Math.max(Math.ceil(max), 4); 
-
-    return { chartData: data, totalPeriodHours: total, maxVal: displayMax };
+    return calculateChartData(sessions, viewMode, currentDate);
   }, [viewMode, currentDate, sessions]);
 
   const totalHoursAllTime = useMemo(() => {
