@@ -104,14 +104,22 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession, 
                             <div className="h-px bg-slate-100 dark:bg-white/10 w-full mb-4"></div>
                             <div className="flex flex-col gap-4">
                                 <div className="flex items-center justify-between">
-                                    <p className="text-xs font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wider">Last 3 Sessions</p>
+                                    <p className="text-xs font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wider">Today's Sessions</p>
                                 </div>
-                                {todaysSessions.slice().reverse().slice(0, 3).map((session, i) => (
+                                {todaysSessions.slice().reverse().map((session, i) => {
+                                   const colors = [
+                                       'bg-purple-500/10 text-purple-500',
+                                       'bg-orange-500/10 text-orange-500',
+                                       'bg-pink-500/10 text-pink-500',
+                                       'bg-blue-500/10 text-blue-500',
+                                       'bg-teal-500/10 text-teal-500',
+                                       'bg-indigo-500/10 text-indigo-500'
+                                   ];
+                                   const colorClass = colors[i % colors.length];
+                                   
+                                   return (
                                    <div key={i} className="flex items-center gap-3">
-                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-                                          i === 0 ? 'bg-purple-500/10 text-purple-500' : 
-                                          i === 1 ? 'bg-orange-500/10 text-orange-500' : 'bg-pink-500/10 text-pink-500'
-                                        }`}>
+                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${colorClass}`}>
                                             {session.tags[0] === 'Math' ? <FlaskConical size={20} /> : <Tag size={20} />}
                                         </div>
                                         <div className="flex flex-col flex-1 min-w-0">
@@ -120,7 +128,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession, 
                                         </div>
                                         <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">{Math.floor(session.durationSeconds / 60)}m</p>
                                     </div>
-                                ))}
+                                )})}
                                 {todaysSessions.length === 0 && <p className="text-sm text-slate-500">No sessions today.</p>}
                             </div>
                         </>
