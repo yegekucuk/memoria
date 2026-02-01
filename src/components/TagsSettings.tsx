@@ -66,19 +66,21 @@ export const TagsSettings: React.FC = () => {
   }
 
   return (
-    <div className="w-full space-y-8">
-      <div>
+    <div className="w-full">
+      <div className="mb-2">
         <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">My Tags</h2>
         <p className="text-slate-500 dark:text-slate-400">
-          Manage your custom tags for categorizing sessions.
+          Manage tags for categorizing your time
         </p>
       </div>
 
-      <TagForm 
-        onAddTag={handleCreateTag} 
-        isLoading={isCreating} 
-        error={error || hookError} 
-      />
+      <div className='w-full space-y-8'>
+        <TagForm 
+          onAddTag={handleCreateTag} 
+          isLoading={isCreating} 
+          error={error || hookError} 
+        />
+      
 
       <TagList 
         tags={tags} 
@@ -87,6 +89,7 @@ export const TagsSettings: React.FC = () => {
         deletingId={deletingId}
         isLoading={isLoading}
       />
+      </div>
 
       <ConfirmationModal
         isOpen={!!tagToDelete}

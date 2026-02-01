@@ -1,0 +1,68 @@
+import { NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
+import bcrypt from 'bcryptjs';
+import { updatePasswordSchema } from '@/lib/validations/auth';
+import { getCurrentUser } from '@/lib/auth';
+
+export async function POST(req: Request) {
+  try {
+    const user = await getCurrentUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const body = await req.json();
+    const result = updatePasswordSchema.safeParse(body);
+
+    if (!result.success) {
+      return NextResponse.json(
+        { error: 'Invalid input', details: result.error.issues },
+        { status: 400 }
+      );
+    }
+
+    const { currentPassword, newPassword } = result.data;
+
+    // Fetch user with password
+    const userWithPassword = await prisma.user.findUnique({
+      where: { id: user.id },
+    });
+
+    if (!userWithPassword) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // Verify current password
+    const isValid = await bcrypt.compare(currentPassword, userWithPassword.password);
+
+    if (!isValid) {
+      return NextResponse.json(
+        { error: 'Incorrect current password' },
+        { status: 400 }
+      );
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update user
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+      },
+    });
+
+    return NextResponse.json({ success: true, message: 'Password updated successfully' });
+  } catch (error) {
+    console.error('Error changing password:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
