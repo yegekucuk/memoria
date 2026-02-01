@@ -13,6 +13,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!loading && isAuthenticated) {
+      router.refresh();
       router.push('/dashboard');
     }
   }, [loading, isAuthenticated, router]);
