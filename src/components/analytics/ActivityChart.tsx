@@ -23,14 +23,14 @@ export const ActivityChart: React.FC<ActivityChartProps> = ({
           <h3 className="text-lg font-bold mb-1 text-slate-900 dark:text-white capitalize">{viewMode} Activity</h3>
           <div className="flex flex-col sm:flex-row items-baseline gap-2 text-slate-900 dark:text-white">
           <span className="text-2xl sm:text-3xl font-bold tracking-tight">
-            {formatDuration(viewMode === 'weekly' ? totalPeriodHours / 7 : totalPeriodHours)}
+            {formatDuration(viewMode === 'weekly' ? totalPeriodHours / (chartData.filter(d => !d.isFuture).length || 1) : totalPeriodHours)}
           </span>
           <span className="text-sm font-medium text-slate-500 flex items-center">
             {viewMode === 'weekly' ? 'Average' : 'Total for selected period'}
           </span>
           </div>
         </div>
-        <button className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors cursor-pointer">
+        <button className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-primary bg-primary/10 not-disabled:hover:bg-primary/20 rounded-lg transition-colors disabled:opacity-50 disabled:bg-primary/10 disabled:cursor-not-allowed not-disabled:cursor-pointer" disabled>
           <Download size={20} />
           Export Report
         </button>
