@@ -46,17 +46,14 @@ export const useAnalyticsData = (sessions: Session[]) => {
     return sessions.reduce((acc, s) => acc + s.durationSeconds, 0) / 3600;
   }, [sessions]);
   
-  const { topTagName, topTagPct, avgDailyHours } = useMemo(() => {
+  const { topTagName, topTagPct } = useMemo(() => {
     const tagCounts: Record<string, number> = {};
     sessions.forEach(s => s.tags.forEach(t => tagCounts[t] = (tagCounts[t] || 0) + s.durationSeconds));
     const topTagEntry = Object.entries(tagCounts).sort((a, b) => b[1] - a[1])[0];
     const name = topTagEntry ? topTagEntry[0] : 'None';
     const pct = topTagEntry ? Math.round((topTagEntry[1] / 3600 / (totalHoursAllTime || 1)) * 100) : 0;
     
-    const distinctDays = new Set(sessions.map(s => new Date(s.startTime).toDateString())).size;
-    const avg = distinctDays > 0 ? totalHoursAllTime / distinctDays : 0;
-
-    return { topTagName: name, topTagPct: pct, avgDailyHours: avg };
+    return { topTagName: name, topTagPct: pct };
   }, [sessions, totalHoursAllTime]);
 
   return {
@@ -71,7 +68,6 @@ export const useAnalyticsData = (sessions: Session[]) => {
     maxVal,
     totalHoursAllTime,
     topTagName,
-    topTagPct,
-    avgDailyHours
+    topTagPct
   };
 };

@@ -25,8 +25,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => 
     maxVal,
     totalHoursAllTime,
     topTagName,
-    topTagPct,
-    avgDailyHours
+    topTagPct
   } = useAnalyticsData(sessions);
 
   const [isViewAllModalOpen, setIsViewAllModalOpen] = useState(false);
@@ -60,19 +59,8 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => 
                 {/* Insights Grid */}
                 <div className="flex flex-col gap-4">
                     <h2 className="text-[22px] font-bold leading-tight tracking-[-0.015em] pt-2 text-slate-900 dark:text-white">Key Insights</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="bg-white dark:bg-[#1c232d] p-5 rounded-xl border border-[#e5e7eb] dark:border-[#283039] shadow-sm flex flex-col gap-3">
-                            <div className="flex items-center gap-3">
-                                <div className="size-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                                    <Clock size={24} />
-                                </div>
-                                <p className="text-[#6b7280] dark:text-[#9dabb9] text-sm font-medium">Avg. Daily Hours</p>
-                            </div>
-                            <div>
-                                <p className="text-3xl font-bold text-slate-900 dark:text-white">{formatDuration(avgDailyHours)}</p>
-                                <p className="text-xs text-[#6b7280] dark:text-[#9dabb9] mt-1">Based on active days</p>
-                            </div>
-                        </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
                         <div className="bg-white dark:bg-[#1c232d] p-5 rounded-xl border border-[#e5e7eb] dark:border-[#283039] shadow-sm flex flex-col gap-3">
                             <div className="flex items-center gap-3">
                                 <div className="size-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
