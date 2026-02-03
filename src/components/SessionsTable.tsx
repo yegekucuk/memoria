@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Session } from '@/types';
-import { Pencil, Trash2, Tag, Calendar, Clock, Timer } from 'lucide-react';
+import { Pencil, Trash2, Tag, Calendar, Clock, Timer, Search, X, Filter } from 'lucide-react';
 import { ConfirmationModal } from './ConfirmationModal';
 import { EditSessionModal } from './EditSessionModal';
 import { useTags } from '@/hooks/useTags';
+import { toast } from 'react-hot-toast';
 
 interface SessionsTableProps {
   sessions: Session[];
@@ -15,6 +16,22 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
   const [deletingSessionId, setDeletingSessionId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const { tags: allTags } = useTags();
+
+  // Filter States
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [searchNotes, setSearchNotes] = useState('');
+  const [selectedFilterTags, setSelectedFilterTags] = useState<string[]>([]);
+
+  const today = new Date().toISOString().split('T')[0];
+
+  const handleDateChange = (setter: (val: string) => void, val: string, label: string) => {
+      if (val && val > today) {
+          toast.error(`${label} cannot be in the future`);
+          return;
+      }
+      setter(val);
+  };
 
 
   // Helper to format duration
@@ -60,6 +77,47 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
     }
   };
 
+  const toggleFilterTag = (tagName: string) => {
+      setSelectedFilterTags(prev => 
+          prev.includes(tagName) 
+              ? prev.filter(t => t !== tagName)
+              : [...prev, tagName]
+      );
+  };
+
+  const filteredSessions = useMemo(() => {
+    return sessions.filter(session => {
+        const sessionDate = new Date(session.startTime);
+        
+        // Date Logic
+        if (startDate) {
+            const start = new Date(startDate);
+            if (sessionDate < start) return false;
+        }
+        if (endDate) {
+            const end = new Date(endDate);
+            // Set end date specifically to end of day to include sessions on that day
+            end.setHours(23, 59, 59, 999);
+            if (sessionDate > end) return false;
+        }
+
+        // Notes Logic
+        if (searchNotes) {
+            const notes = session.notes || '';
+            if (!notes.toLowerCase().includes(searchNotes.toLowerCase())) return false;
+        }
+
+        // Tags Logic
+        if (selectedFilterTags.length > 0) {
+            // Intersection: Session must have ALL selected tags
+            const hasAllTags = selectedFilterTags.every(tag => session.tags.includes(tag));
+            if (!hasAllTags) return false;
+        }
+
+        return true;
+    });
+  }, [sessions, startDate, endDate, searchNotes, selectedFilterTags]);
+
   if (sessions.length === 0) {
       return (
           <div className="flex flex-col items-center justify-center p-12 text-center bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-white/10">
@@ -73,7 +131,112 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
   }
 
   return (
-    <>
+    <div className="flex flex-col gap-6">
+        {/* Filters Section */}
+        <div className="bg-white dark:bg-surface-dark p-6 rounded-xl border border-slate-200 dark:border-white/10 shadow-sm flex flex-col gap-4">
+            <div className="flex items-center gap-2 text-slate-900 dark:text-white font-semibold mb-2">
+                <Filter size={20} className="text-primary" />
+                <h2>Filter Sessions</h2>
+                {(startDate || endDate || searchNotes || selectedFilterTags.length > 0) && (
+                     <button 
+                        onClick={() => {
+                            setStartDate('');
+                            setEndDate('');
+                            setSearchNotes('');
+                            setSelectedFilterTags([]);
+                        }}
+                        className="text-xs text-red-500 hover:text-red-600 font-medium ml-auto flex items-center gap-1 cursor-pointer"
+                     >
+                         <X size={14} /> Clear All
+                     </button>
+                )}
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Date Inputs */}
+                <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-medium text-slate-500 dark:text-slate-400">Start Date</label>
+                    <div className="relative">
+                        <Calendar size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                        <input 
+                            type="date" 
+                            max={today}
+                            value={startDate}
+                            onChange={(e) => handleDateChange(setStartDate, e.target.value, 'Start Date')}
+                            className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                        />
+                    </div>
+                </div>
+                <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-medium text-slate-500 dark:text-slate-400">End Date</label>
+                    <div className="relative">
+                         <Calendar size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                        <input 
+                            type="date" 
+                            max={today}
+                            value={endDate}
+                            onChange={(e) => handleDateChange(setEndDate, e.target.value, 'End Date')}
+                            className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                        />
+                    </div>
+                </div>
+
+                {/* Search Notes */}
+                <div className="flex flex-col gap-1.5 md:col-span-2 lg:col-span-2">
+                     <label className="text-xs font-medium text-slate-500 dark:text-slate-400">Search Notes</label>
+                     <div className="relative">
+                        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                        <input 
+                            type="text" 
+                            placeholder="Type to search..."
+                            value={searchNotes}
+                            onChange={(e) => setSearchNotes(e.target.value)}
+                            className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                        />
+                        {searchNotes && (
+                            <button 
+                                onClick={() => setSearchNotes('')}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                            >
+                                <X size={14} />
+                            </button>
+                        )}
+                     </div>
+                </div>
+            </div>
+
+            {/* Tags Filter */}
+            <div className="flex flex-col gap-1.5 pt-2">
+                <label className="text-xs font-medium text-slate-500 dark:text-slate-400">Filter by Tags</label>
+                <div className="flex flex-wrap gap-2">
+                    {allTags.map(tag => {
+                         const isSelected = selectedFilterTags.includes(tag.name);
+                         const color = tag.color;
+                         return (
+                            <button 
+                                key={tag.id}
+                                onClick={() => toggleFilterTag(tag.name)}
+                                className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 cursor-pointer`}
+                                style={{ 
+                                    backgroundColor: isSelected ? color : (color ? `${color}1A` : '#f8fafc'),
+                                    borderColor: isSelected ? color : (color ? `${color}33` : '#e2e8f0'),
+                                    color: isSelected ? '#ffffff' : (color || '#64748b'),
+                                    boxShadow: isSelected ? `0 1px 2px 0 ${color}66` : 'none'
+                                }}
+                            >
+                                {isSelected && <Tag size={12} className="mr-1.5" />}
+                                {tag.name}
+                            </button>
+                         );
+                    })}
+                    {allTags.length === 0 && (
+                        <span className="text-sm text-slate-400 italic">No tags available.</span>
+                    )}
+                </div>
+            </div>
+        </div>
+
+        {/* Table Section */}
         <div className="w-full overflow-hidden rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark shadow-sm">
             <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
@@ -108,67 +271,75 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-200 dark:divide-white/5">
-                        {sessions.slice().reverse().map((session) => {
-                            const startDate = new Date(session.startTime);
-                            const endDate = session.endTime ? new Date(session.endTime) : null;
-                            
-                            return (
-                                <tr key={session.id} className="group hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-                                    <td className="px-6 py-4 whitespace-nowrap text-slate-900 dark:text-white font-medium">
-                                        {startDate.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-slate-500 dark:text-slate-400">
-                                        {startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                        {endDate && ` - ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-slate-700 dark:text-slate-300 font-semibold">
-                                        {formatDuration(session.durationSeconds)}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex flex-wrap gap-1 max-w-[200px]">
-                                            {session.tags.map(tag => {
-                                                const tagInfo = allTags.find(t => t.name === tag);
-                                                const color = tagInfo?.color;
-                                                return (
-                                                    <span 
-                                                        key={tag} 
-                                                        className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium border"
-                                                        style={{ 
-                                                            backgroundColor: color ? `${color}1A` : 'rgba(var(--primary), 0.1)', 
-                                                            color: color || 'var(--primary)',
-                                                            borderColor: color ? `${color}33` : 'rgba(var(--primary), 0.2)'
-                                                        }}
-                                                    >
-                                                        {tag}
-                                                    </span>
-                                                );
-                                            })}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-slate-600 dark:text-slate-400 max-w-[300px] truncate" title={session.notes || ''}>
-                                        {session.notes || <span className="text-slate-400 italic">No notes</span>}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right">
-                                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button 
-                                                onClick={() => setEditingSession(session)}
-                                                className="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
-                                                title="Edit Session"
-                                            >
-                                                <Pencil size={16} />
-                                            </button>
-                                            <button 
-                                                onClick={() => setDeletingSessionId(session.id)}
-                                                className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
-                                                title="Delete Session"
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            );
-                        })}
+                        {filteredSessions.length > 0 ? (
+                            filteredSessions.slice().reverse().map((session) => {
+                                const startDate = new Date(session.startTime);
+                                const endDate = session.endTime ? new Date(session.endTime) : null;
+                                
+                                return (
+                                    <tr key={session.id} className="group hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                                        <td className="px-6 py-4 whitespace-nowrap text-slate-900 dark:text-white font-medium">
+                                            {startDate.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-slate-500 dark:text-slate-400">
+                                            {startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            {endDate && ` - ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-slate-700 dark:text-slate-300 font-semibold">
+                                            {formatDuration(session.durationSeconds)}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="flex flex-wrap gap-1 max-w-[200px]">
+                                                {session.tags.map(tag => {
+                                                    const tagInfo = allTags.find(t => t.name === tag);
+                                                    const color = tagInfo?.color;
+                                                    return (
+                                                        <span 
+                                                            key={tag} 
+                                                            className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium border"
+                                                            style={{ 
+                                                                backgroundColor: color ? `${color}1A` : 'rgba(var(--primary), 0.1)', 
+                                                                color: color || 'var(--primary)',
+                                                                borderColor: color ? `${color}33` : 'rgba(var(--primary), 0.2)'
+                                                            }}
+                                                        >
+                                                            {tag}
+                                                        </span>
+                                                    );
+                                                })}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 text-slate-600 dark:text-slate-400 max-w-[300px] truncate" title={session.notes || ''}>
+                                            {session.notes || <span className="text-slate-400 italic">No notes</span>}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-right">
+                                            <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button 
+                                                    onClick={() => setEditingSession(session)}
+                                                    className="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors cursor-pointer"
+                                                    title="Edit Session"
+                                                >
+                                                    <Pencil size={16} />
+                                                </button>
+                                                <button 
+                                                    onClick={() => setDeletingSessionId(session.id)}
+                                                    className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
+                                                    title="Delete Session"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                );
+                            })
+                        ) : (
+                            <tr>
+                                <td colSpan={6} className="px-6 py-12 text-center text-slate-500 dark:text-slate-400 font-medium">
+                                    No sessions match your filters.
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>
@@ -197,6 +368,6 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
             variant="danger"
             isLoading={isDeleting}
         />
-    </>
+    </div>
   );
 };

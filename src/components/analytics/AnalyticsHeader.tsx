@@ -55,7 +55,7 @@ export const AnalyticsHeader: React.FC<AnalyticsHeaderProps> = ({
   return (
     <PageHeader 
       title="Analytics"
-      description="Detailed productivity analytics and trends"
+      description="View your productivity analytics."
       actions={renderHeaderActions()}
     />
   );
