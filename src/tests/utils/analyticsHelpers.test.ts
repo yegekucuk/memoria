@@ -1,5 +1,5 @@
-import { calculateChartData, ChartBar } from '../analyticsHelpers';
-import { Session } from '../../types';
+import { calculateChartData, ChartBar } from '@/utils/analyticsHelpers';
+import { Session } from '@/types';
 
 describe('analyticsHelpers', () => {
   // We'll fix the "current time" to a specific date for consistent testing

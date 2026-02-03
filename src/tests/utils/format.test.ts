@@ -1,4 +1,4 @@
-import { formatDuration } from '../format';
+import { formatDuration } from '@/utils/format';
 
 describe('formatDuration', () => {
   it('should format whole hours correctly', () => {

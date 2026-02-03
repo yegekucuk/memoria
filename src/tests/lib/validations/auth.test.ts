@@ -1,4 +1,4 @@
-import { loginSchema, registerSchema, changePasswordSchema, updatePasswordSchema } from '../auth';
+import { loginSchema, registerSchema, changePasswordSchema, updatePasswordSchema } from '@/lib/validations/auth';
 
 describe('Auth Validation Schemas', () => {
   describe('loginSchema', () => {
