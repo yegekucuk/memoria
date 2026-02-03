@@ -6,7 +6,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Paths to protect
-  const protectedPaths = ['/dashboard', '/api/sessions', '/api/tags', '/reports', '/settings'];
+  const protectedPaths = ['/dashboard', '/api/sessions', '/api/tags', '/reports', '/settings', '/sessions'];
   
   // Check if the current path starts with any of the protected paths
   const isProtected = protectedPaths.some((path) => pathname.startsWith(path));
@@ -35,5 +35,6 @@ export const config = {
     '/api/tags/:path*',
     '/reports/:path*',
     '/settings/:path*',
+    '/sessions/:path*',
   ],
 };

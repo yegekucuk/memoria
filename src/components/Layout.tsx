@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, BarChart2, LogIn, LogOut, Settings } from 'lucide-react';
+import { LayoutDashboard, BarChart2, LogIn, LogOut, Settings, Table } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { AuthModal } from '@/components/AuthModal';
 import { useState } from 'react';
@@ -49,6 +49,17 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                     >
                         <BarChart2 size={24} />
                         <p className="hidden lg:block text-sm font-medium leading-normal">Reports</p>
+                    </Link>
+                    <Link 
+                      href="/sessions"
+                      className={`flex items-center gap-3 px-3 py-3 rounded-lg group transition-colors w-full text-left cursor-pointer ${
+                        isActive('/sessions')
+                        ? 'bg-primary text-white' 
+                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
+                      }`}
+                    >
+                        <Table size={24} />
+                        <p className="hidden lg:block text-sm font-medium leading-normal">Sessions</p>
                     </Link>
                     <Link 
                       href="/settings"
