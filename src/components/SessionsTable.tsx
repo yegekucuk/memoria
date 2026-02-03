@@ -3,7 +3,7 @@ import { Session } from '@/types';
 import { Pencil, Trash2, Tag, Calendar, Clock, Timer } from 'lucide-react';
 import { ConfirmationModal } from './ConfirmationModal';
 import { EditSessionModal } from './EditSessionModal';
-import { useAuth } from '@/context/AuthContext';
+import { useTags } from '@/hooks/useTags';
 
 interface SessionsTableProps {
   sessions: Session[];
@@ -14,7 +14,8 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
   const [editingSession, setEditingSession] = useState<Session | null>(null);
   const [deletingSessionId, setDeletingSessionId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const { } = useAuth(); // for tag colors potential if needed, though they are stored in DB/API
+  const { tags: allTags } = useTags();
+
 
   // Helper to format duration
   const formatDuration = (seconds: number) => {
@@ -125,11 +126,23 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex flex-wrap gap-1 max-w-[200px]">
-                                            {session.tags.map(tag => (
-                                                <span key={tag} className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary border border-primary/20">
-                                                    {tag}
-                                                </span>
-                                            ))}
+                                            {session.tags.map(tag => {
+                                                const tagInfo = allTags.find(t => t.name === tag);
+                                                const color = tagInfo?.color;
+                                                return (
+                                                    <span 
+                                                        key={tag} 
+                                                        className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium border"
+                                                        style={{ 
+                                                            backgroundColor: color ? `${color}1A` : 'rgba(var(--primary), 0.1)', 
+                                                            color: color || 'var(--primary)',
+                                                            borderColor: color ? `${color}33` : 'rgba(var(--primary), 0.2)'
+                                                        }}
+                                                    >
+                                                        {tag}
+                                                    </span>
+                                                );
+                                            })}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-slate-600 dark:text-slate-400 max-w-[300px] truncate" title={session.notes || ''}>
