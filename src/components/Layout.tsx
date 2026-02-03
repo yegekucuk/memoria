@@ -40,15 +40,15 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                         <p className="hidden lg:block text-sm font-medium leading-normal">Dashboard</p>
                     </Link>
                     <Link 
-                      href="/reports"
+                      href="/analytics"
                       className={`flex items-center gap-3 px-3 py-3 rounded-lg group transition-colors w-full text-left cursor-pointer ${
-                        isActive('/reports')
+                        isActive('/analytics')
                         ? 'bg-primary text-white' 
                         : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
                       }`}
                     >
                         <BarChart2 size={24} />
-                        <p className="hidden lg:block text-sm font-medium leading-normal">Reports</p>
+                        <p className="hidden lg:block text-sm font-medium leading-normal">Analytics</p>
                     </Link>
                     <Link 
                       href="/sessions"

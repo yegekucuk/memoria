@@ -2,7 +2,7 @@
 
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 
-export default function ReportsLayout({
+export default function AnalyticsLayout({
   children,
 }: {
   children: React.ReactNode;

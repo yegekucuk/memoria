@@ -14,7 +14,7 @@ export default function SessionsPage() {
     <ProtectedRoute>
       <PageLayout>
         <PageHeader 
-            title="All Sessions" 
+            title="Sessions" 
             description="Manage your deep work history. View, edit, or delete your past sessions."
         />
         
