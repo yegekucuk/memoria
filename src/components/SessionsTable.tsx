@@ -114,6 +114,11 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
             if (!hasAllTags) return false;
         }
 
+        // Hide running sessions (no endTime) if they have no tags and no notes
+        if (!session.endTime && (!session.tags || session.tags.length === 0) && (!session.notes || session.notes.trim() === '')) {
+            return false;
+        }
+
         return true;
     });
   }, [sessions, startDate, endDate, searchNotes, selectedFilterTags]);
@@ -155,10 +160,11 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Date Inputs */}
                 <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-medium text-slate-500 dark:text-slate-400">Start Date</label>
+                    <label htmlFor="startDate" className="text-xs font-medium text-slate-500 dark:text-slate-400">Start Date</label>
                     <div className="relative">
                         <Calendar size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                         <input 
+                            id="startDate"
                             type="date" 
                             max={today}
                             value={startDate}
@@ -168,10 +174,11 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
                     </div>
                 </div>
                 <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-medium text-slate-500 dark:text-slate-400">End Date</label>
+                    <label htmlFor="endDate" className="text-xs font-medium text-slate-500 dark:text-slate-400">End Date</label>
                     <div className="relative">
                          <Calendar size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                         <input 
+                            id="endDate" 
                             type="date" 
                             max={today}
                             value={endDate}
@@ -183,10 +190,11 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
 
                 {/* Search Notes */}
                 <div className="flex flex-col gap-1.5 md:col-span-2 lg:col-span-2">
-                     <label className="text-xs font-medium text-slate-500 dark:text-slate-400">Search Notes</label>
+                     <label htmlFor="searchNotes" className="text-xs font-medium text-slate-500 dark:text-slate-400">Search Notes</label>
                      <div className="relative">
                         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                         <input 
+                            id="searchNotes"
                             type="text" 
                             placeholder="Type to search..."
                             value={searchNotes}
