@@ -28,6 +28,22 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     setIsMobileMenuOpen(false);
   }, [pathname]);
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+      // Prevent overscroll on iOS
+      document.body.style.overscrollBehavior = 'none';
+    } else {
+      document.body.style.overflow = 'unset';
+      document.body.style.overscrollBehavior = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+      document.body.style.overscrollBehavior = 'unset';
+    };
+  }, [isMobileMenuOpen]);
+
   // Touch handling for swipe to close
   const touchStart = useRef<number | null>(null);
 
@@ -87,7 +103,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             )}
 
             <aside 
-                className={`fixed inset-y-0 left-0 z-40 w-72 shrink-0 flex flex-col border-r border-slate-200 dark:border-white/10 bg-white dark:bg-background-dark lg:static lg:translate-x-0 ${
+                className={`fixed inset-y-0 left-0 z-40 w-72 shrink-0 flex flex-col border-r border-slate-200 dark:border-white/10 bg-white dark:bg-background-dark overflow-y-auto lg:static lg:translate-x-0 ${
                     isDragging ? '' : 'transition-transform duration-300'
                 } ${
                     isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
@@ -181,7 +197,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col h-full overflow-y-auto relative bg-background-light dark:bg-background-dark">
+      <main className={`flex-1 flex flex-col h-full relative bg-background-light dark:bg-background-dark ${isMobileMenuOpen ? 'overflow-hidden' : 'overflow-y-auto'}`}>
           {!isLandingPage && (
             <div className="lg:hidden p-4 pb-0">
                 <button 
