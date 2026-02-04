@@ -169,8 +169,16 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
                             max={today}
                             value={startDate}
                             onChange={(e) => handleDateChange(setStartDate, e.target.value, 'Start Date')}
-                            className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                            className="w-full pl-9 pr-10 py-2 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all appearance-none max-w-full min-w-0"
                         />
+                        {startDate && (
+                            <button 
+                                onClick={() => setStartDate('')}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                            >
+                                <X size={14} />
+                            </button>
+                        )}
                     </div>
                 </div>
                 <div className="flex flex-col gap-1.5">
@@ -183,8 +191,16 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
                             max={today}
                             value={endDate}
                             onChange={(e) => handleDateChange(setEndDate, e.target.value, 'End Date')}
-                            className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                            className="w-full pl-9 pr-10 py-2 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all appearance-none max-w-full min-w-0"
                         />
+                        {endDate && (
+                            <button 
+                                onClick={() => setEndDate('')}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                            >
+                                <X size={14} />
+                            </button>
+                        )}
                     </div>
                 </div>
 
@@ -232,7 +248,7 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
                                     boxShadow: isSelected ? `0 1px 2px 0 ${color}66` : 'none'
                                 }}
                             >
-                                {isSelected && <Tag size={12} className="mr-1.5" />}
+                                {isSelected}
                                 {tag.name}
                             </button>
                          );
