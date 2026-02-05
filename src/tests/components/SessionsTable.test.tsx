@@ -17,7 +17,7 @@ jest.mock('@/hooks/useTags', () => ({
 
 // Mock ConfirmationModal and EditSessionModal
 jest.mock('@/components/ConfirmationModal', () => ({
-  ConfirmationModal: ({ isOpen, onConfirm, onClose }: any) => (
+  ConfirmationModal: ({ isOpen, onConfirm, onClose }: { isOpen: boolean; onConfirm: () => void; onClose: () => void }) => (
     isOpen ? (
         <div data-testid="confirmation-modal">
             <button onClick={onConfirm} data-testid="confirm-delete">Confirm</button>
@@ -28,7 +28,7 @@ jest.mock('@/components/ConfirmationModal', () => ({
 }));
 
 jest.mock('@/components/EditSessionModal', () => ({
-  EditSessionModal: ({ isOpen, onClose }: any) => (
+  EditSessionModal: ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => (
     isOpen ? <div data-testid="edit-session-modal"><button onClick={onClose}>Close</button></div> : null
   ),
 }));

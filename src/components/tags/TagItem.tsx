@@ -48,8 +48,12 @@ export const TagItem: React.FC<TagItemProps> = ({ tag, onUpdate, onDelete, isDel
     try {
       await onUpdate(tag.id, editName.trim(), editColor);
       setIsEditing(false);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred');
+      }
     } finally {
       setIsUpdating(false);
     }

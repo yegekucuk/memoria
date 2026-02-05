@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Timer, Clock, StopCircle } from 'lucide-react';
+import { Clock, StopCircle } from 'lucide-react';
 
 interface ActiveSessionProps {
   startTime: Date;

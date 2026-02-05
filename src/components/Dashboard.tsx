@@ -24,8 +24,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession, 
   
   const todaysSessions = sessions.filter(s => new Date(s.startTime).toDateString() === todayString);
   const totalSecondsToday = todaysSessions.reduce((acc, curr) => acc + curr.durationSeconds, 0);
-  const hoursToday = Math.floor(totalSecondsToday / 3600);
-  const minutesToday = Math.floor((totalSecondsToday % 3600) / 60);
 
   const { tags } = useTags();
   const [isStarting, setIsStarting] = React.useState(false);
@@ -104,7 +102,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession, 
                             <div className="h-px bg-slate-100 dark:bg-white/10 w-full mb-4"></div>
                             <div className="flex flex-col gap-4">
                                 <div className="flex items-center justify-between">
-                                    <p className="text-xs font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wider">Today's Sessions</p>
+                                    <p className="text-xs font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wider">Today&apos;s Sessions</p>
                                 </div>
                                 {todaysSessions.slice().reverse().map((session, i) => {
                                    const colors = [

@@ -52,7 +52,8 @@ export async function POST(req: Request) {
     });
 
     // Return user without password
-    const { password: _, ...userWithoutPassword } = user;
+
+    const { password: _password, ...userWithoutPassword } = user;
 
     // Generate JWT
     const { signToken } = await import('@/lib/auth');

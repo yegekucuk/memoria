@@ -26,8 +26,12 @@ export const TagsSettings: React.FC = () => {
     setError(null);
     try {
       await addTag(name, color);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred');
+      }
       throw err; // Let TagForm handle its own UI if needed
     } finally {
       setIsCreating(false);
@@ -46,8 +50,10 @@ export const TagsSettings: React.FC = () => {
     try {
       await deleteTag(tagToDelete.id);
       setTagToDelete(null);
-    } catch (err: any) {
-      console.error("Failed to delete", err);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+           console.error("Failed to delete", err);
+      }
     } finally {
       setDeletingId(null);
     }

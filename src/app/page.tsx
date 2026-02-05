@@ -27,9 +27,9 @@ export default function Home() {
     const interval = setInterval(() => {
       setCurrentWordIndex((prev) => (prev + 1) % words.length);
     }, 2000); // Change every 2 seconds
-
-    return () => clearInterval(interval);
-  }, []);
+  
+      return () => clearInterval(interval);
+    }, [words.length]);
 
   if (loading) {
     return (

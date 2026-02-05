@@ -44,8 +44,12 @@ export const ChangePassword = () => {
 
       toast.success('Password updated successfully');
       reset();
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+          toast.error(error.message);
+      } else {
+        toast.error('Failed to update password');
+      }
     } finally {
       setIsSubmitting(false);
     }

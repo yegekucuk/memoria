@@ -1,6 +1,6 @@
 import React from 'react';
 import { Session } from '../types';
-import { Clock, Tag, Sigma, Loader2 } from 'lucide-react';
+import { Tag, Sigma, Loader2 } from 'lucide-react';
 import { formatDuration } from '../utils/format';
 import { PageLayout } from './layout/PageLayout';
 import { useAnalyticsData } from '../hooks/useAnalyticsData';

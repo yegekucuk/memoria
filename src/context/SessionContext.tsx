@@ -27,7 +27,8 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
 
   const { user, loading: authLoading } = useAuth();
 
-  const refreshSessions = async (updateLoading = true) => {
+
+  const refreshSessions = React.useCallback(async (updateLoading = true) => {
     if (!user) return;
     if (updateLoading) setIsLoading(true);
     try {
@@ -41,7 +42,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     } finally {
        if (updateLoading) setIsLoading(false);
     }
-  };
+  }, [user]);
 
   // Load from API
   useEffect(() => {
@@ -85,7 +86,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     } else if (!authLoading) {
         setIsLoading(false);
     }
-  }, [user, authLoading]);
+  }, [user, authLoading, refreshSessions]);
 
   const startSession = async () => {
     if (!user) return;

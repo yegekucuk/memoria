@@ -39,7 +39,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           <div className="mt-4 text-center text-sm text-slate-600 dark:text-slate-400">
             {mode === 'login' ? (
               <p>
-                Don't have an account?{' '}
+                Don&apos;t have an account?{' '}
                 <button
                   onClick={() => setMode('register')}
                   className="text-primary hover:underline font-medium"

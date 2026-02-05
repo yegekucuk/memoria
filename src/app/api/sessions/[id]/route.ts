@@ -36,7 +36,12 @@ export async function PATCH(
     const { endTime, durationSeconds, notes, tags } = body;
 
     // Use a dynamic data object to only update what's passed
-    const updateData: any = {};
+    const updateData: {
+        endTime?: Date;
+        durationSeconds?: number;
+        notes?: string;
+        tags?: object; 
+    } = {};
 
     if (endTime) {
         updateData.endTime = new Date(endTime);

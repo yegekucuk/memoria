@@ -26,8 +26,12 @@ export const TagForm: React.FC<TagFormProps> = ({ onAddTag, isLoading, error }) 
     try {
       await onAddTag(newTagName.trim(), selectedColor);
       setNewTagName('');
-    } catch (err: any) {
-      setLocalError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setLocalError(err.message);
+      } else {
+        setLocalError('An error occurred while adding the tag');
+      }
     } finally {
       setIsSubmitting(false);
     }

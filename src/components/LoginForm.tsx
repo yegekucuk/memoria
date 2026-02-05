@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '@/context/AuthContext';
-import { LoginInput, loginSchema, RegisterInput, registerSchema } from '@/lib/validations/auth';
+import { LoginInput, loginSchema } from '@/lib/validations/auth';
 import { Loader2 } from 'lucide-react';
 
 interface LoginFormProps {

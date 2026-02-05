@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Session, Tag as TagType } from '../types';
-import { X, Tag, Plus, CheckCircle, Loader2 } from 'lucide-react';
+import { X, Tag, CheckCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 interface SessionReportProps {

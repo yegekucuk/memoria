@@ -25,7 +25,10 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   // Close mobile menu when route changes
   useEffect(() => {
-    setIsMobileMenuOpen(false);
+    if (isMobileMenuOpen) {
+      setIsMobileMenuOpen(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   // Lock body scroll when mobile menu is open

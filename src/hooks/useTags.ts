@@ -55,8 +55,13 @@ export const useTags = () => {
       const newTag = await response.json();
       setTags(prev => [...prev, newTag]);
       return newTag;
-    } catch (err: any) {
-        setError(err.message);
+      return newTag;
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            setError(err.message);
+        } else {
+            setError('An unknown error occurred');
+        }
         throw err;
     }
   };
@@ -74,8 +79,12 @@ export const useTags = () => {
         }
 
         setTags(prev => prev.filter(t => t.id !== tagId));
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+            setError(err.message);
+        } else {
+             setError('Failed to delete tag');
+        }
         throw err;
       }
   };
@@ -102,8 +111,12 @@ export const useTags = () => {
       const updatedTag = await response.json();
       setTags(prev => prev.map(t => t.id === tagId ? updatedTag : t));
       return updatedTag;
-    } catch (err: any) {
-        setError(err.message);
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            setError(err.message);
+        } else {
+            setError('Failed to update tag');
+        }
         throw err;
     }
   };
