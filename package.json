@@ -2,6 +2,7 @@
   "name": "temp_next_app",
   "version": "0.1.0",
   "private": true,
+  "license": "UNLICENSED",
   "scripts": {
     "dev": "npx prisma generate && next dev",
     "build": "npx prisma generate && next build",
