@@ -1,6 +1,6 @@
 import { Session } from '../types';
 
-export type ViewMode = 'daily' | 'weekly';
+export type ViewMode = 'daily' | 'weekly' | 'monthly';
 
 export interface ChartBar {
   label: string;
@@ -83,6 +83,73 @@ export const calculateChartData = (
             currentPointer = segmentEnd;
         }
       }
+    });
+
+  } else if (viewMode === 'monthly') {
+    // MONTHLY VIEW
+    const cur = new Date(selectedDate);
+    const year = cur.getFullYear();
+    const month = cur.getMonth();
+    
+    // Get number of days in the month
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    
+    // Initialize days of the month
+    for (let i = 1; i <= daysInMonth; i++) {
+        const d = new Date(year, month, i);
+        data.push({
+            label: `${i}`,
+            value: 0,
+            fullDate: d.toDateString(),
+            isFuture: d > now,
+        });
+    }
+
+    sessions.forEach((session) => {
+        let sTime = new Date(session.startTime);
+        
+        // Skip sessions that don't overlap with the selected month
+        const monthStart = new Date(year, month, 1);
+        const monthEnd = new Date(year, month + 1, 0, 23, 59, 59, 999);
+        
+        const sessionEnd = new Date(sTime.getTime() + session.durationSeconds * 1000);
+        
+        if (sessionEnd < monthStart || sTime > monthEnd) {
+             return;
+        }
+
+        let remainingDurationSeconds = session.durationSeconds;
+        
+        // If session started before the month, fast forward to month start
+        if (sTime < monthStart) {
+            const diffSeconds = (monthStart.getTime() - sTime.getTime()) / 1000;
+            remainingDurationSeconds -= diffSeconds;
+            sTime = new Date(monthStart);
+        }
+
+        while (remainingDurationSeconds > 0) {
+            const sDateStr = sTime.toDateString();
+             // If we've gone past the month, stop
+             if (sTime > monthEnd) break;
+
+            const endOfDay = new Date(sTime);
+            endOfDay.setHours(23, 59, 59, 999);
+            
+            const nextMidnight = new Date(sTime);
+            nextMidnight.setDate(nextMidnight.getDate() + 1);
+            nextMidnight.setHours(0,0,0,0);
+            
+            const secondsToNextDay = (nextMidnight.getTime() - sTime.getTime()) / 1000;
+            const durationForThisDay = Math.min(remainingDurationSeconds, secondsToNextDay);
+            
+            addToData(sDateStr, durationForThisDay / 3600);
+             if (data.some(d => d.fullDate === sDateStr)) {
+                total += durationForThisDay / 3600;
+            }
+            
+            remainingDurationSeconds -= durationForThisDay;
+            sTime = new Date(nextMidnight);
+        }
     });
 
   } else {

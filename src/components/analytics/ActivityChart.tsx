@@ -76,6 +76,11 @@ export const ActivityChart: React.FC<ActivityChartProps> = ({
       {/* X-Axis Labels */}
       <div className="flex justify-between px-2 pt-2 text-[#9dabb9] text-xs font-medium pl-10">
         {viewMode === 'weekly' && chartData.map((d, i) => <span key={i} className="flex-1 text-center">{d.label}</span>)}
+        {viewMode === 'monthly' && chartData.map((d, i) => (
+            <span key={i} className="flex-1 text-center text-[10px]">
+                {d.label}
+            </span>
+        ))}
         {viewMode === 'daily' && [0, 4, 8, 12, 16, 20, 24].map((h) => <span key={h}>{h}:00</span>)}
       </div>
     </div>

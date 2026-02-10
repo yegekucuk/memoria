@@ -1,9 +1,8 @@
 import { useState, useMemo } from 'react';
 import { Session } from '../types';
-import { calculateChartData, ChartBar } from '../utils/analyticsHelpers';
+import { calculateChartData, ChartBar, ViewMode } from '../utils/analyticsHelpers';
 
-export type ViewMode = 'daily' | 'weekly';
-export type { ChartBar }; // Re-export for compatibility
+export type { ViewMode, ChartBar }; // Re-export for compatibility
 
 export const useAnalyticsData = (sessions: Session[]) => {
   const [viewMode, setViewMode] = useState<ViewMode>('weekly');
@@ -13,6 +12,7 @@ export const useAnalyticsData = (sessions: Session[]) => {
     const newDate = new Date(currentDate);
     if (viewMode === 'daily') newDate.setDate(newDate.getDate() - 1);
     else if (viewMode === 'weekly') newDate.setDate(newDate.getDate() - 7);
+    else if (viewMode === 'monthly') newDate.setMonth(newDate.getMonth() - 1);
     setCurrentDate(newDate);
   };
 
@@ -20,6 +20,7 @@ export const useAnalyticsData = (sessions: Session[]) => {
     const newDate = new Date(currentDate);
     if (viewMode === 'daily') newDate.setDate(newDate.getDate() + 1);
     else if (viewMode === 'weekly') newDate.setDate(newDate.getDate() + 7);
+    else if (viewMode === 'monthly') newDate.setMonth(newDate.getMonth() + 1);
     setCurrentDate(newDate);
   };
 
@@ -34,6 +35,9 @@ export const useAnalyticsData = (sessions: Session[]) => {
         const end = new Date(start);
         end.setDate(start.getDate() + 6);
         return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+    }
+    if (viewMode === 'monthly') {
+        return currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     }
     return currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   }, [currentDate, viewMode]);

@@ -48,6 +48,16 @@ export const AnalyticsHeader: React.FC<AnalyticsHeaderProps> = ({
         >
           Weekly
         </button>
+        <button 
+          onClick={() => setViewMode('monthly')}
+          className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all cursor-pointer ${
+            viewMode === 'monthly' 
+              ? 'bg-white dark:bg-[#111418] text-[#111418] dark:text-white shadow-sm' 
+              : 'text-[#6b7280] dark:text-[#9dabb9]'
+          }`}
+        >
+          Monthly
+        </button>
       </div>
     </div>
   );
