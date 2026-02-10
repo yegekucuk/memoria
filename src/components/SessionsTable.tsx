@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Session } from '@/types';
-import { Pencil, Trash2, Tag, Calendar, Clock, Timer, Search, X, Filter } from 'lucide-react';
+import { Pencil, Trash2, Tag, Calendar, Clock, Timer, Search, X, Filter, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 import { ConfirmationModal } from './ConfirmationModal';
 import { EditSessionModal } from './EditSessionModal';
 import { useTags } from '@/hooks/useTags';
@@ -22,6 +22,10 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
   const [endDate, setEndDate] = useState('');
   const [searchNotes, setSearchNotes] = useState('');
   const [selectedFilterTags, setSelectedFilterTags] = useState<string[]>([]);
+  
+  // Pagination State
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -40,6 +44,11 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
     const m = Math.floor((seconds % 3600) / 60);
     return `${h}h ${m}m`;
   };
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [startDate, endDate, searchNotes, selectedFilterTags]);
 
   const handleSaveEdit = async (id: string, updates: Pick<Session, 'tags' | 'notes'>) => {
     try {
@@ -142,7 +151,27 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
             <div className="flex items-center gap-2 text-slate-900 dark:text-white font-semibold mb-2">
                 <Filter size={20} className="text-primary" />
                 <h2>Filter Sessions</h2>
-                {(startDate || endDate || searchNotes || selectedFilterTags.length > 0) && (
+                <div className="ml-auto flex items-center gap-4">
+                    <div className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+                        <span>Show</span>
+                        <div className="relative group">
+                            <select
+                                value={itemsPerPage}
+                                onChange={(e) => {
+                                    setItemsPerPage(Number(e.target.value));
+                                    setCurrentPage(1);
+                                }}
+                                className="appearance-none bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-md py-1 pl-2 pr-6 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                            >
+                                <option value={10}>10</option>
+                                <option value={20}>20</option>
+                                <option value={50}>50</option>
+                            </select>
+                            <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400" />
+                        </div>
+                        <span>per page</span>
+                    </div>
+                 {(startDate || endDate || searchNotes || selectedFilterTags.length > 0) && (
                      <button 
                         onClick={() => {
                             setStartDate('');
@@ -155,6 +184,7 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
                          <X size={14} /> Clear All
                      </button>
                 )}
+                </div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -260,6 +290,36 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
             </div>
         </div>
 
+        {/* Pagination Header */}
+        {filteredSessions.length > 0 && (
+            <div className="flex items-center justify-between px-2">
+                <div className="text-sm text-slate-500 dark:text-slate-400">
+                    Showing <span className="font-medium text-slate-900 dark:text-white">{Math.min((currentPage - 1) * itemsPerPage + 1, filteredSessions.length)}</span> to <span className="font-medium text-slate-900 dark:text-white">{Math.min(currentPage * itemsPerPage, filteredSessions.length)}</span> of <span className="font-medium text-slate-900 dark:text-white">{filteredSessions.length}</span> results
+                </div>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                        className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        title="Previous Page"
+                    >
+                        <ChevronLeft size={20} />
+                    </button>
+                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                        Page {currentPage} of {Math.ceil(filteredSessions.length / itemsPerPage)}
+                    </span>
+                    <button
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredSessions.length / itemsPerPage)))}
+                        disabled={currentPage === Math.ceil(filteredSessions.length / itemsPerPage)}
+                        className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        title="Next Page"
+                    >
+                        <ChevronRight size={20} />
+                    </button>
+                </div>
+            </div>
+        )}
+
         {/* Table Section */}
         <div className="w-full overflow-hidden rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark shadow-sm">
             <div className="overflow-x-auto">
@@ -296,7 +356,11 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
                     </thead>
                     <tbody className="divide-y divide-slate-200 dark:divide-white/5">
                         {filteredSessions.length > 0 ? (
-                            filteredSessions.slice().reverse().map((session) => {
+                            filteredSessions
+                                .slice()
+                                .reverse()
+                                .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                                .map((session) => {
                                 const startDate = new Date(session.startTime);
                                 const endDate = session.endTime ? new Date(session.endTime) : null;
                                 
@@ -368,7 +432,6 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
                 </table>
             </div>
         </div>
-
         {/* Edit Modal */}
         {editingSession && (
             <EditSessionModal 
