@@ -17,6 +17,15 @@ model User {
   
   sessions  Session[]
   tags      Tag[]
+  settings  Settings? // Add relation to Settings
+}
+
+model Settings {
+  id              String   @id @default(cuid())
+  excludeWeekends Boolean  @default(false)
+  
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Session {

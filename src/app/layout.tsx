@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from '@/context/SessionContext';
 import { AuthProvider } from '@/context/AuthContext';
+import { SettingsProvider } from '@/context/SettingsContext';
 import { Layout } from '@/components/Layout';
 import { Toaster } from 'react-hot-toast';
 
@@ -24,20 +25,22 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         <AuthProvider>
-          <SessionProvider>
-            <Layout>
-              {children}
-            </Layout>
-            <Toaster 
-              position="bottom-right"
-              toastOptions={{
-                className: '!bg-white dark:!bg-surface-dark !text-slate-900 dark:!text-white !border !border-slate-200 dark:!border-white/10 !shadow-lg',
-                style: {
-                  borderRadius: '12px',
-                },
-              }} 
-            />
-          </SessionProvider>
+          <SettingsProvider>
+            <SessionProvider>
+              <Layout>
+                {children}
+              </Layout>
+              <Toaster 
+                position="bottom-right"
+                toastOptions={{
+                  className: '!bg-white dark:!bg-surface-dark !text-slate-900 dark:!text-white !border !border-slate-200 dark:!border-white/10 !shadow-lg',
+                  style: {
+                    borderRadius: '12px',
+                  },
+                }} 
+              />
+            </SessionProvider>
+          </SettingsProvider>
         </AuthProvider>
       </body>
     </html>

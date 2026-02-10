@@ -1,5 +1,6 @@
 
 import { TagsSettings } from '@/components/TagsSettings';
+import { AnalyticsSettings } from '@/components/AnalyticsSettings';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { PageHeader } from '@/components/layout/PageHeader';
@@ -22,6 +23,10 @@ export default function SettingsPage() {
           
           <section id="tags">
               <TagsSettings />
+          </section>
+
+          <section id="analytics">
+              <AnalyticsSettings />
           </section>
         </div>
       </PageLayout>
