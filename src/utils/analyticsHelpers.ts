@@ -1,6 +1,6 @@
 import { Session } from '../types';
 
-export type ViewMode = 'daily' | 'weekly' | 'monthly';
+export type ViewMode = 'weekly' | 'monthly';
 
 export interface ChartBar {
   label: string;
@@ -12,7 +12,8 @@ export interface ChartBar {
 export const calculateChartData = (
   sessions: Session[],
   viewMode: ViewMode,
-  currentDate: Date
+  currentDate: Date,
+  excludeWeekends: boolean = false
 ): { chartData: ChartBar[]; totalPeriodHours: number; maxVal: number } => {
   const data: ChartBar[] = [];
   let total = 0;
@@ -27,65 +28,13 @@ export const calculateChartData = (
     }
   };
 
-  // Helper to add hours to a specific hour index (0-23) for daily view
-  const addToHourlyData = (hour: number, hours: number) => {
-    if (data[hour]) {
-      data[hour].value += hours;
-    }
+  const isWeekend = (date: Date) => {
+    const day = date.getDay();
+    return day === 0 || day === 6; // 0 is Sunday, 6 is Saturday
   };
 
-  if (viewMode === 'daily') {
-    // DAILY VIEW
-    const startOfDay = new Date(selectedDate);
-    startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date(selectedDate);
-    endOfDay.setHours(23, 59, 59, 999);
 
-    // Initialize 24 hours
-    for (let i = 0; i < 24; i++) {
-        data.push({ label: `${i}`, value: 0 });
-    }
-
-    sessions.forEach((session) => {
-      const sTime = new Date(session.startTime);
-      const eTime = new Date(sTime.getTime() + session.durationSeconds * 1000);
-
-      // We only care about the overlap of [sTime, eTime] with [startOfDay, endOfDay]
-      const overlapStart = sTime < startOfDay ? startOfDay : sTime;
-      const overlapEnd = eTime > endOfDay ? endOfDay : eTime;
-
-      if (overlapStart < overlapEnd) {
-        // There is an overlap with this day
-        // For the hourly chart, we want to distribute this overlap duration into hours
-        // This is a bit more granular. If a session spans 13:50 to 15:10
-        // 13:50-14:00 -> 10 mins in hour 13
-        // 14:00-15:00 -> 60 mins in hour 14
-        // 15:00-15:10 -> 10 mins in hour 15
-        
-        let currentPointer = new Date(overlapStart);
-        while (currentPointer < overlapEnd) {
-            const currentHour = currentPointer.getHours();
-            
-            // The end of this hour slot
-            const endOfHour = new Date(currentPointer);
-            endOfHour.setHours(currentHour + 1, 0, 0, 0);
-            
-            // The effective end time for this segment is either the session end or the hour end
-            const segmentEnd = overlapEnd < endOfHour ? overlapEnd : endOfHour;
-            
-            const durationMs = segmentEnd.getTime() - currentPointer.getTime();
-            const durationHours = durationMs / (1000 * 60 * 60);
-            
-            addToHourlyData(currentHour, durationHours);
-            total += durationHours;
-
-            // Move pointer
-            currentPointer = segmentEnd;
-        }
-      }
-    });
-
-  } else if (viewMode === 'monthly') {
+  if (viewMode === 'monthly') {
     // MONTHLY VIEW
     const cur = new Date(selectedDate);
     const year = cur.getFullYear();
@@ -97,6 +46,8 @@ export const calculateChartData = (
     // Initialize days of the month
     for (let i = 1; i <= daysInMonth; i++) {
         const d = new Date(year, month, i);
+        if (excludeWeekends && isWeekend(d)) continue;
+        
         data.push({
             label: `${i}`,
             value: 0,
@@ -142,8 +93,9 @@ export const calculateChartData = (
             const secondsToNextDay = (nextMidnight.getTime() - sTime.getTime()) / 1000;
             const durationForThisDay = Math.min(remainingDurationSeconds, secondsToNextDay);
             
-            addToData(sDateStr, durationForThisDay / 3600);
+             addToData(sDateStr, durationForThisDay / 3600);
              if (data.some(d => d.fullDate === sDateStr)) {
+                // Only add to total if it's visible (not excluded)
                 total += durationForThisDay / 3600;
             }
             
@@ -165,6 +117,9 @@ export const calculateChartData = (
     for (let i = 0; i < 7; i++) {
       const d = new Date(monday);
       d.setDate(monday.getDate() + i);
+      
+      if (excludeWeekends && isWeekend(d)) continue;
+
       data.push({
         label: d.toLocaleDateString('en-US', { weekday: 'short' }),
         value: 0,
@@ -202,6 +157,7 @@ export const calculateChartData = (
         if (data.some(d => d.fullDate === sDateStr)) {
             // Only add to total if it's visible in the current week view? 
             // The original logic calculated total for the visible period.
+            // If excluded, data.some will be false, so it won't be added to total. Correct.
             total += durationForThisDay / 3600;
         }
 

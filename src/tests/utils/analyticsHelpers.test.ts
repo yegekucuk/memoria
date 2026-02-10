@@ -17,65 +17,6 @@ describe('analyticsHelpers', () => {
 
   describe('calculateChartData', () => {
     
-    describe('Daily View', () => {
-      it('should initialize empty chart with 24 hours of 0 values', () => {
-        const result = calculateChartData([], 'daily', MOCK_NOW);
-        
-        expect(result.chartData).toHaveLength(24);
-        result.chartData.forEach((bar: ChartBar, index: number) => {
-          expect(bar.label).toBe(index.toString());
-          expect(bar.value).toBe(0);
-        });
-        expect(result.totalPeriodHours).toBe(0);
-      });
-
-      it('should correctly attribute session duration to specific hours', () => {
-        // Session from 10:00 to 11:30 (1.5 hours)
-        // Should put 1.0 into hour 10, and 0.5 into hour 11
-        const sessionDate = new Date(MOCK_NOW);
-        sessionDate.setHours(10, 0, 0, 0);
-        
-        const sessions: Session[] = [
-          {
-            id: '1',
-            startTime: sessionDate.toISOString(),
-            endTime: new Date(sessionDate.getTime() + 1.5 * 3600 * 1000).toISOString(),
-            durationSeconds: 1.5 * 3600, // 1.5 hours
-            tags: [],
-            notes: '',
-          }
-        ];
-
-        const result = calculateChartData(sessions, 'daily', MOCK_NOW);
-
-        expect(result.chartData[10].value).toBeCloseTo(1, 5);
-        expect(result.chartData[11].value).toBeCloseTo(0.5, 5);
-        expect(result.totalPeriodHours).toBeCloseTo(1.5, 5);
-      });
-
-      it('should handle session crossing into next day (truncate at midnight for daily view)', () => {
-        // Session starts at 23:00 and lasts 2 hours (ends 01:00 next day)
-        // Daily view for TODAY should only see the 1 hour from 23:00 to 24:00
-        const sessionDate = new Date(MOCK_NOW);
-        sessionDate.setHours(23, 0, 0, 0);
-        
-        const sessions: Session[] = [
-          {
-            id: '1',
-            startTime: sessionDate.toISOString(),
-            endTime: new Date(sessionDate.getTime() + 2 * 3600 * 1000).toISOString(),
-            durationSeconds: 2 * 3600,
-            tags: [],
-            notes: '',
-          }
-        ];
-
-        const result = calculateChartData(sessions, 'daily', MOCK_NOW);
-        
-        expect(result.chartData[23].value).toBeCloseTo(1, 5);
-        expect(result.totalPeriodHours).toBeCloseTo(1, 5); // truncated
-      });
-    });
 
     describe('Weekly View', () => {
       it('should initialize empty chart with 7 days', () => {

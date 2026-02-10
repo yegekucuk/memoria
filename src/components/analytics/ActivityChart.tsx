@@ -81,7 +81,7 @@ export const ActivityChart: React.FC<ActivityChartProps> = ({
                 {d.label}
             </span>
         ))}
-        {viewMode === 'daily' && [0, 4, 8, 12, 16, 20, 24].map((h) => <span key={h}>{h}:00</span>)}
+
       </div>
     </div>
   );

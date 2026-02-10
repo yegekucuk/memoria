@@ -1,31 +1,31 @@
 import { useState, useMemo } from 'react';
 import { Session } from '../types';
 import { calculateChartData, ChartBar, ViewMode } from '../utils/analyticsHelpers';
+import { useSettings } from '../context/SettingsContext';
 
 export type { ViewMode, ChartBar }; // Re-export for compatibility
 
 export const useAnalyticsData = (sessions: Session[]) => {
+  const { settings } = useSettings();
   const [viewMode, setViewMode] = useState<ViewMode>('weekly');
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const handlePrev = () => {
     const newDate = new Date(currentDate);
-    if (viewMode === 'daily') newDate.setDate(newDate.getDate() - 1);
-    else if (viewMode === 'weekly') newDate.setDate(newDate.getDate() - 7);
+    if (viewMode === 'weekly') newDate.setDate(newDate.getDate() - 7);
     else if (viewMode === 'monthly') newDate.setMonth(newDate.getMonth() - 1);
     setCurrentDate(newDate);
   };
 
   const handleNext = () => {
     const newDate = new Date(currentDate);
-    if (viewMode === 'daily') newDate.setDate(newDate.getDate() + 1);
-    else if (viewMode === 'weekly') newDate.setDate(newDate.getDate() + 7);
+    if (viewMode === 'weekly') newDate.setDate(newDate.getDate() + 7);
     else if (viewMode === 'monthly') newDate.setMonth(newDate.getMonth() + 1);
     setCurrentDate(newDate);
   };
 
   const dateLabel = useMemo(() => {
-    if (viewMode === 'daily') return currentDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
     if (viewMode === 'weekly') {
         const curr = new Date(currentDate);
         const day = curr.getDay();
@@ -43,8 +43,8 @@ export const useAnalyticsData = (sessions: Session[]) => {
   }, [currentDate, viewMode]);
 
   const { chartData, totalPeriodHours, maxVal } = useMemo(() => {
-    return calculateChartData(sessions, viewMode, currentDate);
-  }, [viewMode, currentDate, sessions]);
+    return calculateChartData(sessions, viewMode, currentDate, settings.excludeWeekends);
+  }, [viewMode, currentDate, sessions, settings.excludeWeekends]);
 
   const totalHoursAllTime = useMemo(() => {
     return sessions.reduce((acc, s) => acc + s.durationSeconds, 0) / 3600;

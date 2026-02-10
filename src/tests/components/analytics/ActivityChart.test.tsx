@@ -63,18 +63,4 @@ describe('ActivityChart', () => {
         expect(container).toHaveTextContent('4 hours 0 minutes');
     });
 
-    it('displays total instead of average for daily view', () => {
-        render(
-            <ActivityChart 
-                chartData={[]}
-                maxVal={10}
-                viewMode="daily"
-                totalPeriodHours={5}
-            />
-        );
-
-        expect(screen.getByText('Total for selected period')).toBeInTheDocument();
-        // 5 hours
-        expect(screen.getByText('5 hours 0 minutes')).toBeInTheDocument();
-    });
 });
