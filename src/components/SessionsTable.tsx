@@ -278,7 +278,6 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
                                     boxShadow: isSelected ? `0 1px 2px 0 ${color}66` : 'none'
                                 }}
                             >
-                                {isSelected}
                                 {tag.name}
                             </button>
                          );

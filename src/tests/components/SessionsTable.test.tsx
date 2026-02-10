@@ -43,7 +43,10 @@ jest.mock('lucide-react', () => ({
     Timer: () => <span>Timer</span>,
     Search: () => <span>Search</span>,
     X: () => <span>X</span>,
-    Filter: () => <span>Filter</span>
+    Filter: () => <span>Filter</span>,
+    ChevronLeft: () => <span>ChevronLeft</span>,
+    ChevronRight: () => <span>ChevronRight</span>,
+    ChevronDown: () => <span>ChevronDown</span>
 }));
 
 // Mock global fetch
