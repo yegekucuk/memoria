@@ -16,7 +16,6 @@ export const calculateChartData = (
   excludeWeekends: boolean = false
 ): { chartData: ChartBar[]; totalPeriodHours: number; maxVal: number } => {
   const data: ChartBar[] = [];
-  let total = 0;
   const now = new Date();
   const selectedDate = new Date(currentDate);
 
@@ -94,10 +93,6 @@ export const calculateChartData = (
             const durationForThisDay = Math.min(remainingDurationSeconds, secondsToNextDay);
             
              addToData(sDateStr, durationForThisDay / 3600);
-             if (data.some(d => d.fullDate === sDateStr)) {
-                // Only add to total if it's visible (not excluded)
-                total += durationForThisDay / 3600;
-            }
             
             remainingDurationSeconds -= durationForThisDay;
             sTime = new Date(nextMidnight);
@@ -153,13 +148,6 @@ export const calculateChartData = (
         
         // Add to data if this day is in our view
         addToData(sDateStr, durationForThisDay / 3600);
-        
-        if (data.some(d => d.fullDate === sDateStr)) {
-            // Only add to total if it's visible in the current week view? 
-            // The original logic calculated total for the visible period.
-            // If excluded, data.some will be false, so it won't be added to total. Correct.
-            total += durationForThisDay / 3600;
-        }
 
         // Advance
         remainingDurationSeconds -= durationForThisDay;
@@ -170,6 +158,7 @@ export const calculateChartData = (
 
   const max = Math.max(...data.map((d) => d.value), 0);
   const displayMax = Math.max(Math.ceil(max), 4);
+  const totalPeriodHours = data.reduce((acc, curr) => acc + curr.value, 0);
 
-  return { chartData: data, totalPeriodHours: total, maxVal: displayMax };
+  return { chartData: data, totalPeriodHours, maxVal: displayMax };
 };
