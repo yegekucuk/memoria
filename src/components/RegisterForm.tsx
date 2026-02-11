@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '@/context/AuthContext';
 import { RegisterInput, registerSchema } from '@/lib/validations/auth';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Lock } from 'lucide-react';
 
 interface RegisterFormProps {
   onSuccess: () => void;
@@ -96,7 +96,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
           {...register('password')}
           type="password"
           className="w-full px-3 py-2 border rounded-md dark:bg-white/5 dark:border-white/10 dark:text-white"
-          placeholder="••••••••(min 6 chars)"
+          placeholder="•••••••• (min 8 chars, 1 upper, 1 lower, 1 symbol)"
         />
         {errors.password && (
           <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
@@ -125,6 +125,11 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
       >
         {loading ? <Loader2 className="animate-spin" size={20} /> : 'Register'}
       </button>
+
+      <div className="flex items-center justify-center gap-2 text-xs text-slate-500 dark:text-slate-400 pt-2">
+        <Lock size={14} className="text-emerald-500" />
+        <span>Password hashing and JWT are used for full security.</span>
+      </div>
     </form>
   );
 };

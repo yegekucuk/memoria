@@ -29,8 +29,8 @@ describe('Auth Validation Schemas', () => {
       const valid = {
         name: 'John Doe',
         email: 'john@example.com',
-        password: 'password123',
-        confirmPassword: 'password123'
+        password: 'Password123!',
+        confirmPassword: 'Password123!'
       };
       const result = registerSchema.safeParse(valid);
       expect(result.success).toBe(true);
@@ -51,19 +51,64 @@ describe('Auth Validation Schemas', () => {
       const invalid = {
         name: 'John',
         email: 'john@example.com',
-        password: '123',
-        confirmPassword: '123'
+        password: 'Pass1!',
+        confirmPassword: 'Pass1!'
       };
       const result = registerSchema.safeParse(invalid);
       expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toBe('Password must be at least 8 characters');
+      }
+    });
+
+    it('should fail password without uppercase', () => {
+      const invalid = {
+        name: 'John',
+        email: 'john@example.com',
+        password: 'password123!',
+        confirmPassword: 'password123!'
+      };
+      const result = registerSchema.safeParse(invalid);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toBe('Password must contain at least one uppercase letter');
+      }
+    });
+
+    it('should fail password without lowercase', () => {
+      const invalid = {
+        name: 'John',
+        email: 'john@example.com',
+        password: 'PASSWORD123!',
+        confirmPassword: 'PASSWORD123!'
+      };
+      const result = registerSchema.safeParse(invalid);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toBe('Password must contain at least one lowercase letter');
+      }
+    });
+
+    it('should fail password without symbol', () => {
+      const invalid = {
+        name: 'John',
+        email: 'john@example.com',
+        password: 'Password123',
+        confirmPassword: 'Password123'
+      };
+      const result = registerSchema.safeParse(invalid);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toBe('Password must contain at least one symbol');
+      }
     });
 
     it('should fail when passwords do not match', () => {
       const invalid = {
         name: 'John',
         email: 'john@example.com',
-        password: 'password123',
-        confirmPassword: 'password456'
+        password: 'Password123!',
+        confirmPassword: 'Password456!'
       };
       const result = registerSchema.safeParse(invalid);
       expect(result.success).toBe(false);
@@ -80,8 +125,8 @@ describe('Auth Validation Schemas', () => {
     it('should validate valid password change', () => {
       const valid = {
         currentPassword: 'oldPass',
-        newPassword: 'newPass123',
-        confirmNewPassword: 'newPass123'
+        newPassword: 'NewPassword123!',
+        confirmNewPassword: 'NewPassword123!'
       };
       const result = changePasswordSchema.safeParse(valid);
       expect(result.success).toBe(true);
@@ -90,8 +135,8 @@ describe('Auth Validation Schemas', () => {
     it('should fail when new passwords do not match', () => {
         const invalid = {
             currentPassword: 'oldPass',
-            newPassword: 'newPass123',
-            confirmNewPassword: 'newPass456'
+            newPassword: 'NewPassword123!',
+            confirmNewPassword: 'NewPassword456!'
         };
         const result = changePasswordSchema.safeParse(invalid);
         expect(result.success).toBe(false);
@@ -105,10 +150,19 @@ describe('Auth Validation Schemas', () => {
       it('should validate valid update payload', () => {
           const valid = {
               currentPassword: 'curr',
-              newPassword: 'newpass'
+              newPassword: 'NewPassword123!'
           };
           const result = updatePasswordSchema.safeParse(valid);
           expect(result.success).toBe(true);
+      });
+
+      it('should fail invalid update payload', () => {
+          const invalid = {
+              currentPassword: 'curr',
+              newPassword: 'plain'
+          };
+          const result = updatePasswordSchema.safeParse(invalid);
+          expect(result.success).toBe(false);
       });
   });
 });
