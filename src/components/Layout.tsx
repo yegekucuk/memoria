@@ -204,13 +204,25 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* Main Content */}
       <main className={`flex-1 flex flex-col h-full relative bg-background-light dark:bg-background-dark ${isMobileMenuOpen ? 'overflow-hidden' : 'overflow-y-auto'}`}>
           {!isLandingPage && (
-            <div className="lg:hidden p-4 pb-0">
-                <button 
-                    onClick={() => setIsMobileMenuOpen(true)}
-                    className="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg"
-                >
-                    <Menu size={24} />
-                </button>
+            <div className="lg:hidden sticky top-0 z-20 w-full">
+                <div className="flex items-center justify-between bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-white/10 px-4 py-2 shadow-sm">
+                    <button 
+                        onClick={() => setIsMobileMenuOpen(true)}
+                        className="p-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg transition-colors"
+                    >
+                        <Menu size={22} />
+                    </button>
+                    
+                    <span className="font-bold text-slate-900 dark:text-white text-sm capitalize">
+                        {pathname?.split('/').filter(Boolean).pop() || 'Dashboard'}
+                    </span>
+
+                    <div className="w-8 h-8 flex items-center justify-center">
+                        <div className="w-7 h-7 bg-primary rounded-md flex items-center justify-center shadow-sm">
+                            <span className="text-white font-bold text-xs">T</span>
+                        </div>
+                    </div>
+                </div>
             </div>
           )}
           {children}
