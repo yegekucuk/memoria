@@ -20,7 +20,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       <div className="bg-white dark:bg-slate-900 rounded-lg shadow-xl w-full max-w-md overflow-hidden relative">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+          className="absolute top-4 right-4 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 cursor-pointer"
         >
           <X size={20} />
         </button>
@@ -42,7 +42,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 Don&apos;t have an account?{' '}
                 <button
                   onClick={() => setMode('register')}
-                  className="text-primary hover:underline font-medium"
+                  className="text-primary hover:underline font-medium cursor-pointer"
                 >
                   Register
                 </button>
@@ -52,7 +52,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 Already have an account?{' '}
                 <button
                   onClick={() => setMode('login')}
-                  className="text-primary hover:underline font-medium"
+                  className="text-primary hover:underline font-medium cursor-pointer"
                 >
                   Login
                 </button>

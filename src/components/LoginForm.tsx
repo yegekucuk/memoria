@@ -91,7 +91,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-primary text-white py-2 rounded-md hover:bg-primary/90 transition-colors flex items-center justify-center disabled:opacity-50"
+        className="w-full bg-primary text-white py-2 rounded-md hover:bg-primary/90 transition-colors flex items-center justify-center disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
       >
         {loading ? <Loader2 className="animate-spin" size={20} /> : 'Login'}
       </button>
