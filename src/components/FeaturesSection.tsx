@@ -25,7 +25,7 @@ export const FeaturesSection = () => {
   ];
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 py-20">
+    <div className="w-full max-w-4xl mx-auto px-4 py-10">
       <div className="text-center mb-16">
         <h2 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-linear-to-r from-primary to-purple-900 mb-8">
           Features

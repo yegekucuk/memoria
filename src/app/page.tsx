@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { AuthModal } from '@/components/AuthModal';
 import { FeaturesSection } from '@/components/FeaturesSection';
+import { DashboardPreview } from '@/components/previews/DashboardPreview';
 import { Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -45,7 +46,7 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col w-full bg-mesh">
+    <div className="flex flex-col w-full bg-mesh gap-y-8">
       {/* Hero Section */}
       <div className="flex flex-col items-center justify-center min-h-[40vh] w-full p-4 relative z-10 pt-20">
         <div className="text-center max-w-5xl">
@@ -79,6 +80,13 @@ export default function Home() {
             </button>
           </div>
         </div>
+      </div>
+
+      {/* Dashboard Preview Section */}
+      <div className="w-full hidden xl:flex justify-center px-4 relative z-10">
+          <div className="w-full max-w-7xl transform transition-transform duration-500 hover:scale-[1.01]">
+              <DashboardPreview />
+          </div>
       </div>
 
       {/* Features Section */}
