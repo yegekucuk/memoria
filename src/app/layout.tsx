@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { SessionProvider } from '@/context/SessionContext';
 import { AuthProvider } from '@/context/AuthContext';
@@ -8,6 +9,22 @@ import { Layout } from '@/components/Layout';
 import { Toaster } from 'react-hot-toast';
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+
+const codecPro = localFont({
+  src: [
+    {
+      path: "../../public/fonts/CodecPro-Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/CodecPro-Italic.ttf",
+      weight: "400",
+      style: "italic",
+    },
+  ],
+  variable: "--font-codec-pro",
+});
 
 export const metadata: Metadata = {
   title: "howmanyhours?",
@@ -23,7 +40,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
       </head>
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} ${codecPro.variable} font-sans antialiased`}>
         <AuthProvider>
           <SettingsProvider>
             <SessionProvider>
