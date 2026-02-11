@@ -117,7 +117,13 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                 onTouchEnd={onTouchEnd}
             >
         <div className="flex flex-col h-full p-4 justify-between">
-            <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-6">
+                {isAuthenticated && user && (
+                    <div className="px-3 py-2 border-b border-slate-100 dark:border-white/5 pb-4">
+                        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Signed in as</p>
+                        <p className="text-sm font-semibold truncate text-slate-900 dark:text-white" title={user.email}>{user.name || user.email}</p>
+                    </div>
+                )}
                 {/* Navigation */}
                 <nav className="lg:p-2 flex flex-col gap-2">
                     <Link 
@@ -170,10 +176,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             <div className="lg:p-2 lg:mb-4">
                {isAuthenticated && user ? (
                  <div className="flex flex-col gap-2">
-                    <div className="px-3 py-2">
-                        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Signed in as</p>
-                        <p className="text-sm font-semibold truncate text-slate-900 dark:text-white" title={user.email}>{user.name || user.email}</p>
-                    </div>
                     <button
                         onClick={logout}
                         className="flex items-center gap-3 px-3 py-3 rounded-lg group transition-colors w-full text-left cursor-pointer text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10"
