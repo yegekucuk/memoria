@@ -126,50 +126,25 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                 )}
                 {/* Navigation */}
                 <nav className="lg:p-2 flex flex-col gap-2">
-                    <Link 
-                      href="/dashboard"
-                      className={`flex items-center gap-3 px-3 py-3 rounded-lg group transition-colors w-full text-left cursor-pointer ${
-                        isActive('/dashboard')
-                        ? 'bg-primary text-white' 
-                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
-                      }`}
-                    >
-                        <LayoutDashboard size={24} />
-                        <p className="text-sm font-medium leading-normal">Dashboard</p>
-                    </Link>
-                    <Link 
-                      href="/analytics"
-                      className={`flex items-center gap-3 px-3 py-3 rounded-lg group transition-colors w-full text-left cursor-pointer ${
-                        isActive('/analytics')
-                        ? 'bg-primary text-white' 
-                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
-                      }`}
-                    >
-                        <BarChart2 size={24} />
-                        <p className="text-sm font-medium leading-normal">Analytics</p>
-                    </Link>
-                    <Link 
-                      href="/sessions"
-                      className={`flex items-center gap-3 px-3 py-3 rounded-lg group transition-colors w-full text-left cursor-pointer ${
-                        isActive('/sessions')
-                        ? 'bg-primary text-white' 
-                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
-                      }`}
-                    >
-                        <Table size={24} />
-                        <p className="text-sm font-medium leading-normal">Sessions</p>
-                    </Link>
-                    <Link 
-                      href="/settings"
-                      className={`flex items-center gap-3 px-3 py-3 rounded-lg group transition-colors w-full text-left cursor-pointer ${
-                        isActive('/settings')
-                        ? 'bg-primary text-white' 
-                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
-                      }`}
-                    >
-                        <Settings size={24} />
-                        <p className="text-sm font-medium leading-normal">Settings</p>
-                    </Link>
+                    {[
+                      { href: '/dashboard', icon: <LayoutDashboard size={24} />, label: 'Dashboard' },
+                      { href: '/analytics', icon: <BarChart2 size={24} />, label: 'Analytics' },
+                      { href: '/sessions', icon: <Table size={24} />, label: 'Sessions' },
+                      { href: '/settings', icon: <Settings size={24} />, label: 'Settings' },
+                    ].map(({ href, icon, label }) => (
+                      <Link 
+                        key={href}
+                        href={href}
+                        className={`flex items-center gap-3 px-3 py-3 rounded-lg group transition-colors w-full text-left cursor-pointer ${
+                          isActive(href)
+                          ? 'bg-primary text-white' 
+                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
+                        }`}
+                      >
+                          {icon}
+                          <p className="text-sm font-medium leading-normal">{label}</p>
+                      </Link>
+                    ))}
                 </nav>
             </div>
 

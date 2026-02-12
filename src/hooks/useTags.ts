@@ -55,7 +55,6 @@ export const useTags = () => {
       const newTag = await response.json();
       setTags(prev => [...prev, newTag]);
       return newTag;
-      return newTag;
     } catch (err: unknown) {
         if (err instanceof Error) {
             setError(err.message);

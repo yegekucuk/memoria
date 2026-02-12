@@ -13,19 +13,6 @@ export interface Tag {
   color: string;
 }
 
-export enum ViewState {
-  DASHBOARD = 'DASHBOARD',
-  ACTIVE_SESSION = 'ACTIVE_SESSION',
-  REPORT = 'REPORT',
-  ANALYTICS = 'ANALYTICS',
-  SETTINGS = 'SETTINGS',
-}
-
-export interface ChartDataPoint {
-  name: string;
-  value: number;
-}
-
 export interface User {
   id: string;
   email: string;

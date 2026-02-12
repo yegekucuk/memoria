@@ -1,7 +1,12 @@
 import React from 'react';
 import { Session } from '../types';
-import { Play, Timer, FlaskConical, Tag } from 'lucide-react';
+import { Play, Timer, FlaskConical, Tag, Loader2 } from 'lucide-react';
 import { formatDuration } from '../utils/format';
+import { useAuth } from '@/context/AuthContext';
+import { PageLayout } from './layout/PageLayout';
+import { PageHeader } from './layout/PageHeader';
+import { useTags } from '@/hooks/useTags';
+import toast from 'react-hot-toast';
 
 interface DashboardProps {
   sessions: Session[];
@@ -9,12 +14,6 @@ interface DashboardProps {
   isLoading?: boolean;
 }
 
-import { useAuth } from '@/context/AuthContext';
-import { PageLayout } from './layout/PageLayout';
-import { PageHeader } from './layout/PageHeader';
-import { useTags } from '@/hooks/useTags';
-import toast from 'react-hot-toast';
-import { Loader2 } from 'lucide-react';
 
 export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession, isLoading }) => {
   const { user } = useAuth();

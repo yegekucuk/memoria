@@ -5,6 +5,7 @@ import { ConfirmationModal } from './ConfirmationModal';
 import { EditSessionModal } from './EditSessionModal';
 import { useTags } from '@/hooks/useTags';
 import { toast } from 'react-hot-toast';
+import { formatDurationShort } from '@/utils/format';
 
 interface SessionsTableProps {
   sessions: Session[];
@@ -38,12 +39,6 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
   };
 
 
-  // Helper to format duration
-  const formatDuration = (seconds: number) => {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    return `${h}h ${m}m`;
-  };
 
   // Reset page when filters change
   useEffect(() => {
@@ -373,7 +368,7 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
                                             {endDate && ` - ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-slate-700 dark:text-slate-300 font-semibold">
-                                            {formatDuration(session.durationSeconds)}
+                                            {formatDurationShort(session.durationSeconds)}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex flex-wrap gap-1 max-w-[200px]">

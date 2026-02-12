@@ -4,3 +4,9 @@ export const formatDuration = (hours: number): string => {
   const m = totalMinutes % 60;
   return `${h} hours ${m} minutes`;
 };
+
+export const formatDurationShort = (seconds: number): string => {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  return `${h}h ${m}m`;
+};
