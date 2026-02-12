@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { AuthModal } from "@/components/AuthModal";
-import { FeaturesSection } from "@/components/FeaturesSection";
 import { DashboardPreview } from "@/components/previews/DashboardPreview";
 import { Navbar } from "@/components/landingpage/Navbar";
 import { Hero } from "@/components/landingpage/Hero";
+import { HowItWorks } from "@/components/landingpage/HowItWorks";
+import { Features } from "@/components/landingpage/Features";
 import { Loader2 } from "lucide-react";
 
 export default function Home() {
@@ -39,25 +40,44 @@ export default function Home() {
     <main>
       {/* Navbar */}
       <Navbar onAuthClick={() => setIsAuthModalOpen(true)} />
-      <div className="flex flex-col w-full bg-mesh gap-y-20 min-h-screen">
+      <div className="flex flex-col w-full bg-mesh min-h-screen">
         {/* Hero Section */}
-        <Hero onRegisterClick={() => setIsAuthModalOpen(true)} />
+        <div className="w-full pt-10 pb-0 md:pt-20 md:pb-10">
+          <Hero onRegisterClick={() => setIsAuthModalOpen(true)} />
+        </div>
 
         {/* Dashboard Preview Section */}
-        <div className="w-full hidden xl:flex justify-center px-4 relative z-10">
+        <div className="w-full hidden xl:flex justify-center px-4 relative z-10 py-24">
           <div className="w-full max-w-7xl transform transition-transform duration-500 hover:scale-[1.01]">
             <DashboardPreview />
           </div>
         </div>
 
         {/* Features Section */}
-        <div id="features" className="bg-transparent relative z-10">
-          <FeaturesSection />
+        <div id="features" className="bg-transparent relative z-10 py-24">
+          <Features />
+        </div>
+
+        {/* How It Works Section */}
+        <div id="how-it-works" className="relative z-10 py-24">
+          <HowItWorks />
         </div>
 
         {/* Footer */}
-        <footer className="py-2 text-center text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-white/10 relative z-10">
-          <p>© 2026 @yegekucuk. All rights reserved.</p>
+        <footer className="py-12 bg-white/50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-white/10 relative z-10 backdrop-blur-sm">
+          <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="text-center md:text-left">
+              <p className="font-bold text-lg mb-2">Memoria</p>
+              <p className="text-slate-500 dark:text-slate-400 text-sm">
+                © {new Date().getFullYear()} @yegekucuk. All rights reserved.
+              </p>
+            </div>
+            <div className="flex gap-8">
+              <a href="#" className="text-slate-500 dark:text-slate-400 hover:text-primary transition-colors text-sm">Privacy Policy</a>
+              <a href="#" className="text-slate-500 dark:text-slate-400 hover:text-primary transition-colors text-sm">Terms of Service</a>
+              <a href="#" className="text-slate-500 dark:text-slate-400 hover:text-primary transition-colors text-sm">Contact</a>
+            </div>
+          </div>
         </footer>
 
         <AuthModal

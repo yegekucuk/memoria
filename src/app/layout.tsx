@@ -27,8 +27,8 @@ const codecPro = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "howmanyhours?",
-  description: "How many hours did you really work?",
+  title: "memoria",
+  description: "",
 };
 
 export default function RootLayout({
@@ -37,7 +37,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="scroll-smooth">
       <head>
       </head>
       <body className={`${inter.variable} ${codecPro.variable} font-sans antialiased`}>

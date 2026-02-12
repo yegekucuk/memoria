@@ -216,12 +216,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                     <span className="font-bold text-slate-900 dark:text-white text-sm capitalize">
                         {pathname?.split('/').filter(Boolean).pop() || 'Dashboard'}
                     </span>
-
-                    <div className="w-8 h-8 flex items-center justify-center">
-                        <div className="w-7 h-7 bg-primary rounded-md flex items-center justify-center shadow-sm">
-                            <span className="text-white font-bold text-xs">T</span>
-                        </div>
-                    </div>
+                    {/* Empty div to center the title */}
+                    <div className="w-8 h-8" />
                 </div>
             </div>
           )}

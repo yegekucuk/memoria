@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X, ArrowRight } from "lucide-react";
 
 interface NavbarProps {
   onAuthClick: () => void;
@@ -16,16 +16,16 @@ export const Navbar: React.FC<NavbarProps> = ({ onAuthClick }) => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const scrollToFeatures = (e: React.MouseEvent) => {
+  const scrollToSection = (e: React.MouseEvent, sectionId: string) => {
     e.preventDefault();
     setIsMobileMenuOpen(false);
-    const featuresSection = document.getElementById('features');
-    if (featuresSection) {
-      featuresSection.scrollIntoView({ behavior: 'smooth' });
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -34,36 +34,34 @@ export const Navbar: React.FC<NavbarProps> = ({ onAuthClick }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className={`fixed top-0 left-0 right-0 z-50 flex justify-center transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-white dark:bg-slate-900 shadow-md border-b border-slate-200 dark:border-white/10' 
-          : 'bg-white/90 dark:bg-slate-900/90 border-b border-white/10'
+        isScrolled
+          ? "bg-white dark:bg-slate-900 shadow-md border-b border-slate-200 dark:border-white/10"
+          : "bg-white/90 dark:bg-slate-900/90 border-b border-white/10"
       }`}
     >
       <div className="w-full max-w-7xl flex items-center justify-between px-6 md:px-8 py-2 md:py-3">
         {/* Logo */}
-        <motion.div 
-          className="flex items-center gap-2 cursor-pointer group" 
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          whileHover={{ scale: 1.01 }}
-        >
-          <div className="relative">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-md shadow-primary/20 relative z-10 overflow-hidden">
-               <span className="text-white font-black text-lg">T</span>
-            </div>
-          </div>
-          <span className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
-            Tempus
-          </span>
-        </motion.div>
+        <img
+          src="/memoria-logo-3-removebg.png"
+          alt="Memoria Logo"
+          className="h-8 w-auto p-0.5"
+        />
 
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-8">
           <a
             href="#features"
-            onClick={scrollToFeatures}
+            onClick={(e) => scrollToSection(e, "features")}
             className="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors font-semibold text-xs tracking-wide uppercase"
           >
             Features
+          </a>
+          <a
+            href="#how-it-works"
+            onClick={(e) => scrollToSection(e, "how-it-works")}
+            className="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors font-semibold text-xs tracking-wide uppercase"
+          >
+            How It Works
           </a>
           <button
             onClick={onAuthClick}
@@ -75,7 +73,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onAuthClick }) => {
         </div>
 
         {/* Mobile Toggle */}
-        <button 
+        <button
           className="md:hidden p-2 text-slate-900 dark:text-white"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
@@ -94,10 +92,17 @@ export const Navbar: React.FC<NavbarProps> = ({ onAuthClick }) => {
               <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl p-4 flex flex-col gap-4">
                 <a
                   href="#features"
-                  onClick={scrollToFeatures}
+                  onClick={(e) => scrollToSection(e, "features")}
                   className="text-base font-semibold text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-white/5 pb-2"
                 >
                   Features
+                </a>
+                <a
+                  href="#how-it-works"
+                  onClick={(e) => scrollToSection(e, "how-it-works")}
+                  className="text-base font-semibold text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-white/5 pb-2"
+                >
+                  How It Works
                 </a>
                 <button
                   onClick={() => {
