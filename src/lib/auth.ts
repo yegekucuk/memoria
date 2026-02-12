@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-dev-only';
 
@@ -28,4 +29,22 @@ export async function getCurrentUser(): Promise<UserPayload | null> {
   if (!token) return null;
 
   return verifyToken(token);
+}
+
+/**
+ * Sign a JWT for the given user and set it as an httpOnly cookie on the response.
+ * Used by both login and register routes.
+ */
+export function setAuthCookie(response: NextResponse, user: { id: string; email: string; name?: string | null }): void {
+  const token = signToken({ id: user.id, email: user.email, name: user.name });
+
+  response.cookies.set({
+    name: 'token',
+    value: token,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    path: '/',
+    maxAge: 7 * 24 * 60 * 60, // 7 days
+  });
 }

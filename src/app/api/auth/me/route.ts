@@ -1,14 +1,10 @@
 import { NextResponse } from 'next/server';
-import { getCurrentUser } from '@/lib/auth';
 import prisma from '@/lib/prisma';
+import { requireAuth, handleApiError } from '@/lib/apiUtils';
 
 export async function GET() {
   try {
-    const userPayload = await getCurrentUser();
-
-    if (!userPayload) {
-      return NextResponse.json({ user: null });
-    }
+    const userPayload = await requireAuth();
 
     const user = await prisma.user.findUnique({
       where: { id: userPayload.id },
@@ -23,10 +19,6 @@ export async function GET() {
 
     return NextResponse.json({ user });
   } catch (error) {
-    console.error('Error in /api/auth/me:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Error in /api/auth/me');
   }
 }

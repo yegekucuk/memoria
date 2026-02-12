@@ -1,22 +1,13 @@
-
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { requireAuth, handleApiError } from '@/lib/apiUtils';
 
 export async function PUT(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { getCurrentUser } = await import('@/lib/auth');
-    const user = await getCurrentUser();
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
+    const user = await requireAuth();
     const { id: tagId } = await params;
     const body = await req.json();
     const { name, color } = body;
@@ -75,13 +66,8 @@ export async function PUT(
     });
 
     return NextResponse.json(updatedTag);
-
   } catch (error) {
-    console.error('Error updating tag:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Error updating tag');
   }
 }
 
@@ -90,13 +76,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { getCurrentUser } = await import('@/lib/auth');
-    const user = await getCurrentUser();
-
-    if (!user) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
+    const user = await requireAuth();
     const { id: tagId } = await params;
     const userId = user.id;
 
@@ -106,18 +86,18 @@ export async function DELETE(
         { status: 400 }
       );
     }
-    
+
     // Verify ownership
     const tag = await prisma.tag.findUnique({
-        where: { id: tagId }
+      where: { id: tagId },
     });
 
     if (!tag) {
-        return NextResponse.json({ error: 'Tag not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Tag not found' }, { status: 404 });
     }
 
     if (tag.userId !== userId) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
     await prisma.tag.delete({
@@ -128,10 +108,6 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error deleting tag:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Error deleting tag');
   }
 }

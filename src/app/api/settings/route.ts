@@ -1,56 +1,58 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { getCurrentUser } from '@/lib/auth';
+import { requireAuth, handleApiError } from '@/lib/apiUtils';
 
-export async function GET(req: NextRequest) {
-  const currentUser = await getCurrentUser();
-  if (!currentUser?.email) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+export async function GET() {
+  try {
+    const currentUser = await requireAuth();
+
+    const user = await prisma.user.findUnique({
+      where: { email: currentUser.email },
+      include: { settings: true },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // If settings don't exist, return default false (schema default)
+    const settings = user.settings || { excludeWeekends: false };
+
+    return NextResponse.json(settings);
+  } catch (error) {
+    return handleApiError(error, 'Error fetching settings');
   }
-
-  const user = await prisma.user.findUnique({
-    where: { email: currentUser.email },
-    include: { settings: true },
-  });
-
-  if (!user) {
-    return NextResponse.json({ error: 'User not found' }, { status: 404 });
-  }
-
-  // If settings don't exist, return default false (schema default)
-  const settings = user.settings || { excludeWeekends: false };
-
-  return NextResponse.json(settings);
 }
 
-export async function PATCH(req: NextRequest) {
-  const currentUser = await getCurrentUser();
-  if (!currentUser?.email) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+export async function PATCH(req: Request) {
+  try {
+    const currentUser = await requireAuth();
 
-  const { excludeWeekends } = await req.json();
+    const { excludeWeekends } = await req.json();
 
-  if (typeof excludeWeekends !== 'boolean') {
+    if (typeof excludeWeekends !== 'boolean') {
       return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
-  }
+    }
 
-  const user = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { email: currentUser.email },
-  });
-  
-  if (!user) {
-       return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    const updatedSettings = await prisma.settings.upsert({
+      where: { userId: user.id },
+      update: { excludeWeekends },
+      create: {
+        userId: user.id,
+        excludeWeekends,
+      },
+    });
+
+    return NextResponse.json(updatedSettings);
+  } catch (error) {
+    return handleApiError(error, 'Error updating settings');
   }
-
-  const updatedSettings = await prisma.settings.upsert({
-    where: { userId: user.id },
-    update: { excludeWeekends },
-    create: {
-      userId: user.id,
-      excludeWeekends,
-    },
-  });
-
-  return NextResponse.json(updatedSettings);
 }

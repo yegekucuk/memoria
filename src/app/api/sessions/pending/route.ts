@@ -1,35 +1,29 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { requireAuth, handleApiError } from '@/lib/apiUtils';
 
 export async function GET(_request: Request) {
   try {
-    const { getCurrentUser } = await import('@/lib/auth');
-    const user = await getCurrentUser();
-
-    if (!user) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    const userId = user.id;
+    const user = await requireAuth();
 
     const pendingSession = await prisma.session.findFirst({
       where: {
-        userId,
+        userId: user.id,
         endTime: {
-          not: null
+          not: null,
         },
         OR: [
           { notes: null },
-          { notes: "" }
-        ]
+          { notes: '' },
+        ],
       },
       orderBy: {
-        startTime: 'desc'
-      }
+        startTime: 'desc',
+      },
     });
 
     return NextResponse.json(pendingSession || null);
   } catch (error) {
-    console.error('Error fetching pending session:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return handleApiError(error, 'Error fetching pending session');
   }
 }
