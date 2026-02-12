@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowRight } from "lucide-react";
 
@@ -41,10 +42,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onAuthClick }) => {
     >
       <div className="w-full max-w-7xl flex items-center justify-between px-6 md:px-8 py-2 md:py-3">
         {/* Logo */}
-        <img
+        <Image
           src="/memoria-logo-3-removebg.png"
           alt="Memoria Logo"
+          width={120}
+          height={32}
           className="h-8 w-auto p-0.5"
+          priority
         />
 
         {/* Desktop Links */}
