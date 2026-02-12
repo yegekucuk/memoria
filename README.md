@@ -1,6 +1,6 @@
-# howmanyhours?
+# Memoria
 
-howmanyhours? is a web application to track your working hours and sessions.
+Memoria is a web application to track your working hours and sessions.
 
 ## Features
 - **Session Tracking**: Start, pause, and stop work sessions.
@@ -19,7 +19,7 @@ howmanyhours? is a web application to track your working hours and sessions.
 1. Clone the repository:
    ```bash
    git clone <repository-url>
-   cd howmanyhours
+   cd memoria
    ```
 
 2. Install dependencies:

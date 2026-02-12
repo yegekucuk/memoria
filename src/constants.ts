@@ -1,1 +1,1 @@
-export const APP_NAME = "howmanyhours?";
+export const APP_NAME = "memoria";
