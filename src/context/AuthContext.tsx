@@ -25,6 +25,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (res.ok) {
           const data = await res.json();
           setUser(data.user);
+        } else if (res.status === 401) {
+          // Session expired or not logged in - expected behavior
+          setUser(null);
         } else {
             console.error('Session check failed', res.statusText);
             setUser(null);
