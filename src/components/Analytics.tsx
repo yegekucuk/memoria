@@ -41,10 +41,21 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => 
     chartData,
     totalPeriodHours,
     maxVal,
-    totalHoursAllTime,
-    topTagName,
-    topTagPct
   } = useAnalyticsData(filteredSessions);
+
+  // Insights always use unfiltered sessions so they don't change with tag filter
+  const totalHoursAllTime = useMemo(() => {
+    return sessions.reduce((acc, s) => acc + s.durationSeconds, 0) / 3600;
+  }, [sessions]);
+
+  const { topTagName, topTagPct } = useMemo(() => {
+    const tagCounts: Record<string, number> = {};
+    sessions.forEach(s => s.tags.forEach(t => tagCounts[t] = (tagCounts[t] || 0) + s.durationSeconds));
+    const topEntry = Object.entries(tagCounts).sort((a, b) => b[1] - a[1])[0];
+    const name = topEntry ? topEntry[0] : 'None';
+    const pct = topEntry ? Math.round((topEntry[1] / 3600 / (totalHoursAllTime || 1)) * 100) : 0;
+    return { topTagName: name, topTagPct: pct };
+  }, [sessions, totalHoursAllTime]);
 
   return (
     <PageLayout className="animate-in slide-in-from-bottom-4 duration-500">
