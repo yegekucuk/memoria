@@ -54,6 +54,20 @@ export const Navbar: React.FC<NavbarProps> = ({ onAuthClick }) => {
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-8">
           <a
+            href="#home"
+            onClick={(e) => scrollToSection(e, "home")}
+            className="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors font-semibold text-xs tracking-wide uppercase"
+          >
+            Home
+          </a>
+          <a
+            href="#preview"
+            onClick={(e) => scrollToSection(e, "preview")}
+            className="hidden lg:inline text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors font-semibold text-xs tracking-wide uppercase"
+          >
+            Preview
+          </a>
+          <a
             href="#features"
             onClick={(e) => scrollToSection(e, "features")}
             className="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors font-semibold text-xs tracking-wide uppercase"
@@ -94,6 +108,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onAuthClick }) => {
               className="absolute top-full left-0 right-0 p-2 md:hidden"
             >
               <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl p-4 flex flex-col gap-4">
+                <a
+                  href="#home"
+                  onClick={(e) => scrollToSection(e, "home")}
+                  className="text-base font-semibold text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-white/5 pb-2"
+                >
+                  Home
+                </a>
                 <a
                   href="#features"
                   onClick={(e) => scrollToSection(e, "features")}

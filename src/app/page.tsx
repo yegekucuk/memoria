@@ -42,12 +42,12 @@ export default function Home() {
       <Navbar onAuthClick={() => setIsAuthModalOpen(true)} />
       <div className="flex flex-col w-full bg-mesh min-h-screen">
         {/* Hero Section */}
-        <div className="w-full pt-10 pb-0 md:pt-20 md:pb-10">
+        <div id="home" className="w-full pt-10 pb-0 md:pt-20 md:pb-10">
           <Hero onRegisterClick={() => setIsAuthModalOpen(true)} />
         </div>
 
         {/* Dashboard Preview Section */}
-        <div className="w-full hidden xl:flex justify-center px-4 relative z-10 py-24">
+        <div id="preview" className="w-full hidden lg:flex justify-center px-4 relative z-10 py-24">
           <div className="w-full max-w-7xl transform transition-transform duration-500 hover:scale-[1.01]">
             <DashboardPreview />
           </div>
