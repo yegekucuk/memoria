@@ -51,8 +51,22 @@ jest.mock('@/components/analytics/AnalyticsHeader', () => ({
 }));
 
 jest.mock('@/components/analytics/ActivityChart', () => ({
-  ActivityChart: ({ totalPeriodHours }: { totalPeriodHours: number }) => (
+  ActivityChart: ({ 
+    totalPeriodHours, 
+    allTags = [], 
+    onToggleFilterTag = () => {}, 
+    onClearFilters = () => {}, 
+    selectedFilterTags = [] 
+  }: any) => (
     <div data-testid="activity-chart" data-total={totalPeriodHours}>
+      <div>Filter by Tags</div>
+      {selectedFilterTags.length > 0 && <button onClick={onClearFilters}>Clear</button>}
+      {allTags.length === 0 && <span>No tags available.</span>}
+      {allTags.map((tag: any) => (
+        <button key={tag.id} onClick={() => onToggleFilterTag(tag.name)}>
+          {tag.name}
+        </button>
+      ))}
       Chart
     </div>
   ),

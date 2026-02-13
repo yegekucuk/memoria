@@ -1,12 +1,18 @@
 import React from "react";
 import { formatDuration } from "../../utils/format";
 import { ChartBar, ViewMode } from "../../hooks/useAnalyticsData";
+import { Tag as TagIcon, X } from "lucide-react";
+import { Tag } from "../../types";
 
 interface ActivityChartProps {
   chartData: ChartBar[];
   maxVal: number;
   viewMode: ViewMode;
   totalPeriodHours: number;
+  allTags: Tag[];
+  selectedFilterTags: string[];
+  onToggleFilterTag: (tagName: string) => void;
+  onClearFilters: () => void;
 }
 
 export const ActivityChart: React.FC<ActivityChartProps> = ({
@@ -14,6 +20,10 @@ export const ActivityChart: React.FC<ActivityChartProps> = ({
   maxVal,
   viewMode,
   totalPeriodHours,
+  allTags = [],
+  selectedFilterTags = [],
+  onToggleFilterTag = () => {},
+  onClearFilters = () => {},
 }) => {
   return (
     <div className="bg-white dark:bg-[#1c232d] rounded-xl border border-[#e5e7eb] dark:border-[#283039] p-6 lg:p-8 shadow-sm">
@@ -22,18 +32,59 @@ export const ActivityChart: React.FC<ActivityChartProps> = ({
           <h3 className="text-lg font-bold mb-1 text-slate-900 dark:text-white capitalize">
             {viewMode} Activity
           </h3>
-          <div className="flex flex-col sm:flex-row items-baseline gap-2 text-slate-900 dark:text-white">
-            <span className="text-2xl sm:text-3xl font-bold tracking-tight">
-              {formatDuration(
-                viewMode === "weekly"
-                  ? totalPeriodHours /
-                      (chartData.filter((d) => !d.isFuture).length || 1)
-                  : totalPeriodHours,
-              )}
-            </span>
-            <span className="text-sm font-medium text-slate-500 flex items-center">
-              {viewMode === "weekly" ? "Average" : "Total for selected period"}
-            </span>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row items-baseline gap-2 text-slate-900 dark:text-white">
+              <span className="text-2xl sm:text-3xl font-bold tracking-tight">
+                {formatDuration(
+                  viewMode === "weekly"
+                    ? totalPeriodHours /
+                        (chartData.filter((d) => !d.isFuture).length || 1)
+                    : totalPeriodHours,
+                )}
+              </span>
+              <span className="text-sm font-medium text-slate-500 flex items-center">
+                {viewMode === "weekly" ? "Average" : "Total for selected period"}
+              </span>
+            </div>
+
+            {/* Tag Filter - Moved here */}
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-3">
+                <label className="text-xs font-medium text-slate-500 dark:text-slate-400">Filter by Tags</label>
+                {selectedFilterTags.length > 0 && (
+                  <button
+                    onClick={onClearFilters}
+                    className="text-[10px] text-red-500 hover:text-red-600 font-bold uppercase flex items-center gap-1 cursor-pointer"
+                  >
+                    <X size={12} /> Clear
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {allTags.map(tag => {
+                  const isSelected = selectedFilterTags.includes(tag.name);
+                  const color = tag.color;
+                  return (
+                    <button
+                      key={tag.id}
+                      onClick={() => onToggleFilterTag(tag.name)}
+                      className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] border transition-all duration-200 cursor-pointer"
+                      style={{
+                        backgroundColor: isSelected ? color : (color ? `${color}1A` : '#f8fafc'),
+                        borderColor: isSelected ? color : (color ? `${color}33` : '#e2e8f0'),
+                        color: isSelected ? '#ffffff' : (color || '#64748b'),
+                        boxShadow: isSelected ? `0 2px 4px 0 ${color}40` : 'none'
+                      }}
+                    >
+                      {tag.name}
+                    </button>
+                  );
+                })}
+                {allTags.length === 0 && (
+                  <span className="text-xs text-slate-400 italic">No tags available.</span>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
