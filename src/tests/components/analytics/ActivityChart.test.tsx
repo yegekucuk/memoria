@@ -63,4 +63,30 @@ describe('ActivityChart', () => {
         expect(container).toHaveTextContent('4 hours 0 minutes');
     });
 
+    it('highlights today label with primary color', () => {
+        const mockDataWithToday: ChartBar[] = [
+            { label: 'Mon', value: 2, isFuture: false, isToday: true },
+            { label: 'Tue', value: 2, isFuture: false, isToday: false },
+        ];
+
+        render(
+            <ActivityChart 
+                chartData={mockDataWithToday}
+                maxVal={10}
+                viewMode="weekly"
+                totalPeriodHours={4}
+                allTags={[]}
+                selectedFilterTags={[]}
+                onToggleFilterTag={() => {}}
+                onClearFilters={() => {}}
+            />
+        );
+
+        const todayLabel = screen.getByText('Mon');
+        expect(todayLabel).toHaveClass('text-primary');
+        expect(todayLabel).toHaveClass('font-bold');
+
+        const otherLabel = screen.getByText('Tue');
+        expect(otherLabel).not.toHaveClass('text-primary');
+    });
 });

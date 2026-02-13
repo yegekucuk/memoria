@@ -127,13 +127,13 @@ export const ActivityChart: React.FC<ActivityChartProps> = ({
       <div className="flex justify-between px-2 pt-2 text-[#9dabb9] text-xs font-medium pl-10">
         {viewMode === "weekly" &&
           chartData.map((d, i) => (
-            <span key={i} className="flex-1 text-center">
+            <span key={i} className={`flex-1 text-center ${d.isToday ? "text-primary font-bold" : ""}`}>
               {d.label}
             </span>
           ))}
         {viewMode === "monthly" &&
           chartData.map((d, i) => (
-            <span key={i} className="flex-1 text-center text-[10px]">
+            <span key={i} className={`flex-1 text-center text-[10px] ${d.isToday ? "text-primary font-bold" : ""}`}>
               {d.label}
             </span>
           ))}

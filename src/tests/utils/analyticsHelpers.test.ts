@@ -54,4 +54,13 @@ describe('analyticsHelpers - Logic Issue #3', () => {
     const saturday = result.chartData.find(d => new Date(d.fullDate!).toDateString() === new Date(weekendSession.startTime).toDateString());
     expect(saturday).toBeUndefined();
   });
+
+  it('correctly identifies today in chart data', () => {
+    const today = new Date();
+    const result = calculateChartData([], 'weekly', today, false);
+    
+    const todayEntry = result.chartData.find(d => d.isToday === true);
+    expect(todayEntry).toBeDefined();
+    expect(todayEntry?.fullDate).toBe(today.toDateString());
+  });
 });

@@ -7,6 +7,7 @@ export interface ChartBar {
   value: number;
   fullDate?: string;
   isFuture?: boolean;
+  isToday?: boolean;
 }
 
 export const calculateChartData = (
@@ -52,6 +53,7 @@ export const calculateChartData = (
             value: 0,
             fullDate: d.toDateString(),
             isFuture: d > now,
+            isToday: d.toDateString() === now.toDateString(),
         });
     }
 
@@ -120,6 +122,7 @@ export const calculateChartData = (
         value: 0,
         fullDate: d.toDateString(),
         isFuture: d > now,
+        isToday: d.toDateString() === now.toDateString(),
       });
     }
 
