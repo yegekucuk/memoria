@@ -1,8 +1,24 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { PieChartCard } from '@/components/analytics/PieChartCard';
 
 describe('PieChartCard', () => {
+    const mockMatchMedia = (matches: boolean) => {
+        Object.defineProperty(window, 'matchMedia', {
+            writable: true,
+            value: jest.fn().mockImplementation((query: string) => ({
+                matches,
+                media: query,
+                onchange: null,
+                addListener: jest.fn(),
+                removeListener: jest.fn(),
+                addEventListener: jest.fn(),
+                removeEventListener: jest.fn(),
+                dispatchEvent: jest.fn(),
+            })),
+        });
+    };
+
     // Mock ResizeObserver
     beforeAll(() => {
         global.ResizeObserver = class ResizeObserver {
@@ -10,11 +26,36 @@ describe('PieChartCard', () => {
             unobserve() {}
             disconnect() {}
         };
+
+        mockMatchMedia(false);
+    });
+
+    beforeEach(() => {
+        mockMatchMedia(false);
     });
 
     it('renders correctly', () => {
         render(<PieChartCard sessions={[]} allTags={[]} />);
         expect(screen.getByText('Activity Distribution')).toBeInTheDocument();
+    });
+
+    it('starts collapsed on desktop and opens when toggled', async () => {
+        mockMatchMedia(true);
+        render(<PieChartCard sessions={[]} allTags={[]} />);
+
+        await waitFor(() => {
+            expect(screen.getByLabelText('Show activity distribution')).toBeInTheDocument();
+        });
+
+        expect(screen.queryByLabelText('Next period')).not.toBeInTheDocument();
+
+        fireEvent.click(screen.getByLabelText('Show activity distribution'));
+
+        await waitFor(() => {
+            expect(screen.getByLabelText('Hide activity distribution')).toHaveAttribute('aria-expanded', 'true');
+        });
+
+        expect(screen.getByLabelText('Next period')).toBeInTheDocument();
     });
 
     it('disables the next button when viewing the current period (weekly)', () => {
