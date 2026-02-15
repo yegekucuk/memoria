@@ -42,6 +42,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => 
     chartData,
     totalPeriodHours,
     maxVal,
+    isNextDisabled,
   } = useAnalyticsData(filteredSessions);
 
   // Insights always use unfiltered sessions so they don't change with tag filter
@@ -87,6 +88,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => 
                     onNext={handleNext}
                     dateLabel={dateLabel}
                     setViewMode={setViewMode}
+                    isNextDisabled={isNextDisabled}
                 />
 
                 {/* Insights Grid */}

@@ -66,6 +66,35 @@ export const PieChartCard: React.FC<PieChartCardProps> = ({ sessions, allTags })
     });
   }, [sessions, viewMode, currentDate, allTags]);
 
+  const isNextDisabled = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (viewMode === 'weekly') {
+      const nextWeek = new Date(currentDate);
+      nextWeek.setDate(nextWeek.getDate() + 7);
+      
+      // Calculate the start of the next week period
+      const day = nextWeek.getDay();
+      const diff = nextWeek.getDate() - day + (day === 0 ? -6 : 1);
+      const nextWeekStart = new Date(nextWeek);
+      nextWeekStart.setDate(diff);
+      nextWeekStart.setHours(0, 0, 0, 0);
+
+      return nextWeekStart > today;
+    }
+
+    if (viewMode === 'monthly') {
+      const nextMonth = new Date(currentDate);
+      nextMonth.setMonth(nextMonth.getMonth() + 1);
+      // Start of next month
+      const nextMonthStart = new Date(nextMonth.getFullYear(), nextMonth.getMonth(), 1);
+      return nextMonthStart > today;
+    }
+
+    return false;
+  }, [viewMode, currentDate]);
+
   const totalDuration = useMemo(() => data.reduce((acc, curr) => acc + curr.value, 0), [data]);
 
   return (
@@ -91,7 +120,12 @@ export const PieChartCard: React.FC<PieChartCardProps> = ({ sessions, allTags })
             </span>
             <button
               onClick={handleNext}
-              className="size-8 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+              disabled={isNextDisabled}
+              className={`size-8 flex items-center justify-center rounded-full transition-colors ${
+                isNextDisabled 
+                  ? "opacity-30 cursor-not-allowed text-slate-400 dark:text-slate-600" 
+                  : "hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
+              }`}
               aria-label="Next period"
             >
               <ChevronRight size={20} />

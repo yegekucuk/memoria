@@ -36,6 +36,14 @@ describe('ActivityChart', () => {
                 maxVal={10}
                 viewMode="weekly"
                 totalPeriodHours={14}
+                allTags={[]}
+                selectedFilterTags={[]}
+                onToggleFilterTag={() => {}}
+                onClearFilters={() => {}}
+                onPrev={() => {}}
+                onNext={() => {}}
+                dateLabel="Test Date"
+                setViewMode={() => {}}
             />
         );
 
@@ -54,6 +62,14 @@ describe('ActivityChart', () => {
                 maxVal={10}
                 viewMode="weekly"
                 totalPeriodHours={12}
+                allTags={[]}
+                selectedFilterTags={[]}
+                onToggleFilterTag={() => {}}
+                onClearFilters={() => {}}
+                onPrev={() => {}}
+                onNext={() => {}}
+                dateLabel="Test Date"
+                setViewMode={() => {}}
             />
         );
 
@@ -79,6 +95,10 @@ describe('ActivityChart', () => {
                 selectedFilterTags={[]}
                 onToggleFilterTag={() => {}}
                 onClearFilters={() => {}}
+                onPrev={() => {}}
+                onNext={() => {}}
+                dateLabel="Test Date"
+                setViewMode={() => {}}
             />
         );
 
@@ -88,5 +108,29 @@ describe('ActivityChart', () => {
 
         const otherLabel = screen.getByText('Tue');
         expect(otherLabel).not.toHaveClass('text-primary');
+    });
+
+    it('disables the next button when isNextDisabled is true', () => {
+        render(
+            <ActivityChart 
+                chartData={[]}
+                maxVal={10}
+                viewMode="weekly"
+                totalPeriodHours={0}
+                isNextDisabled={true}
+                allTags={[]}
+                selectedFilterTags={[]}
+                onToggleFilterTag={() => {}}
+                onClearFilters={() => {}}
+                onPrev={() => {}}
+                onNext={() => {}}
+                dateLabel="Test Date"
+                setViewMode={() => {}}
+            />
+        );
+
+        const nextButton = screen.getByLabelText('Next period');
+        expect(nextButton).toBeDisabled();
+        expect(nextButton).toHaveClass('cursor-not-allowed');
     });
 });

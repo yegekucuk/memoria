@@ -17,6 +17,7 @@ interface ActivityChartProps {
   onNext: () => void;
   dateLabel: string;
   setViewMode: (mode: ViewMode) => void;
+  isNextDisabled?: boolean;
 }
 
 export const ActivityChart: React.FC<ActivityChartProps> = ({
@@ -32,6 +33,7 @@ export const ActivityChart: React.FC<ActivityChartProps> = ({
   onNext,
   dateLabel,
   setViewMode,
+  isNextDisabled = false,
 }) => {
   return (
     <div className="bg-white dark:bg-[#1c232d] rounded-xl border border-[#e5e7eb] dark:border-[#283039] p-6 lg:p-8 shadow-sm">
@@ -73,7 +75,12 @@ export const ActivityChart: React.FC<ActivityChartProps> = ({
             </span>
             <button
               onClick={onNext}
-              className="size-8 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+              disabled={isNextDisabled}
+              className={`size-8 flex items-center justify-center rounded-full transition-colors ${
+                isNextDisabled 
+                  ? "opacity-30 cursor-not-allowed text-slate-400 dark:text-slate-600" 
+                  : "hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
+              }`}
               aria-label="Next period"
             >
               <ChevronRight size={20} />
