@@ -83,7 +83,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onAuthClick }) => {
           </a>
           <button
             onClick={onAuthClick}
-            className="group relative flex items-center gap-2 px-5 py-1.5 bg-primary dark:bg-white text-white dark:text-[#0F172A] rounded-lg font-bold hover:opacity-95 transition-all shadow-md active:scale-95 cursor-pointer"
+            className="group relative flex items-center gap-2 px-5 py-1.5 bg-primary text-white rounded-lg font-bold hover:opacity-95 transition-all shadow-md active:scale-95 cursor-pointer"
           >
             <span className="text-sm">Get Started</span>
             <ArrowRight size={16} />

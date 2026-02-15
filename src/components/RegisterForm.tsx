@@ -66,7 +66,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
           {...register('name')}
           type="text"
           className="w-full px-3 py-2 border rounded-md dark:bg-white/5 dark:border-white/10 dark:text-white"
-          placeholder="Your Name"
+          placeholder="Jane Doe"
         />
         {errors.name && (
           <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
@@ -81,7 +81,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
           {...register('email')}
           type="email"
           className="w-full px-3 py-2 border rounded-md dark:bg-white/5 dark:border-white/10 dark:text-white"
-          placeholder="you@example.com"
+          placeholder="jane@example.com"
         />
         {errors.email && (
           <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
