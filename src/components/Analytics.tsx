@@ -3,9 +3,10 @@ import { Session } from '../types';
 import { Tag, Sigma, Loader2, X } from 'lucide-react';
 import { formatDuration } from '../utils/format';
 import { PageLayout } from './layout/PageLayout';
+import { PageHeader } from './layout/PageHeader';
 import { useAnalyticsData } from '../hooks/useAnalyticsData';
-import { AnalyticsHeader } from './analytics/AnalyticsHeader';
 import { ActivityChart } from './analytics/ActivityChart';
+import { PieChartCard } from './analytics/PieChartCard';
 import { useTags } from '../hooks/useTags';
 
 interface AnalyticsProps {
@@ -59,13 +60,10 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => 
 
   return (
     <PageLayout className="animate-in slide-in-from-bottom-4 duration-500">
-        <AnalyticsHeader 
-            dateLabel={dateLabel}
-            viewMode={viewMode}
-            setViewMode={setViewMode}
-            onPrev={handlePrev}
-            onNext={handleNext}
-        />
+      <PageHeader
+        title="Analytics"
+        description="View your productivity analytics."
+      />
         
         {/* Content Wrapper */}
         {isLoading ? (
@@ -85,6 +83,10 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => 
                     selectedFilterTags={selectedFilterTags}
                     onToggleFilterTag={toggleFilterTag}
                     onClearFilters={() => setSelectedFilterTags([])}
+                    onPrev={handlePrev}
+                    onNext={handleNext}
+                    dateLabel={dateLabel}
+                    setViewMode={setViewMode}
                 />
 
                 {/* Insights Grid */}
@@ -117,6 +119,9 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => 
                             </div>
                         </div>
                     </div>
+
+                    {/* Pie Chart */}
+                    <PieChartCard sessions={sessions} allTags={allTags} />
                 </div>
             </>
         )}

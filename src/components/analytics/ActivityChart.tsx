@@ -1,7 +1,7 @@
 import React from "react";
 import { formatDuration } from "../../utils/format";
 import { ChartBar, ViewMode } from "../../hooks/useAnalyticsData";
-import { Tag as TagIcon, X } from "lucide-react";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Tag } from "../../types";
 
 interface ActivityChartProps {
@@ -13,6 +13,10 @@ interface ActivityChartProps {
   selectedFilterTags: string[];
   onToggleFilterTag: (tagName: string) => void;
   onClearFilters: () => void;
+  onPrev: () => void;
+  onNext: () => void;
+  dateLabel: string;
+  setViewMode: (mode: ViewMode) => void;
 }
 
 export const ActivityChart: React.FC<ActivityChartProps> = ({
@@ -24,6 +28,10 @@ export const ActivityChart: React.FC<ActivityChartProps> = ({
   selectedFilterTags = [],
   onToggleFilterTag = () => {},
   onClearFilters = () => {},
+  onPrev,
+  onNext,
+  dateLabel,
+  setViewMode,
 }) => {
   return (
     <div className="bg-white dark:bg-[#1c232d] rounded-xl border border-[#e5e7eb] dark:border-[#283039] p-6 lg:p-8 shadow-sm">
@@ -47,45 +55,103 @@ export const ActivityChart: React.FC<ActivityChartProps> = ({
               </span>
             </div>
 
-            {/* Tag Filter - Moved here */}
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-3">
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400">Filter by Tags</label>
-                {selectedFilterTags.length > 0 && (
-                  <button
-                    onClick={onClearFilters}
-                    className="text-[10px] text-red-500 hover:text-red-600 font-bold uppercase flex items-center gap-1 cursor-pointer"
-                  >
-                    <X size={12} /> Clear
-                  </button>
-                )}
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {allTags.map(tag => {
-                  const isSelected = selectedFilterTags.includes(tag.name);
-                  const color = tag.color;
-                  return (
-                    <button
-                      key={tag.id}
-                      onClick={() => onToggleFilterTag(tag.name)}
-                      className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] border transition-all duration-200 cursor-pointer"
-                      style={{
-                        backgroundColor: isSelected ? color : (color ? `${color}1A` : '#f8fafc'),
-                        borderColor: isSelected ? color : (color ? `${color}33` : '#e2e8f0'),
-                        color: isSelected ? '#ffffff' : (color || '#64748b'),
-                        boxShadow: isSelected ? `0 2px 4px 0 ${color}40` : 'none'
-                      }}
-                    >
-                      {tag.name}
-                    </button>
-                  );
-                })}
-                {allTags.length === 0 && (
-                  <span className="text-xs text-slate-400 italic">No tags available.</span>
-                )}
-              </div>
-            </div>
           </div>
+        </div>
+
+        {/* Right Side Controls */}
+        <div className="flex flex-col gap-3 items-end">
+          <div className="flex items-center gap-1 mb-1 text-slate-900 dark:text-white select-none">
+            <button
+              onClick={onPrev}
+              className="size-8 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+              aria-label="Previous period"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <span className="text-sm font-bold text-center px-1">
+              {dateLabel}
+            </span>
+            <button
+              onClick={onNext}
+              className="size-8 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+              aria-label="Next period"
+            >
+              <ChevronRight size={20} />
+            </button>
+          </div>
+          <div className="bg-[#f1f5f9] dark:bg-[#111418] p-1 rounded-lg inline-flex border border-transparent dark:border-[#283039]">
+            <button
+              onClick={() => setViewMode("weekly")}
+              className={`px-3 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
+                viewMode === "weekly"
+                  ? "bg-white dark:bg-[#283039] text-[#0f172a] dark:text-white shadow-sm"
+                  : "text-[#64748b] dark:text-[#94a3b8] hover:text-[#0f172a] dark:hover:text-white"
+              }`}
+            >
+              Weekly
+            </button>
+            <button
+              onClick={() => setViewMode("monthly")}
+              className={`px-3 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
+                viewMode === "monthly"
+                  ? "bg-white dark:bg-[#283039] text-[#0f172a] dark:text-white shadow-sm"
+                  : "text-[#64748b] dark:text-[#94a3b8] hover:text-[#0f172a] dark:hover:text-white"
+              }`}
+            >
+              Monthly
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Tag Filter - Full Width */}
+      <div className="flex flex-col gap-2 mb-6">
+        <div className="flex items-center gap-3">
+          <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
+            Filter by Tags
+          </label>
+          {selectedFilterTags.length > 0 && (
+            <button
+              onClick={onClearFilters}
+              className="text-[10px] text-red-500 hover:text-red-600 font-bold uppercase flex items-center gap-1 cursor-pointer"
+            >
+              <X size={12} /> Clear
+            </button>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {allTags.map((tag) => {
+            const isSelected = selectedFilterTags.includes(tag.name);
+            const color = tag.color;
+            return (
+              <button
+                key={tag.id}
+                onClick={() => onToggleFilterTag(tag.name)}
+                className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] border transition-all duration-200 cursor-pointer"
+                style={{
+                  backgroundColor: isSelected
+                    ? color
+                    : color
+                    ? `${color}1A`
+                    : "#f8fafc",
+                  borderColor: isSelected
+                    ? color
+                    : color
+                    ? `${color}33`
+                    : "#e2e8f0",
+                  color: isSelected ? "#ffffff" : color || "#64748b",
+                  boxShadow: isSelected ? `0 2px 4px 0 ${color}40` : "none",
+                }}
+              >
+                {tag.name}
+              </button>
+            );
+          })}
+          {allTags.length === 0 && (
+            <span className="text-xs text-slate-400 italic">
+              No tags available.
+            </span>
+          )}
         </div>
       </div>
 

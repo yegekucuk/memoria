@@ -165,3 +165,73 @@ export const calculateChartData = (
 
   return { chartData: data, totalPeriodHours, maxVal: displayMax };
 };
+
+export interface PieChartData {
+  name: string;
+  value: number;
+  color?: string;
+}
+
+export const calculatePieChartData = (
+  sessions: Session[],
+  viewMode: ViewMode,
+  currentDate: Date
+): PieChartData[] => {
+  const tagDurations: Record<string, number> = {};
+  const selectedDate = new Date(currentDate);
+
+  let startDate: Date;
+  let endDate: Date;
+
+  if (viewMode === 'monthly') {
+    // Start of month
+    startDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+    // End of month
+    endDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0, 23, 59, 59, 999);
+  } else {
+    // Weekly view - Start of week (Monday)
+    const day = selectedDate.getDay();
+    const diff = selectedDate.getDate() - day + (day === 0 ? -6 : 1);
+    startDate = new Date(selectedDate);
+    startDate.setDate(diff);
+    startDate.setHours(0, 0, 0, 0);
+
+    // End of week (Sunday)
+    endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 6);
+    endDate.setHours(23, 59, 59, 999);
+  }
+
+  sessions.forEach((session) => {
+    const sTime = new Date(session.startTime);
+    // If session is completely outside range, skip
+    // We'll simplify and check if start time is within range OR if it overlaps
+    // For simplicity in this helper, let's just check if start time is within range or basic overlap logic similar to calculateChartData
+    // Actually, let's reuse the logic from calculateChartData but simpler since we just need total duration per tag
+      
+    const sessionEnd = new Date(sTime.getTime() + session.durationSeconds * 1000);
+
+    if (sessionEnd < startDate || sTime > endDate) {
+        return;
+    }
+
+    // Calculate overlap
+    const overlapStart = sTime < startDate ? startDate : sTime;
+    const overlapEnd = sessionEnd > endDate ? endDate : sessionEnd;
+
+    if (overlapStart < overlapEnd) {
+        const duration = (overlapEnd.getTime() - overlapStart.getTime()) / 1000;
+        session.tags.forEach(t => {
+            tagDurations[t] = (tagDurations[t] || 0) + duration;
+        });
+    }
+  });
+
+  return Object.entries(tagDurations)
+    .map(([name, duration]) => ({
+      name,
+      value: duration / 3600,
+    }))
+    .filter(d => d.value > 0)
+    .sort((a, b) => b.value - a.value);
+};
