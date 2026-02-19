@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Session } from '@/types';
-import { Pencil, Trash2, Tag, Calendar, Clock, Timer, Search, X, Filter, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
+import { Pencil, Trash2, Tag, Calendar, Clock, Timer, Search, X, Filter, ChevronLeft, ChevronRight, ChevronDown, Download } from 'lucide-react';
 import { ConfirmationModal } from './ConfirmationModal';
 import { EditSessionModal } from './EditSessionModal';
 import { useTags } from '@/hooks/useTags';
@@ -89,6 +89,49 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
       );
   };
 
+  const handleExportCSV = () => {
+    if (filteredSessions.length === 0) {
+        toast.error("No sessions to export");
+        return;
+    }
+
+    // CSV Headers
+    const headers = ['Date', 'Start Time', 'End Time', 'Duration (seconds)', 'Tags', 'Notes'];
+
+    // CSV Rows
+    const rows = filteredSessions.map(session => {
+        const startDate = new Date(session.startTime);
+        const endDate = session.endTime ? new Date(session.endTime) : null;
+        
+        // Escape quotes in notes and tags to prevent CSV breakages
+        const escapedNotes = session.notes ? `"${session.notes.replace(/"/g, '""')}"` : '';
+        const escapedTags = session.tags.length > 0 ? `"${session.tags.join(', ')}"` : '';
+
+        return [
+            startDate.toLocaleDateString(),
+            startDate.toLocaleTimeString(),
+            endDate ? endDate.toLocaleTimeString() : '',
+            session.durationSeconds,
+            escapedTags,
+            escapedNotes
+        ].join(',');
+    });
+
+    // Combine headers and rows
+    const csvContent = [headers.join(','), ...rows].join('\n');
+
+    // Create a blob and trigger download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `sessions_export_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const filteredSessions = useMemo(() => {
     return sessions.filter(session => {
         const sessionDate = new Date(session.startTime);
@@ -166,6 +209,15 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
                         </div>
                         <span>per page</span>
                     </div>
+                    
+                    <button
+                        onClick={handleExportCSV}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-lg transition-colors border border-slate-200 dark:border-white/5 cursor-pointer"
+                        title="Export filtered sessions as CSV"
+                    >
+                        <Download size={14} />
+                        Export CSV
+                    </button>
                  {(startDate || endDate || searchNotes || selectedFilterTags.length > 0) && (
                      <button 
                         onClick={() => {
