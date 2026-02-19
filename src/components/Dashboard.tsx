@@ -19,9 +19,25 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession, 
   const { user } = useAuth();
   // Calculate today's stats
   const today = new Date();
-  const todayString = today.toDateString();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
   
-  const todaysSessions = sessions.filter(s => new Date(s.startTime).toDateString() === todayString);
+  const todaysSessions = sessions.map(session => {
+      const sTime = new Date(session.startTime);
+      const sessionEnd = new Date(sTime.getTime() + session.durationSeconds * 1000);
+      
+      const overlapStart = sTime > today ? sTime : today;
+      const overlapEnd = sessionEnd < tomorrow ? sessionEnd : tomorrow;
+      
+      const durationForThisDay = Math.max(0, (overlapEnd.getTime() - overlapStart.getTime()) / 1000);
+      
+      return {
+          ...session,
+          durationSeconds: durationForThisDay
+      };
+  }).filter(s => s.durationSeconds > 0);
+
   const totalSecondsToday = todaysSessions.reduce((acc, curr) => acc + curr.durationSeconds, 0);
 
   const { tags } = useTags();
