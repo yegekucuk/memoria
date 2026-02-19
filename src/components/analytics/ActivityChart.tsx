@@ -51,10 +51,8 @@ export const ActivityChart: React.FC<ActivityChartProps> = ({
                 {formatDuration(
                   isTotal
                     ? totalPeriodHours
-                    : viewMode === "weekly"
-                    ? totalPeriodHours /
+                    : totalPeriodHours /
                       (chartData.filter((d) => !d.isFuture).length || 1)
-                    : totalPeriodHours / (chartData.length || 1)
                 )}
               </span>
               <div className="flex items-center gap-2">
