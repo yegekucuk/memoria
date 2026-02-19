@@ -36,6 +36,8 @@ export const ActivityChart: React.FC<ActivityChartProps> = ({
   setViewMode,
   isNextDisabled = false,
 }) => {
+  const [isTotal, setIsTotal] = React.useState(false);
+
   return (
     <div className="bg-white dark:bg-[#1c232d] rounded-xl border border-[#e5e7eb] dark:border-[#283039] p-6 lg:p-8 shadow-sm">
       <div className="flex justify-between items-start mb-8">
@@ -47,15 +49,31 @@ export const ActivityChart: React.FC<ActivityChartProps> = ({
             <div className="flex flex-col sm:flex-row items-baseline gap-2 text-slate-900 dark:text-white">
               <span className="text-2xl sm:text-3xl font-bold tracking-tight">
                 {formatDuration(
-                  viewMode === "weekly"
+                  isTotal
+                    ? totalPeriodHours
+                    : viewMode === "weekly"
                     ? totalPeriodHours /
-                        (chartData.filter((d) => !d.isFuture).length || 1)
-                    : totalPeriodHours,
+                      (chartData.filter((d) => !d.isFuture).length || 1)
+                    : totalPeriodHours / (chartData.length || 1)
                 )}
               </span>
-              <span className="text-sm font-medium text-slate-500 flex items-center">
-                {viewMode === "weekly" ? "Average" : "Total for selected period"}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-slate-500 flex items-center">
+                  {isTotal ? "Total" : "Average"}
+                </span>
+                <button
+                  onClick={() => setIsTotal(!isTotal)}
+                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-slate-900 ${
+                    isTotal ? "bg-primary" : "bg-slate-200 dark:bg-slate-700"
+                  }`}
+                >
+                  <span
+                    className={`${
+                      isTotal ? "translate-x-5" : "translate-x-1"
+                    } inline-block h-3 w-3 transform rounded-full bg-white transition-transform`}
+                  />
+                </button>
+              </div>
             </div>
 
           </div>
