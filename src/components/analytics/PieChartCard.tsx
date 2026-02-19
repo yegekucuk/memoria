@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useEffect, useId } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
-import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronDown } from "lucide-react";
+import { DateRangeControls } from "./DateRangeControls";
 import { Session, Tag } from "../../types";
 import { ViewMode, calculatePieChartData } from "../../utils/analyticsHelpers";
 import { formatDuration } from "../../utils/format";
@@ -158,57 +159,16 @@ export const PieChartCard: React.FC<PieChartCardProps> = ({ sessions, allTags })
             className="overflow-hidden"
           >
             <div className="pt-4">
-              {/* Controls */}
               <div className="flex justify-end mb-6">
-                <div className="flex flex-col gap-3 items-end">
-          <div className="flex items-center gap-1 mb-1 text-slate-900 dark:text-white select-none">
-            <button
-              onClick={handlePrev}
-              className="size-8 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
-              aria-label="Previous period"
-            >
-              <ChevronLeft size={20} />
-            </button>
-            <span className="text-sm font-bold text-center px-1 min-w-[120px]">
-              {dateLabel}
-            </span>
-            <button
-              onClick={handleNext}
-              disabled={isNextDisabled}
-              className={`size-8 flex items-center justify-center rounded-full transition-colors ${
-                isNextDisabled 
-                  ? "opacity-30 cursor-not-allowed text-slate-400 dark:text-slate-600" 
-                  : "hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
-              }`}
-              aria-label="Next period"
-            >
-              <ChevronRight size={20} />
-            </button>
-          </div>
-          <div className="bg-[#f1f5f9] dark:bg-[#111418] p-1 rounded-lg inline-flex border border-transparent dark:border-[#283039]">
-            <button
-              onClick={() => setViewMode("weekly")}
-              className={`px-3 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
-                viewMode === "weekly"
-                  ? "bg-white dark:bg-[#283039] text-[#0f172a] dark:text-white shadow-sm"
-                  : "text-[#64748b] dark:text-[#94a3b8] hover:text-[#0f172a] dark:hover:text-white"
-              }`}
-            >
-              Weekly
-            </button>
-            <button
-              onClick={() => setViewMode("monthly")}
-              className={`px-3 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
-                viewMode === "monthly"
-                  ? "bg-white dark:bg-[#283039] text-[#0f172a] dark:text-white shadow-sm"
-                  : "text-[#64748b] dark:text-[#94a3b8] hover:text-[#0f172a] dark:hover:text-white"
-              }`}
-            >
-              Monthly
-            </button>
+                <DateRangeControls
+                  viewMode={viewMode}
+                  setViewMode={setViewMode}
+                  dateLabel={dateLabel}
+                  onPrev={handlePrev}
+                  onNext={handleNext}
+                  isNextDisabled={isNextDisabled}
+                />
               </div>
-              </div>
-            </div>
 
           <div className="flex flex-col md:flex-row items-center justify-center gap-8">
           {/* Pie Chart */}
