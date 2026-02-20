@@ -2,6 +2,7 @@ import React from 'react';
 import { Session } from '../../types';
 import { formatDuration } from '../../utils/format';
 import { useTags } from '../../hooks/useTags';
+import { getStartOfWeek, getTagColor } from '../../utils/analyticsHelpers';
 
 interface WeeklyCalendarProps {
   sessions: Session[];
@@ -16,16 +17,7 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
 }) => {
   const { tags: allTags } = useTags();
 
-  // Calculate the start of the week (Monday)
-  const startOfWeek = React.useMemo(() => {
-    const date = new Date(currentDate);
-    const day = date.getDay();
-    const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-    const monday = new Date(date);
-    monday.setDate(diff);
-    monday.setHours(0, 0, 0, 0);
-    return monday;
-  }, [currentDate]);
+  const startOfWeek = React.useMemo(() => getStartOfWeek(currentDate), [currentDate]);
 
   // Generate 7 days (or 5 if excluding weekends)
   const days = React.useMemo(() => {
@@ -53,10 +45,7 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
     });
   }, [sessions, startOfWeek, excludeWeekends]);
 
-  const getTagColor = (tagName: string) => {
-    const tag = allTags.find(t => t.name === tagName);
-    return tag?.color || '#3b82f6';
-  };
+
 
   // Current Time State
   const [now, setNow] = React.useState(new Date());
@@ -136,7 +125,7 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
 
                   if (duration <= 0) return null;
 
-                  const color = getTagColor(session.tags[0] || '');
+                  const color = getTagColor(allTags, session.tags[0] || '');
 
                   return (
                     <div

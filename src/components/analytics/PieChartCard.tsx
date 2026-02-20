@@ -4,7 +4,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { ChevronDown } from "lucide-react";
 import { DateRangeControls } from "./DateRangeControls";
 import { Session, Tag } from "../../types";
-import { ViewMode, calculatePieChartData } from "../../utils/analyticsHelpers";
+import { ViewMode, calculatePieChartData, navigateDate, getDateLabel, isNextPeriodDisabled } from "../../utils/analyticsHelpers";
 import { formatDuration } from "../../utils/format";
 
 interface PieChartCardProps {
@@ -43,42 +43,10 @@ export const PieChartCard: React.FC<PieChartCardProps> = ({ sessions, allTags })
     return () => mediaQuery.removeListener(updateViewport);
   }, []);
 
-  const handlePrev = () => {
-    const newDate = new Date(currentDate);
-    if (viewMode === "weekly") {
-      newDate.setDate(newDate.getDate() - 7);
-    } else {
-      newDate.setMonth(newDate.getMonth() - 1);
-    }
-    setCurrentDate(newDate);
-  };
+  const handlePrev = () => setCurrentDate(navigateDate(viewMode, currentDate, 'prev'));
+  const handleNext = () => setCurrentDate(navigateDate(viewMode, currentDate, 'next'));
 
-  const handleNext = () => {
-    const newDate = new Date(currentDate);
-    if (viewMode === "weekly") {
-      newDate.setDate(newDate.getDate() + 7);
-    } else {
-      newDate.setMonth(newDate.getMonth() + 1);
-    }
-    setCurrentDate(newDate);
-  };
-
-  const dateLabel = useMemo(() => {
-    if (viewMode === "weekly") {
-      const day = currentDate.getDay();
-      const diff = currentDate.getDate() - day + (day === 0 ? -6 : 1);
-      const start = new Date(currentDate);
-      start.setDate(diff);
-      const end = new Date(start);
-      end.setDate(start.getDate() + 6);
-      
-      const startStr = start.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-      const endStr = end.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-      return `${startStr} - ${endStr}`;
-    } else {
-      return currentDate.toLocaleDateString("en-US", { month: "long", year: "numeric" });
-    }
-  }, [currentDate, viewMode]);
+  const dateLabel = useMemo(() => getDateLabel(viewMode, currentDate), [currentDate, viewMode]);
 
   const data = useMemo(() => {
     return calculatePieChartData(sessions, viewMode, currentDate).map(item => {
@@ -90,34 +58,10 @@ export const PieChartCard: React.FC<PieChartCardProps> = ({ sessions, allTags })
     });
   }, [sessions, viewMode, currentDate, allTags]);
 
-  const isNextDisabled = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    if (viewMode === 'weekly') {
-      const nextWeek = new Date(currentDate);
-      nextWeek.setDate(nextWeek.getDate() + 7);
-      
-      // Calculate the start of the next week period
-      const day = nextWeek.getDay();
-      const diff = nextWeek.getDate() - day + (day === 0 ? -6 : 1);
-      const nextWeekStart = new Date(nextWeek);
-      nextWeekStart.setDate(diff);
-      nextWeekStart.setHours(0, 0, 0, 0);
-
-      return nextWeekStart > today;
-    }
-
-    if (viewMode === 'monthly') {
-      const nextMonth = new Date(currentDate);
-      nextMonth.setMonth(nextMonth.getMonth() + 1);
-      // Start of next month
-      const nextMonthStart = new Date(nextMonth.getFullYear(), nextMonth.getMonth(), 1);
-      return nextMonthStart > today;
-    }
-
-    return false;
-  }, [viewMode, currentDate]);
+  const isNextDisabled = useMemo(
+    () => isNextPeriodDisabled(viewMode, currentDate),
+    [viewMode, currentDate]
+  );
 
   const totalDuration = useMemo(() => data.reduce((acc, curr) => acc + curr.value, 0), [data]);
   const isAccordionOpen = !isDesktopViewport || isDesktopOpen;

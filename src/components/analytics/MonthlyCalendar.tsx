@@ -2,6 +2,7 @@ import React from 'react';
 import { Session } from '../../types';
 import { formatDuration } from '../../utils/format';
 import { useTags } from '../../hooks/useTags';
+import { getTagColor } from '../../utils/analyticsHelpers';
 
 interface MonthlyCalendarProps {
   sessions: Session[];
@@ -58,10 +59,7 @@ export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
     });
   };
 
-  const getTagColor = (tagName: string) => {
-    const tag = allTags.find(t => t.name === tagName);
-    return tag?.color || '#3b82f6';
-  };
+
 
   return (
     <div className="bg-white dark:bg-[#1c232d] rounded-xl border border-[#e5e7eb] dark:border-[#283039] p-4 lg:p-6 shadow-sm mt-4">
@@ -111,7 +109,7 @@ export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
               
               <div className="flex flex-col gap-0.5 overflow-hidden">
                 {daySessions.slice(0, 3).map(s => {
-                  const color = getTagColor(s.tags[0] || '');
+                  const color = getTagColor(allTags, s.tags[0] || '');
                   return (
                     <div 
                         key={s.id} 
