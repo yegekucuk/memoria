@@ -58,6 +58,26 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
     return tag?.color || '#3b82f6';
   };
 
+  // Current Time State
+  const [now, setNow] = React.useState(new Date());
+
+  React.useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 60000); // update every minute
+    return () => clearInterval(timer);
+  }, []);
+
+  const isCurrentWeek = React.useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + (excludeWeekends ? 5 : 7));
+
+    return today >= startOfWeek && today < endOfWeek;
+  }, [startOfWeek, excludeWeekends]);
+
+  const currentTimeOffset = (now.getHours() + now.getMinutes() / 60) * 48;
+
   return (
     <div className="bg-white dark:bg-[#1c232d] rounded-xl border border-[#e5e7eb] dark:border-[#283039] p-4 lg:p-6 shadow-sm mt-4 overflow-x-auto">
       <div className="min-w-[700px]">
@@ -144,6 +164,17 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
                 })}
               </div>
             ))}
+
+            {/* Current Time Indicator */}
+            {isCurrentWeek && (
+              <div 
+                className="absolute left-0 right-0 z-30 pointer-events-none flex items-center"
+                style={{ top: `${currentTimeOffset}px`, transform: 'translateY(-50%)' }}
+              >
+                <div className="w-2 h-2 rounded-full bg-primary -ml-1"></div>
+                <div className="flex-1 h-[2px] bg-primary/50"></div>
+              </div>
+            )}
           </div>
         </div>
       </div>
