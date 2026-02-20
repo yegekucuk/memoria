@@ -3,6 +3,7 @@ import { Session } from '../types';
 import { X, CheckCircle, Loader2 } from 'lucide-react';
 import { useTags } from '@/hooks/useTags';
 import { TagSelector } from './TagSelector';
+import { validateSessionForm } from '@/utils/sessionHelpers';
 
 interface EditSessionModalProps {
   session: Session;
@@ -42,13 +43,9 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
     if (isSaving) return;
     setError(null);
 
-    if (selectedTags.length === 0) {
-      setError("Please add at least one tag.");
-      return;
-    }
-
-    if (!notes.trim()) {
-      setError("Please add some notes.");
+    const validationError = validateSessionForm(selectedTags, notes);
+    if (validationError) {
+      setError(validationError);
       return;
     }
 

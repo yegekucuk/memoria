@@ -46,7 +46,16 @@ jest.mock('lucide-react', () => ({
     Filter: () => <span>Filter</span>,
     ChevronLeft: () => <span>ChevronLeft</span>,
     ChevronRight: () => <span>ChevronRight</span>,
-    ChevronDown: () => <span>ChevronDown</span>
+    ChevronDown: () => <span>ChevronDown</span>,
+    Download: () => <span>Download</span>,
+}));
+
+// Mock react-hot-toast
+jest.mock('react-hot-toast', () => ({
+    toast: {
+        error: jest.fn(),
+        success: jest.fn(),
+    },
 }));
 
 // Mock global fetch

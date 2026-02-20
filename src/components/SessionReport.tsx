@@ -3,6 +3,8 @@ import { Session } from '../types';
 import { CheckCircle, Loader2 } from 'lucide-react';
 import { useTags } from '@/hooks/useTags';
 import { TagSelector } from './TagSelector';
+import { formatDurationHMS } from '@/utils/format';
+import { validateSessionForm } from '@/utils/sessionHelpers';
 
 interface SessionReportProps {
   durationSeconds: number;
@@ -35,13 +37,9 @@ export const SessionReport: React.FC<SessionReportProps> = ({
     if (isProcessing) return;
     setError(null);
 
-    if (selectedTags.length === 0) {
-      setError("Please add at least one tag to categorize your session.");
-      return;
-    }
-
-    if (!notes.trim()) {
-      setError("Please add some notes about your session.");
+    const validationError = validateSessionForm(selectedTags, notes);
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
@@ -65,9 +63,7 @@ export const SessionReport: React.FC<SessionReportProps> = ({
       }
   };
 
-  const hours = Math.floor(durationSeconds / 3600);
-  const minutes = Math.floor((durationSeconds % 3600) / 60);
-  const seconds = durationSeconds % 60;
+  const { h: hours, m: minutes, s: seconds } = formatDurationHMS(durationSeconds);
 
   return (
     <div className="fixed inset-0 z-60 font-display flex items-center justify-center p-4">
@@ -85,7 +81,7 @@ export const SessionReport: React.FC<SessionReportProps> = ({
                     <div className="flex gap-3 py-4">
                         <div className="flex flex-col items-center gap-2">
                             <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-[#283039] border border-[#3e4856] shadow-inner">
-                                <p className="text-white text-2xl font-bold tracking-tight">{hours.toString().padStart(2, '0')}</p>
+                                <p className="text-white text-2xl font-bold tracking-tight">{hours}</p>
                             </div>
                             <p className="text-[#9dabb9] text-xs font-medium uppercase tracking-wider">Hours</p>
                         </div>
@@ -94,7 +90,7 @@ export const SessionReport: React.FC<SessionReportProps> = ({
                         </div>
                         <div className="flex flex-col items-center gap-2">
                             <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-[#283039] border border-[#3e4856] shadow-inner">
-                                <p className="text-white text-2xl font-bold tracking-tight">{minutes.toString().padStart(2, '0')}</p>
+                                <p className="text-white text-2xl font-bold tracking-tight">{minutes}</p>
                             </div>
                             <p className="text-[#9dabb9] text-xs font-medium uppercase tracking-wider">Minutes</p>
                         </div>
@@ -103,7 +99,7 @@ export const SessionReport: React.FC<SessionReportProps> = ({
                         </div>
                         <div className="flex flex-col items-center gap-2">
                             <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-[#283039] border border-[#3e4856] shadow-inner">
-                                <p className="text-white text-2xl font-bold tracking-tight">{seconds.toString().padStart(2, '0')}</p>
+                                <p className="text-white text-2xl font-bold tracking-tight">{seconds}</p>
                             </div>
                             <p className="text-[#9dabb9] text-xs font-medium uppercase tracking-wider">Seconds</p>
                         </div>

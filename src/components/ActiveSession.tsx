@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, StopCircle } from 'lucide-react';
+import { formatDurationHMS } from '@/utils/format';
 
 interface ActiveSessionProps {
   startTime: Date;
@@ -46,18 +47,7 @@ export const ActiveSession: React.FC<ActiveSessionProps> = ({ startTime, onEndSe
 
 
 
-  const formatTime = (totalSeconds: number) => {
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const secs = totalSeconds % 60;
-    return { 
-      h: hours.toString().padStart(2, '0'), 
-      m: minutes.toString().padStart(2, '0'), 
-      s: secs.toString().padStart(2, '0') 
-    };
-  };
-
-  const { h, m, s } = formatTime(seconds);
+  const { h, m, s } = formatDurationHMS(seconds);
 
   return (
     <div className="fixed inset-0 z-50 bg-mesh font-display text-slate-900 dark:text-white antialiased overflow-x-hidden min-h-screen flex flex-col">
