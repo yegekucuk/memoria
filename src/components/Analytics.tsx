@@ -94,25 +94,25 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => 
                     dateLabel={dateLabel}
                     setViewMode={setViewMode}
                     isNextDisabled={isNextDisabled}
-                />
-
-                {/* Calendar View */}
-                <div className="flex flex-col gap-4 mt-6">
-                    <h2 className="text-[22px] font-bold leading-tight tracking-[-0.015em] pt-2 text-slate-900 dark:text-white">Calendar View</h2>
-                    {viewMode === 'weekly' ? (
-                        <WeeklyCalendar 
-                            sessions={currentViewSessions} 
-                            currentDate={chartData[0]?.fullDate ? new Date(chartData[0].fullDate) : new Date()}
-                            excludeWeekends={settings.excludeWeekends}
-                        />
-                    ) : (
-                        <MonthlyCalendar 
-                            sessions={currentViewSessions} 
-                            currentDate={chartData[0]?.fullDate ? new Date(chartData[0].fullDate) : new Date()}
-                            excludeWeekends={settings.excludeWeekends}
-                        />
-                    )}
-                </div>
+                >
+                    {/* Calendar View */}
+                    <div className="flex flex-col gap-4">
+                        <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-slate-900 dark:text-white capitalize">{viewMode} Calendar</h2>
+                        {viewMode === 'weekly' ? (
+                            <WeeklyCalendar 
+                                sessions={currentViewSessions} 
+                                currentDate={chartData[0]?.fullDate ? new Date(chartData[0].fullDate) : new Date()}
+                                excludeWeekends={settings.excludeWeekends}
+                            />
+                        ) : (
+                            <MonthlyCalendar 
+                                sessions={currentViewSessions} 
+                                currentDate={chartData[0]?.fullDate ? new Date(chartData[0].fullDate) : new Date()}
+                                excludeWeekends={settings.excludeWeekends}
+                            />
+                        )}
+                    </div>
+                </ActivityChart>
 
                 {/* Insights Grid */}
                 <div className="flex flex-col gap-4">

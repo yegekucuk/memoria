@@ -19,6 +19,7 @@ interface ActivityChartProps {
   dateLabel: string;
   setViewMode: (mode: ViewMode) => void;
   isNextDisabled?: boolean;
+  children?: React.ReactNode;
 }
 
 export const ActivityChart: React.FC<ActivityChartProps> = ({
@@ -35,6 +36,7 @@ export const ActivityChart: React.FC<ActivityChartProps> = ({
   dateLabel,
   setViewMode,
   isNextDisabled = false,
+  children,
 }) => {
   const [isTotal, setIsTotal] = React.useState(false);
 
@@ -188,6 +190,13 @@ export const ActivityChart: React.FC<ActivityChartProps> = ({
             </span>
           ))}
       </div>
+
+      {/* Children Container (Calendar) */}
+      {children && (
+        <div className="mt-8 pt-6 border-t border-[#e5e7eb] dark:border-[#283039]">
+            {children}
+        </div>
+      )}
     </div>
   );
 };
