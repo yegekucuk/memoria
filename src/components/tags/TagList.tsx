@@ -1,13 +1,8 @@
 'use client';
 
 import React from 'react';
+import { Tag } from '@/types';
 import { TagItem } from './TagItem';
-
-interface Tag {
-  id: string;
-  name: string;
-  color: string;
-}
 
 interface TagListProps {
   tags: Tag[];

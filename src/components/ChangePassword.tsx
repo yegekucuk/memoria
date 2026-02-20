@@ -8,6 +8,19 @@ import { toast } from 'react-hot-toast';
 import { Lock, Loader2 } from 'lucide-react';
 import { SubSetting } from './SubSetting';
 
+const changePassword = async (currentPassword: string, newPassword: string): Promise<void> => {
+  const response = await fetch('/api/auth/password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
+
+  if (!response.ok) {
+    const result = await response.json();
+    throw new Error(result.error || 'Failed to update password');
+  }
+};
+
 export const ChangePassword = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -27,21 +40,7 @@ export const ChangePassword = () => {
   const onSubmit = async (data: ChangePasswordInput) => {
     setIsSubmitting(true);
     try {
-      const response = await fetch('/api/auth/password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          currentPassword: data.currentPassword,
-          newPassword: data.newPassword,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to update password');
-      }
-
+      await changePassword(data.currentPassword, data.newPassword);
       toast.success('Password updated successfully');
       reset();
     } catch (error: unknown) {

@@ -18,21 +18,12 @@ export const TagsSettings: React.FC = () => {
   const [isCreating, setIsCreating] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [tagToDelete, setTagToDelete] = useState<Tag | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   const handleCreateTag = async (name: string, color: string) => {
     if (!user) return;
     setIsCreating(true);
-    setError(null);
     try {
       await addTag(name, color);
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('An unknown error occurred');
-      }
-      throw err; // Let TagForm handle its own UI if needed
     } finally {
       setIsCreating(false);
     }
@@ -79,7 +70,7 @@ export const TagsSettings: React.FC = () => {
             <TagForm 
               onAddTag={handleCreateTag} 
               isLoading={isCreating} 
-              error={error || hookError} 
+              error={hookError} 
             />
             
             <TagList 

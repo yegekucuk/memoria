@@ -2,13 +2,8 @@
 
 import React, { useState } from 'react';
 import { X, Loader2, Trash2, Pencil, Check } from 'lucide-react';
+import { Tag } from '@/types';
 import { COLORS } from '@/constants/colors';
-
-interface Tag {
-  id: string;
-  name: string;
-  color: string;
-}
 
 interface TagItemProps {
   tag: Tag;
