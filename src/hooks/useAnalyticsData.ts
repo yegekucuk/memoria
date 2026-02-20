@@ -102,6 +102,7 @@ export const useAnalyticsData = (sessions: Session[]) => {
     totalHoursAllTime,
     topTagName,
     topTagPct,
-    isNextDisabled
+    isNextDisabled,
+    filteredSessions: sessions // These are already filtered by tags in Analytics.tsx
   };
 };

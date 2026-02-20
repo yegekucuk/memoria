@@ -8,6 +8,9 @@ import { useAnalyticsData } from '../hooks/useAnalyticsData';
 import { ActivityChart } from './analytics/ActivityChart';
 import { PieChartCard } from './analytics/PieChartCard';
 import { useTags } from '../hooks/useTags';
+import { WeeklyCalendar } from './analytics/WeeklyCalendar';
+import { MonthlyCalendar } from './analytics/MonthlyCalendar';
+import { useSettings } from '../context/SettingsContext';
 
 interface AnalyticsProps {
   sessions: Session[];
@@ -16,6 +19,7 @@ interface AnalyticsProps {
 
 export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => {
   const { tags: allTags } = useTags();
+  const { settings } = useSettings();
   const [selectedFilterTags, setSelectedFilterTags] = useState<string[]>([]);
 
   const toggleFilterTag = (tagName: string) => {
@@ -43,6 +47,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => 
     totalPeriodHours,
     maxVal,
     isNextDisabled,
+    filteredSessions: currentViewSessions,
   } = useAnalyticsData(filteredSessions);
 
   // Insights always use unfiltered sessions so they don't change with tag filter
@@ -90,6 +95,24 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => 
                     setViewMode={setViewMode}
                     isNextDisabled={isNextDisabled}
                 />
+
+                {/* Calendar View */}
+                <div className="flex flex-col gap-4 mt-6">
+                    <h2 className="text-[22px] font-bold leading-tight tracking-[-0.015em] pt-2 text-slate-900 dark:text-white">Calendar View</h2>
+                    {viewMode === 'weekly' ? (
+                        <WeeklyCalendar 
+                            sessions={currentViewSessions} 
+                            currentDate={chartData[0]?.fullDate ? new Date(chartData[0].fullDate) : new Date()}
+                            excludeWeekends={settings.excludeWeekends}
+                        />
+                    ) : (
+                        <MonthlyCalendar 
+                            sessions={currentViewSessions} 
+                            currentDate={chartData[0]?.fullDate ? new Date(chartData[0].fullDate) : new Date()}
+                            excludeWeekends={settings.excludeWeekends}
+                        />
+                    )}
+                </div>
 
                 {/* Insights Grid */}
                 <div className="flex flex-col gap-4">
