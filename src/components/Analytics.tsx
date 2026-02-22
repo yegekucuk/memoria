@@ -146,7 +146,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => 
                     </div>
 
                     {/* Pie Chart */}
-                    <PieChartCard sessions={sessions} allTags={allTags} />
+                    <PieChartCard sessions={sessions} allTags={allTags} excludeWeekends={settings.excludeWeekends} />
                 </div>
             </>
         )}

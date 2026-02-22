@@ -10,6 +10,7 @@ import { formatDuration } from "../../utils/format";
 interface PieChartCardProps {
   sessions: Session[];
   allTags: Tag[];
+  excludeWeekends?: boolean;
 }
 
 const COLORS = [
@@ -17,7 +18,7 @@ const COLORS = [
   "#6366f1", "#14b8a6", "#f97316", "#ef4444", "#84cc16"
 ];
 
-export const PieChartCard: React.FC<PieChartCardProps> = ({ sessions, allTags }) => {
+export const PieChartCard: React.FC<PieChartCardProps> = ({ sessions, allTags, excludeWeekends = false }) => {
   const [viewMode, setViewMode] = useState<ViewMode>("weekly");
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isDesktopOpen, setIsDesktopOpen] = useState(false);
@@ -49,14 +50,14 @@ export const PieChartCard: React.FC<PieChartCardProps> = ({ sessions, allTags })
   const dateLabel = useMemo(() => getDateLabel(viewMode, currentDate), [currentDate, viewMode]);
 
   const data = useMemo(() => {
-    return calculatePieChartData(sessions, viewMode, currentDate).map(item => {
+    return calculatePieChartData(sessions, viewMode, currentDate, excludeWeekends).map(item => {
         const tag = allTags.find(t => t.name === item.name);
         return {
             ...item,
             color: tag?.color || COLORS[Math.floor(Math.random() * COLORS.length)]
         };
     });
-  }, [sessions, viewMode, currentDate, allTags]);
+  }, [sessions, viewMode, currentDate, allTags, excludeWeekends]);
 
   const isNextDisabled = useMemo(
     () => isNextPeriodDisabled(viewMode, currentDate),

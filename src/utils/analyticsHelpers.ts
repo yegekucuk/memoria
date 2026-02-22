@@ -199,27 +199,22 @@ export interface PieChartData {
 export const calculatePieChartData = (
   sessions: Session[],
   viewMode: ViewMode,
-  currentDate: Date
+  currentDate: Date,
+  excludeWeekends: boolean = false
 ): PieChartData[] => {
   const tagDurations: Record<string, number> = {};
-  const { start: startDate, end: endDate } = getDateRange(viewMode, currentDate);
+  const { start: periodStart, end: periodEnd } = getDateRange(viewMode, currentDate);
 
   sessions.forEach((session) => {
-    const sTime = new Date(session.startTime);
-    const sessionEnd = new Date(sTime.getTime() + session.durationSeconds * 1000);
-
-    if (sessionEnd < startDate || sTime > endDate) return;
-
-    // Calculate overlap
-    const overlapStart = sTime < startDate ? startDate : sTime;
-    const overlapEnd = sessionEnd > endDate ? endDate : sessionEnd;
-
-    if (overlapStart < overlapEnd) {
-      const duration = (overlapEnd.getTime() - overlapStart.getTime()) / 1000;
+    const chunks = splitSessionIntoDays(session, periodStart, periodEnd);
+    chunks.forEach(({ dateStr, hours }) => {
+      if (excludeWeekends && isWeekend(new Date(dateStr))) return;
+      
+      const duration = hours * 3600;
       session.tags.forEach(t => {
         tagDurations[t] = (tagDurations[t] || 0) + duration;
       });
-    }
+    });
   });
 
   return Object.entries(tagDurations)
