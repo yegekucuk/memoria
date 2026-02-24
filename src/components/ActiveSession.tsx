@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Clock, StopCircle } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Clock, StopCircle, Target } from 'lucide-react';
 import { formatDurationHMS } from '@/utils/format';
+import { TIME_TARGET_KEY, TIME_TARGET_AUDIO_ONLY_KEY } from '@/constants';
 
 interface ActiveSessionProps {
   startTime: Date;
@@ -14,6 +15,49 @@ export const ActiveSession: React.FC<ActiveSessionProps> = ({ startTime, onEndSe
     return Math.max(0, diff);
   });
   const [isEnding, setIsEnding] = useState(false);
+  const [timeTarget, setTimeTarget] = useState<number | null>(null);
+  const [isAudioOnly, setIsAudioOnly] = useState(false);
+
+  // Use refs so the worker callback always reads the latest values
+  const timeTargetRef = useRef<number | null>(null);
+  const notificationSentRef = useRef(false);
+  const isAudioOnlyRef = useRef(false);
+
+  useEffect(() => {
+     const target = localStorage.getItem(TIME_TARGET_KEY);
+     if (target) {
+         const parsed = parseInt(target, 10);
+         setTimeTarget(parsed);
+         timeTargetRef.current = parsed;
+     }
+     const audioOnly = localStorage.getItem(TIME_TARGET_AUDIO_ONLY_KEY) === 'true';
+     setIsAudioOnly(audioOnly);
+     isAudioOnlyRef.current = audioOnly;
+  }, []);
+
+  const playChime = useCallback(() => {
+      try {
+          const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+          const oscillator = audioCtx.createOscillator();
+          const gainNode = audioCtx.createGain();
+          
+          oscillator.connect(gainNode);
+          gainNode.connect(audioCtx.destination);
+          
+          oscillator.type = 'sine';
+          oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
+          oscillator.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.5); // drop to A4
+          
+          gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+          gainNode.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 0.05);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1);
+          
+          oscillator.start(audioCtx.currentTime);
+          oscillator.stop(audioCtx.currentTime + 1);
+      } catch (e) {
+          console.error("Audio API not supported", e);
+      }
+  }, []);
 
   const handleEndSession = () => {
       if (isEnding) return;
@@ -26,23 +70,50 @@ export const ActiveSession: React.FC<ActiveSessionProps> = ({ startTime, onEndSe
   };
 
   useEffect(() => {
-    // Determine the path to the worker script.
-    // In production/Next.js, static files in 'public' are served at root.
     const worker = new Worker('/timer.worker.js');
 
     worker.onmessage = () => {
       const now = new Date();
       const diff = Math.floor((now.getTime() - startTime.getTime()) / 1000);
-      setSeconds(Math.max(0, diff));
+      const currentSeconds = Math.max(0, diff);
+      setSeconds(currentSeconds);
+      
+      // Read latest values from refs (avoids stale closure)
+      const target = timeTargetRef.current;
+      const alreadySent = notificationSentRef.current;
+      const audioOnly = isAudioOnlyRef.current;
+
+      if (target && !alreadySent && currentSeconds >= target * 60) {
+          notificationSentRef.current = true;
+
+          // Always play the audio chime — works even when notifications are unavailable
+          playChime();
+
+          // Send browser notification only when permission is granted and not audio-only
+          if (!audioOnly && 'Notification' in window && Notification.permission === 'granted') {
+              try {
+                  const n = new Notification('Time Target Reached', {
+                      body: `You have reached your goal of ${target} minutes! Great work!`,
+                      icon: '/favicon.ico',
+                      requireInteraction: true,
+                  });
+                  n.onclick = () => {
+                      window.focus();
+                      n.close();
+                  };
+              } catch (e) {
+                  console.error('Notification creation failed', e);
+              }
+          }
+      }
     };
 
-    // Start the worker
     worker.postMessage('start');
 
     return () => {
       worker.terminate();
     };
-  }, [startTime]);
+  }, [startTime, playChime]);
 
 
 
@@ -52,7 +123,7 @@ export const ActiveSession: React.FC<ActiveSessionProps> = ({ startTime, onEndSe
   return (
     <div className="fixed inset-0 z-50 bg-mesh font-display text-slate-900 dark:text-white antialiased overflow-x-hidden min-h-screen flex flex-col">
         <main className="grow flex flex-col items-center justify-center py-12 px-4 relative">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-125 h-125 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
             <div className="w-full max-w-3xl flex flex-col items-center gap-12 z-10 animate-in zoom-in-95 duration-700">
                 <div className="text-center space-y-2">
                     <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white">Deep Work Session</h1>
@@ -82,15 +153,39 @@ export const ActiveSession: React.FC<ActiveSessionProps> = ({ startTime, onEndSe
                     </div>
                 </div>
 
-                {/* Status Box - Start Time Only */}
+                {/* Status Box */}
                 <div className="flex justify-center w-full max-w-lg bg-white/5 dark:bg-slate-800/30 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 backdrop-blur-sm">
-                    <div className="flex flex-col items-center gap-1">
-                        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Start Time</span>
-                        <div className="flex items-center gap-2 text-slate-900 dark:text-white">
-                            <Clock size={20} className="text-slate-400" />
-                            <span className="text-lg font-medium">{startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit'})}</span>
+                    {timeTarget ? (
+                        <div className="flex items-center justify-between w-full">
+                            <div className="flex flex-col items-center gap-1 flex-1">
+                                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Start Time</span>
+                                <div className="flex items-center gap-2 text-slate-900 dark:text-white">
+                                    <Clock size={20} className="text-slate-400" />
+                                    <span className="text-lg font-medium">{startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit'})}</span>
+                                </div>
+                            </div>
+                            
+                            <div className="w-px h-12 bg-slate-200 dark:bg-slate-700 mx-4"></div>
+                            
+                            <div className="flex flex-col items-center gap-1 flex-1">
+                                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Goal</span>
+                                <div className="flex items-center gap-2 text-slate-900 dark:text-white">
+                                    <Target size={20} className="text-slate-400" />
+                                    <span className={`text-lg font-medium ${seconds >= timeTarget * 60 ? 'text-green-500' : 'text-red-500'}`}>
+                                        {Math.floor(seconds / 60)} min / {timeTarget} mins
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    ) : (
+                        <div className="flex flex-col items-center gap-1">
+                            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Start Time</span>
+                            <div className="flex items-center gap-2 text-slate-900 dark:text-white">
+                                <Clock size={20} className="text-slate-400" />
+                                <span className="text-lg font-medium">{startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit'})}</span>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Controls */}
@@ -98,7 +193,7 @@ export const ActiveSession: React.FC<ActiveSessionProps> = ({ startTime, onEndSe
                     <button 
                         onClick={handleEndSession} 
                         disabled={isEnding}
-                        className="group relative flex w-full max-w-[280px] items-center justify-center gap-3 overflow-hidden rounded-full bg-red-600 px-8 py-4 text-white shadow-lg transition-all hover:bg-red-700 hover:shadow-red-600/25 active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 disabled:hover:bg-red-600"
+                        className="group relative flex w-full max-w-70 items-center justify-center gap-3 overflow-hidden rounded-full bg-red-600 px-8 py-4 text-white shadow-lg transition-all hover:bg-red-700 hover:shadow-red-600/25 active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 disabled:hover:bg-red-600"
                     >
                         <StopCircle size={24} fill="currentColor" />
                         <span className="text-lg font-bold">{isEnding ? 'Ending...' : 'End Session'}</span>

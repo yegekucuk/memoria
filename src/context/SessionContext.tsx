@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Session } from '@/types';
 import { useAuth } from './AuthContext';
+import { TIME_TARGET_KEY, TIME_TARGET_AUDIO_ONLY_KEY } from '@/constants';
 
 interface SessionContextType {
   sessions: Session[];
@@ -156,6 +157,8 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     }
     
     setReportData(null);
+    localStorage.removeItem(TIME_TARGET_KEY);
+    localStorage.removeItem(TIME_TARGET_AUDIO_ONLY_KEY);
   };
 
   const discardSession = async () => {
@@ -169,6 +172,8 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
         console.error("Failed to discard session", e);
     }
     setReportData(null);
+    localStorage.removeItem(TIME_TARGET_KEY);
+    localStorage.removeItem(TIME_TARGET_AUDIO_ONLY_KEY);
   };
 
   return (
