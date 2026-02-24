@@ -34,13 +34,13 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, onClose, 
                 <div className="flex justify-end gap-3">
                     <button 
                         onClick={onClose}
-                        className="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        className="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                     >
                         Cancel
                     </button>
                     <button 
                         onClick={onUnderstand}
-                        className="px-4 py-2 rounded-lg text-sm font-medium bg-primary text-white hover:bg-blue-600 transition-colors"
+                        className="px-4 py-2 rounded-lg text-sm font-medium bg-primary text-white hover:bg-blue-600 transition-colors cursor-pointer"
                     >
                         I understand
                     </button>
