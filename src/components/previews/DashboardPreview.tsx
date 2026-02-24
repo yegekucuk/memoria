@@ -1,7 +1,9 @@
-import { Play, Timer, FlaskConical, Tag, Code, LayoutDashboard, BarChart2, Table, Settings, LogOut, LogIn, Menu, Dumbbell, Zap, Coffee } from 'lucide-react';
+import React, { useState } from 'react';
+import { Play, Timer, FlaskConical, Tag, Code, LayoutDashboard, BarChart2, Table, Settings, LogOut, Menu, Zap } from 'lucide-react';
 
 export const DashboardPreview: React.FC = () => {
-  const isStarting = false;
+  const [timeTargetEnabled, setTimeTargetEnabled] = useState(false);
+  const [timeTargetMinutes, setTimeTargetMinutes] = useState<number | ''>('');
 
   const handleStartSession = (e: React.MouseEvent) => {
       e.preventDefault();
@@ -112,13 +114,44 @@ export const DashboardPreview: React.FC = () => {
                                         Hit the button below and start new working session.
                                     </p>
                                 </div>
-                                <button 
-                                    onClick={handleStartSession} 
-                                    className="flex items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 whitespace-nowrap cursor-pointer"
-                                >
-                                    <Play size={20} fill="currentColor" />
-                                    <span className='text-xs sm:text-base'>Start New Working Session</span>
-                                </button>
+                                <div className="flex flex-col items-center gap-4 w-full max-w-xs">
+                                    <button 
+                                        onClick={handleStartSession} 
+                                        className="flex w-full items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 whitespace-nowrap cursor-pointer text-center"
+                                    >
+                                        <Play size={20} fill="currentColor" />
+                                        <span className='text-xs sm:text-base'>Start New Working Session</span>
+                                    </button>
+
+                                    <div className="flex flex-col w-full gap-3 bg-white/50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
+                                        <label className="flex items-center justify-between cursor-pointer group">
+                                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Time Target</span>
+                                            <div className="relative inline-flex items-center">
+                                                <input 
+                                                    type="checkbox" 
+                                                    className="sr-only peer"
+                                                    checked={timeTargetEnabled}
+                                                    onChange={(e) => setTimeTargetEnabled(e.target.checked)}
+                                                />
+                                                <div className="w-9 h-5 bg-slate-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-slate-600 peer-checked:bg-primary"></div>
+                                            </div>
+                                        </label>
+                                        
+                                        {timeTargetEnabled && (
+                                            <div className="flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                                                <input 
+                                                    type="number" 
+                                                    min="1"
+                                                    placeholder="Enter minutes"
+                                                    value={timeTargetMinutes}
+                                                    onChange={(e) => setTimeTargetMinutes(e.target.value === '' ? '' : parseInt(e.target.value))}
+                                                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-medium"
+                                                />
+                                                <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">min</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
                         </section>
 
