@@ -7,7 +7,6 @@ import { AuthModal } from "@/components/AuthModal";
 import { DashboardPreview } from "@/components/previews/DashboardPreview";
 import { Navbar } from "@/components/landingpage/Navbar";
 import { Hero } from "@/components/landingpage/Hero";
-import { HowItWorks } from "@/components/landingpage/HowItWorks";
 import { Features } from "@/components/landingpage/Features";
 import { Loader2 } from "lucide-react";
 
@@ -56,11 +55,6 @@ export default function Home() {
         {/* Features Section */}
         <div id="features" className="bg-transparent relative z-10 py-24">
           <Features />
-        </div>
-
-        {/* How It Works Section */}
-        <div id="how-it-works" className="relative z-10 py-24">
-          <HowItWorks />
         </div>
 
         {/* Footer */}

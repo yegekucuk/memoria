@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowRight } from "lucide-react";
 
 interface NavbarProps {
@@ -31,9 +30,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onAuthClick }) => {
   };
 
   return (
-    <motion.nav
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+    <nav
       className={`fixed top-0 left-0 right-0 z-50 flex justify-center transition-all duration-300 ${
         isScrolled
           ? "bg-white dark:bg-slate-900 shadow-md border-b border-slate-200 dark:border-white/10"
@@ -74,13 +71,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onAuthClick }) => {
           >
             Features
           </a>
-          <a
-            href="#how-it-works"
-            onClick={(e) => scrollToSection(e, "how-it-works")}
-            className="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors font-semibold text-xs tracking-wide uppercase"
-          >
-            How It Works
-          </a>
           <button
             onClick={onAuthClick}
             className="group relative flex items-center gap-2 px-5 py-1.5 bg-primary text-white rounded-lg font-bold hover:opacity-95 transition-all shadow-md active:scale-95 cursor-pointer"
@@ -99,50 +89,36 @@ export const Navbar: React.FC<NavbarProps> = ({ onAuthClick }) => {
         </button>
 
         {/* Mobile Menu */}
-        <AnimatePresence>
-          {isMobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="absolute top-full left-0 right-0 p-2 md:hidden"
-            >
-              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl p-4 flex flex-col gap-4">
-                <a
-                  href="#home"
-                  onClick={(e) => scrollToSection(e, "home")}
-                  className="text-base font-semibold text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-white/5 pb-2"
-                >
-                  Home
-                </a>
-                <a
-                  href="#features"
-                  onClick={(e) => scrollToSection(e, "features")}
-                  className="text-base font-semibold text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-white/5 pb-2"
-                >
-                  Features
-                </a>
-                <a
-                  href="#how-it-works"
-                  onClick={(e) => scrollToSection(e, "how-it-works")}
-                  className="text-base font-semibold text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-white/5 pb-2"
-                >
-                  How It Works
-                </a>
-                <button
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    onAuthClick();
-                  }}
-                  className="w-full py-3 bg-primary text-white rounded-lg font-bold shadow-md shadow-primary/20 flex items-center justify-center gap-2"
-                >
-                  Get Started <ArrowRight size={18} />
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {isMobileMenuOpen && (
+          <div className="absolute top-full left-0 right-0 p-2 md:hidden animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl p-4 flex flex-col gap-4">
+              <a
+                href="#home"
+                onClick={(e) => scrollToSection(e, "home")}
+                className="text-base font-semibold text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-white/5 pb-2"
+              >
+                Home
+              </a>
+              <a
+                href="#features"
+                onClick={(e) => scrollToSection(e, "features")}
+                className="text-base font-semibold text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-white/5 pb-2"
+              >
+                Features
+              </a>
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  onAuthClick();
+                }}
+                className="w-full py-3 bg-primary text-white rounded-lg font-bold shadow-md shadow-primary/20 flex items-center justify-center gap-2"
+              >
+                Get Started <ArrowRight size={18} />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
-    </motion.nav>
+    </nav>
   );
 };

@@ -142,7 +142,7 @@ export const ActivityChart: React.FC<ActivityChartProps> = ({
       </div>
 
       {/* Custom Visual Bar Chart */}
-      <div className="relative h-[300px] w-full flex items-end gap-1 sm:gap-2 md:gap-3 justify-between px-2 pb-6 border-b border-[#e5e7eb] dark:border-[#283039] pl-10">
+      <div className="relative h-75 w-full flex items-end gap-1 sm:gap-2 md:gap-3 justify-between px-2 pb-6 border-b border-[#e5e7eb] dark:border-[#283039] pl-10">
         {/* Y-Axis Labels */}
         <div className="absolute left-0 top-0 bottom-6 flex flex-col justify-between text-xs text-[#9dabb9] font-medium text-right pr-2 h-full w-10">
           <span>{maxVal}h</span>
