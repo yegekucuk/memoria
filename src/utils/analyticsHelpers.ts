@@ -1,14 +1,6 @@
-import { Session, Tag } from '../types';
+import type { Session, Tag, ViewMode, ChartBar, PieChartData } from '@/types';
 
-export type ViewMode = 'weekly' | 'monthly';
-
-export interface ChartBar {
-  label: string;
-  value: number;
-  fullDate?: string;
-  isFuture?: boolean;
-  isToday?: boolean;
-}
+export type { ViewMode, ChartBar, PieChartData };
 
 // ─── Shared Date & Navigation Helpers ────────────────────────────────
 
@@ -189,12 +181,6 @@ export const calculateChartData = (
 
   return { chartData: data, totalPeriodHours, maxVal: displayMax };
 };
-
-export interface PieChartData {
-  name: string;
-  value: number;
-  color?: string;
-}
 
 export const calculatePieChartData = (
   sessions: Session[],

@@ -2,13 +2,14 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Session } from '@/types';
+import type { SessionReportData } from '@/types';
 import { useAuth } from './AuthContext';
 import { TIME_TARGET_KEY, TIME_TARGET_AUDIO_ONLY_KEY } from '@/constants';
 
 interface SessionContextType {
   sessions: Session[];
   activeSessionStartTime: string | null; // ISO string
-  reportData: { duration: number; startTime: string; sessionId: string } | null; // ISO string
+  reportData: SessionReportData | null;
   startSession: () => void;
   endSession: (durationSeconds: number, startTime: Date) => void;
   saveSession: (data: Pick<Session, 'tags' | 'notes'>) => void;
@@ -23,7 +24,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [activeSessionStartTime, setActiveSessionStartTime] = useState<string | null>(null);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
-  const [reportData, setReportData] = useState<{ duration: number; startTime: string; sessionId: string } | null>(null);
+  const [reportData, setReportData] = useState<SessionReportData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const { user, loading: authLoading } = useAuth();

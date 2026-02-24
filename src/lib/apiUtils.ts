@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getCurrentUser, UserPayload } from '@/lib/auth';
+import { DEFAULT_TAG_COLORS } from '@/constants/colors';
+import type { RawDbSession } from '@/types';
 
 /**
  * Custom error class for API errors with HTTP status codes.
@@ -45,17 +47,7 @@ export function handleApiError(error: unknown, context: string): NextResponse {
   );
 }
 
-/**
- * Default tag colors used when creating new tags.
- */
-export const DEFAULT_TAG_COLORS = [
-  '#EF4444', // red-500
-  '#F59E0B', // amber-500
-  '#10B981', // emerald-500
-  '#3B82F6', // blue-500
-  '#8B5CF6', // violet-500
-  '#EC4899', // pink-500
-] as const;
+export { DEFAULT_TAG_COLORS };
 
 /**
  * Pick a random color from DEFAULT_TAG_COLORS.
@@ -68,14 +60,7 @@ export function getRandomTagColor(): string {
  * Format a database session object into the shape the frontend expects.
  * Converts Date objects to ISO strings and flattens tag objects to names.
  */
-export function formatSession(session: {
-  id: string;
-  startTime: Date;
-  endTime: Date | null;
-  durationSeconds: number;
-  notes: string | null;
-  tags: { name: string }[];
-}) {
+export function formatSession(session: RawDbSession) {
   return {
     id: session.id,
     startTime: session.startTime.toISOString(),

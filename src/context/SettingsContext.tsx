@@ -2,10 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
-
-interface Settings {
-  excludeWeekends: boolean;
-}
+import type { Settings } from '@/types';
+import { SETTINGS_EXCLUDE_WEEKENDS_KEY } from '@/constants/storage';
 
 interface SettingsContextType {
   settings: Settings;
@@ -31,12 +29,12 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
         })
         .then((data) => {
             setSettings({ excludeWeekends: data.excludeWeekends });
-            localStorage.setItem('settings_excludeWeekends', JSON.stringify(data.excludeWeekends));
+            localStorage.setItem(SETTINGS_EXCLUDE_WEEKENDS_KEY, JSON.stringify(data.excludeWeekends));
         })
         .catch((err) => {
             console.error(err);
             // Fallback to local storage if API fails or offline
-            const local = localStorage.getItem('settings_excludeWeekends');
+            const local = localStorage.getItem(SETTINGS_EXCLUDE_WEEKENDS_KEY);
             if (local) {
                 setSettings({ excludeWeekends: JSON.parse(local) });
             }
@@ -55,7 +53,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     setSettings((prev) => ({ ...prev, excludeWeekends: newExcludeWeekends }));
     
     // Persist locally for immediate feedback/offline
-    localStorage.setItem('settings_excludeWeekends', JSON.stringify(newExcludeWeekends));
+    localStorage.setItem(SETTINGS_EXCLUDE_WEEKENDS_KEY, JSON.stringify(newExcludeWeekends));
 
     try {
       const res = await fetch('/api/settings', {
@@ -72,7 +70,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       // Revert on failure
       setSettings((prev) => ({ ...prev, excludeWeekends: !newExcludeWeekends }));
       // Revert local storage
-      localStorage.setItem('settings_excludeWeekends', JSON.stringify(!newExcludeWeekends));
+      localStorage.setItem(SETTINGS_EXCLUDE_WEEKENDS_KEY, JSON.stringify(!newExcludeWeekends));
     }
   };
 

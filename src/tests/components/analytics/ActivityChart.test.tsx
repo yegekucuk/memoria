@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { ActivityChart } from '@/components/analytics/ActivityChart';
-import { ChartBar } from '@/hooks/useAnalyticsData';
+import { ChartBar } from '@/types';
 
 // Mock formatDuration to generic string for easier testing if needed, 
 // OR simpler to test exact output "X hours Y minutes"

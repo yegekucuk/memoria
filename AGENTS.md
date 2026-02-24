@@ -45,8 +45,21 @@ src/
 ├── lib/             # Server-side utilities (auth, prisma, rateLimit, apiUtils, validations)
 ├── mocks/           # Static mock data for tests
 ├── tests/           # All test files (mirrors src/ structure)
-├── types.ts         # Shared TypeScript interfaces (Session, Tag, User)
-├── constants.ts     # App-wide constants (APP_NAME, localStorage keys)
+├── types/           # Shared TypeScript interfaces & type definitions
+│   ├── index.ts     # Barrel re-export
+│   ├── session.ts   # Session, SessionReportData, RawDbSession
+│   ├── tag.ts       # Tag
+│   ├── user.ts      # User, UserPayload
+│   ├── analytics.ts # ViewMode, ChartBar, PieChartData
+│   └── settings.ts  # Settings
+├── constants/       # App-wide constants organised by domain
+│   ├── index.ts     # Barrel re-export
+│   ├── app.ts       # APP_NAME
+│   ├── auth.ts      # AUTH_COOKIE_NAME, JWT_EXPIRY, AUTH_COOKIE_MAX_AGE, BCRYPT_SALT_ROUNDS
+│   ├── colors.ts    # COLORS, DEFAULT_TAG_COLORS, PIE_CHART_COLORS
+│   ├── rateLimit.ts # RATE_LIMITS presets
+│   ├── routes.ts    # PROTECTED_PATHS, MIDDLEWARE_MATCHER
+│   └── storage.ts   # TIME_TARGET_KEY, TIME_TARGET_AUDIO_ONLY_KEY, SETTINGS_EXCLUDE_WEEKENDS_KEY
 └── utils/           # Pure utility/helper functions
 ```
 
@@ -87,7 +100,8 @@ AuthProvider → SettingsProvider → SessionProvider
 | Server lib files | camelCase `.ts` | `apiUtils.ts`, `auth.ts`, `prisma.ts` |
 | API routes | always `route.ts` inside segment dirs | `app/api/sessions/[id]/route.ts` |
 | Test files | mirror source path `.test.ts/.tsx` | `tests/utils/format.test.ts` |
-| Global types | `types.ts` (flat, no `types/` directory) | — |
+| Global types | `types/<domain>.ts` with barrel `types/index.ts` | `types/session.ts`, `types/tag.ts` |
+| Constants | `constants/<domain>.ts` with barrel `constants/index.ts` | `constants/auth.ts`, `constants/colors.ts` |
 | Next.js pages | always `page.tsx` and `layout.tsx` | — |
 
 ---

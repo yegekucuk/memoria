@@ -3,7 +3,7 @@ import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { registerSchema } from '@/lib/validations/auth';
 import { setAuthCookie } from '@/lib/auth';
-import { DEFAULT_TAG_COLORS } from '@/lib/apiUtils';
+import { DEFAULT_TAG_COLORS, BCRYPT_SALT_ROUNDS } from '@/constants';
 
 export async function POST(req: Request) {
   try {
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
 
     // Create user with default tags
     const user = await prisma.user.create({

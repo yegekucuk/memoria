@@ -1,6 +1,6 @@
 
 import { calculatePieChartData } from '../../utils/analyticsHelpers';
-import { Session } from '../../types';
+import { Session } from '@/types';
 
 describe('calculatePieChartData - Weekend Exclusion Bug', () => {
     const weekendSession: Session = {

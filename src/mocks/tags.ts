@@ -1,4 +1,4 @@
-import { Tag } from '../types';
+import { Tag } from '@/types';
 
 export const getMockTags = (): Tag[] => [
   { id: '1', name: 'Coding', color: 'bg-blue-500' },

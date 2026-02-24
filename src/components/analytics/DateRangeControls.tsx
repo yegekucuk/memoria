@@ -1,6 +1,6 @@
 import React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { ViewMode } from "../../utils/analyticsHelpers";
+import { ViewMode } from "@/types";
 
 interface DateRangeControlsProps {
   viewMode: ViewMode;

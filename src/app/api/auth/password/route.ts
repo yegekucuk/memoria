@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { updatePasswordSchema } from '@/lib/validations/auth';
 import { requireAuth, handleApiError } from '@/lib/apiUtils';
+import { BCRYPT_SALT_ROUNDS } from '@/constants/auth';
 
 export async function POST(req: Request) {
   try {
@@ -40,7 +41,7 @@ export async function POST(req: Request) {
     }
 
     // Hash new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await bcrypt.hash(newPassword, BCRYPT_SALT_ROUNDS);
 
     // Update user
     await prisma.user.update({

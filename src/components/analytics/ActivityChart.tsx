@@ -1,6 +1,6 @@
 import React from "react";
 import { formatDuration } from "../../utils/format";
-import { ChartBar, ViewMode } from "../../hooks/useAnalyticsData";
+import { ChartBar, ViewMode } from "@/types";
 import { X } from "lucide-react";
 import { DateRangeControls } from "./DateRangeControls";
 import { Tag } from "../../types";

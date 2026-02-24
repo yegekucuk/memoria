@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { rateLimit, getClientIp, RATE_LIMITS } from '@/lib/rateLimit';
+import { rateLimit, getClientIp } from '@/lib/rateLimit';
+import { RATE_LIMITS } from '@/constants/rateLimit';
+import { PROTECTED_PATHS } from '@/constants/routes';
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
@@ -58,19 +60,7 @@ export function middleware(request: NextRequest) {
   }
 
   // --- Authentication ---
-  // Paths that require a valid token
-  const protectedPaths = [
-    '/dashboard',
-    '/api/sessions',
-    '/api/tags',
-    '/api/settings',
-    '/api/auth/password',
-    '/analytics',
-    '/settings',
-    '/sessions',
-  ];
-
-  const isProtected = protectedPaths.some((path) => pathname.startsWith(path));
+  const isProtected = PROTECTED_PATHS.some((path) => pathname.startsWith(path));
 
   if (isProtected && !token) {
     // API routes return 401

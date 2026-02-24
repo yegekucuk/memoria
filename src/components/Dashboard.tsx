@@ -1,5 +1,5 @@
 import React from 'react';
-import { Session } from '../types';
+import { Session } from '@/types';
 import { Play, Timer, FlaskConical, Tag, Loader2 } from 'lucide-react';
 import { formatDuration } from '../utils/format';
 import { useAuth } from '@/context/AuthContext';

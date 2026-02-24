@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Session } from '../types';
+import { Session } from '@/types';
 import { X, CheckCircle, Loader2 } from 'lucide-react';
 import { useTags } from '@/hooks/useTags';
 import { TagSelector } from './TagSelector';

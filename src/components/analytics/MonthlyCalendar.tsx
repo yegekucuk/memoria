@@ -1,5 +1,5 @@
 import React from 'react';
-import { Session } from '../../types';
+import { Session } from '@/types';
 import { formatDuration } from '../../utils/format';
 import { useTags } from '../../hooks/useTags';
 import { getTagColor } from '../../utils/analyticsHelpers';

@@ -1,4 +1,5 @@
-import { rateLimit, getClientIp, RATE_LIMITS } from '@/lib/rateLimit';
+import { rateLimit, getClientIp } from '@/lib/rateLimit';
+import { RATE_LIMITS } from '@/constants/rateLimit';
 
 // We need to reset the module between tests to clear the in-memory stores
 beforeEach(() => {

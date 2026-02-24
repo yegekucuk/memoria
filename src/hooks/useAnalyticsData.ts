@@ -1,16 +1,14 @@
 import { useState, useMemo } from 'react';
-import { Session } from '../types';
+import type { Session, ViewMode } from '@/types';
 import {
   calculateChartData,
-  ChartBar,
-  ViewMode,
   navigateDate,
   getDateLabel,
   isNextPeriodDisabled,
 } from '../utils/analyticsHelpers';
 import { useSettings } from '../context/SettingsContext';
 
-export type { ViewMode, ChartBar }; // Re-export for compatibility
+export type { ViewMode, ChartBar } from '@/types'; // Re-export for compatibility
 
 export const useAnalyticsData = (sessions: Session[]) => {
   const { settings } = useSettings();

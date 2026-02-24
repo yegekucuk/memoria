@@ -3,20 +3,17 @@ import { AnimatePresence, motion } from "framer-motion";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { ChevronDown } from "lucide-react";
 import { DateRangeControls } from "./DateRangeControls";
-import { Session, Tag } from "../../types";
-import { ViewMode, calculatePieChartData, navigateDate, getDateLabel, isNextPeriodDisabled } from "../../utils/analyticsHelpers";
+import { Session, Tag } from "@/types";
+import { ViewMode } from "@/types";
+import { calculatePieChartData, navigateDate, getDateLabel, isNextPeriodDisabled } from "../../utils/analyticsHelpers";
 import { formatDuration } from "../../utils/format";
+import { PIE_CHART_COLORS } from "@/constants/colors";
 
 interface PieChartCardProps {
   sessions: Session[];
   allTags: Tag[];
   excludeWeekends?: boolean;
 }
-
-const COLORS = [
-  "#3b82f6", "#10b981", "#8b5cf6", "#f59e0b", "#ec4899", 
-  "#6366f1", "#14b8a6", "#f97316", "#ef4444", "#84cc16"
-];
 
 export const PieChartCard: React.FC<PieChartCardProps> = ({ sessions, allTags, excludeWeekends = false }) => {
   const [viewMode, setViewMode] = useState<ViewMode>("weekly");
@@ -54,7 +51,7 @@ export const PieChartCard: React.FC<PieChartCardProps> = ({ sessions, allTags, e
         const tag = allTags.find(t => t.name === item.name);
         return {
             ...item,
-            color: tag?.color || COLORS[Math.floor(Math.random() * COLORS.length)]
+            color: tag?.color || PIE_CHART_COLORS[Math.floor(Math.random() * PIE_CHART_COLORS.length)]
         };
     });
   }, [sessions, viewMode, currentDate, allTags, excludeWeekends]);
@@ -131,7 +128,7 @@ export const PieChartCard: React.FC<PieChartCardProps> = ({ sessions, allTags, e
                   dataKey="value"
                 >
                   {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color || COLORS[index % COLORS.length]} strokeWidth={0} />
+                  <Cell key={`cell-${index}`} fill={entry.color || PIE_CHART_COLORS[index % PIE_CHART_COLORS.length]} strokeWidth={0} />
                   ))}
                 </Pie>
                 <Tooltip 
@@ -163,7 +160,7 @@ export const PieChartCard: React.FC<PieChartCardProps> = ({ sessions, allTags, e
             {data.map((item, index) => (
               <div key={index} className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className="size-3 rounded-full" style={{ backgroundColor: item.color || COLORS[index % COLORS.length] }} />
+                  <div className="size-3 rounded-full" style={{ backgroundColor: item.color || PIE_CHART_COLORS[index % PIE_CHART_COLORS.length] }} />
                   <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{item.name}</span>
                 </div>
                 <div className="text-right">

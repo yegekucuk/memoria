@@ -1,6 +1,6 @@
 
 import { calculateChartData } from '../../utils/analyticsHelpers';
-import { Session } from '../../types';
+import { Session } from '@/types';
 
 describe('analyticsHelpers - Logic Issue #3', () => {
   // Mock Data
