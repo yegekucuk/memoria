@@ -124,7 +124,7 @@ export const Features = () => {
                   >
                     <Tag size={14} /> landing-page
                   </div>
-                  <span className="text-[#6b7280] text-sm ml-1">Add a tag...</span>
+                  <span className="text-[#6b7280] text-sm ml-1">Search tags...</span>
                 </div>
                 <div className="flex gap-2 mt-2">
                   <span className="text-[#9dabb9] text-xs px-2 py-1 rounded-md bg-[#283039] flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500"></span>reading</span>

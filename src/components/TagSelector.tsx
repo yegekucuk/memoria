@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Tag as TagType } from '@/types';
+import React, { useMemo, useState } from 'react';
 import { Tag, X } from 'lucide-react';
+import { Tag as TagType } from '@/types';
 
 interface TagSelectorProps {
   selectedTags: string[];
@@ -16,6 +16,21 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
   disabled = false,
 }) => {
   const [customTag, setCustomTag] = useState('');
+
+  const availableUnselectedTags = useMemo(
+    () => availableTags.filter(tag => !selectedTags.includes(tag.name)),
+    [availableTags, selectedTags],
+  );
+
+  const normalizedFilter = customTag.trim().toLowerCase();
+
+  const filteredAvailableTags = useMemo(
+    () =>
+      normalizedFilter
+        ? availableUnselectedTags.filter(tag => tag.name.toLowerCase().includes(normalizedFilter))
+        : availableUnselectedTags,
+    [availableUnselectedTags, normalizedFilter],
+  );
 
   const handleCustomTagKey = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && customTag.trim()) {
@@ -54,7 +69,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
         })}
         <input
           className="bg-transparent border-none text-white text-sm placeholder:text-[#6b7280] focus:ring-0 grow min-w-[120px] h-8 outline-none"
-          placeholder="Add a tag..."
+          placeholder="Search tags..."
           type="text"
           value={customTag}
           onChange={(e) => setCustomTag(e.target.value)}
@@ -63,22 +78,28 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
           disabled={disabled}
         />
       </div>
-      <div className="flex gap-2 mt-1 overflow-x-auto pb-1 scrollbar-hide">
-        {availableTags
-          .filter(t => !selectedTags.includes(t.name))
-          .map(tag => (
+      <div className="mt-1 flex flex-wrap gap-2">
+        {filteredAvailableTags.map(tag => (
             <button
               key={tag.id}
               onClick={() => onToggle(tag.name)}
               disabled={disabled}
-              className="text-[#9dabb9] hover:text-white text-xs px-2 py-1 rounded-md bg-[#283039] hover:bg-[#3e4856] transition-colors whitespace-nowrap flex items-center gap-1 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex max-w-full items-center gap-1 rounded-md bg-[#283039] px-2 py-1 text-xs text-[#9dabb9] transition-colors hover:bg-[#3e4856] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
             >
               <div className="w-2 h-2 rounded-full" style={{ backgroundColor: tag.color }}></div>
-              {tag.name}
+              <span className="max-w-36 truncate whitespace-nowrap">{tag.name}</span>
             </button>
           ))}
         {availableTags.length === 0 && (
           <p className="text-gray-500 text-xs italic">No tags found. Go to Settings to add some!</p>
+        )}
+        {availableTags.length > 0 && availableUnselectedTags.length === 0 && (
+          <p className="text-gray-500 text-xs italic">All tags are already selected.</p>
+        )}
+        {availableUnselectedTags.length > 0 && filteredAvailableTags.length === 0 && normalizedFilter && (
+          <p className="text-gray-500 text-xs italic">
+            No tags match <span className="font-medium text-gray-400 not-italic">{customTag.trim()}</span>.
+          </p>
         )}
       </div>
     </div>
