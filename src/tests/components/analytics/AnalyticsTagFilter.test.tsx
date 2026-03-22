@@ -2,7 +2,15 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Analytics } from '@/components/Analytics';
-import { Session } from '@/types';
+import { Session, Tag } from '@/types';
+
+interface MockActivityChartProps {
+  totalPeriodHours: number;
+  allTags?: Tag[];
+  onToggleFilterTag?: (tagName: string) => void;
+  onClearFilters?: () => void;
+  selectedFilterTags?: string[];
+}
 
 // Mock useTags
 jest.mock('@/hooks/useTags', () => ({
@@ -57,12 +65,12 @@ jest.mock('@/components/analytics/ActivityChart', () => ({
     onToggleFilterTag = () => {}, 
     onClearFilters = () => {}, 
     selectedFilterTags = [] 
-  }: any) => (
+  }: MockActivityChartProps) => (
     <div data-testid="activity-chart" data-total={totalPeriodHours}>
       <div>Filter by Tags</div>
       {selectedFilterTags.length > 0 && <button onClick={onClearFilters}>Clear</button>}
       {allTags.length === 0 && <span>No tags available.</span>}
-      {allTags.map((tag: any) => (
+      {allTags.map((tag) => (
         <button key={tag.id} onClick={() => onToggleFilterTag(tag.name)}>
           {tag.name}
         </button>

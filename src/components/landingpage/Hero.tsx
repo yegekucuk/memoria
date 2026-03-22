@@ -17,7 +17,7 @@ export const Hero: React.FC<HeroProps> = ({ onRegisterClick }) => {
       setCurrentWordIndex((prev) => (prev + 1) % words.length);
     }, 4000);
     return () => clearInterval(interval);
-  }, []);
+  }, [words.length]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] w-full p-4 relative z-20 pt-48 pb-12">

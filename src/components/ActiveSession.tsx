@@ -15,29 +15,32 @@ export const ActiveSession: React.FC<ActiveSessionProps> = ({ startTime, onEndSe
     return Math.max(0, diff);
   });
   const [isEnding, setIsEnding] = useState(false);
-  const [timeTarget, setTimeTarget] = useState<number | null>(null);
-  const [isAudioOnly, setIsAudioOnly] = useState(false);
+  const [timeTarget] = useState<number | null>(() => {
+    if (typeof window === 'undefined') return null;
+    const target = window.localStorage.getItem(TIME_TARGET_KEY);
+    if (!target) return null;
+    const parsed = parseInt(target, 10);
+    return Number.isNaN(parsed) ? null : parsed;
+  });
 
   // Use refs so the worker callback always reads the latest values
-  const timeTargetRef = useRef<number | null>(null);
+  const timeTargetRef = useRef<number | null>(timeTarget);
   const notificationSentRef = useRef(false);
-  const isAudioOnlyRef = useRef(false);
-
-  useEffect(() => {
-     const target = localStorage.getItem(TIME_TARGET_KEY);
-     if (target) {
-         const parsed = parseInt(target, 10);
-         setTimeTarget(parsed);
-         timeTargetRef.current = parsed;
-     }
-     const audioOnly = localStorage.getItem(TIME_TARGET_AUDIO_ONLY_KEY) === 'true';
-     setIsAudioOnly(audioOnly);
-     isAudioOnlyRef.current = audioOnly;
-  }, []);
+  const isAudioOnlyRef = useRef(
+    typeof window !== 'undefined' && window.localStorage.getItem(TIME_TARGET_AUDIO_ONLY_KEY) === 'true'
+  );
 
   const playChime = useCallback(() => {
       try {
-          const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+          const audioContextClass =
+            window.AudioContext ||
+            (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+
+          if (!audioContextClass) {
+            return;
+          }
+
+          const audioCtx = new audioContextClass();
           const oscillator = audioCtx.createOscillator();
           const gainNode = audioCtx.createGain();
           

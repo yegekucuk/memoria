@@ -15,6 +15,16 @@ interface PieChartCardProps {
   excludeWeekends?: boolean;
 }
 
+const getFallbackPieColor = (tagName: string): string => {
+  let hash = 0;
+  for (let i = 0; i < tagName.length; i++) {
+    hash = (hash << 5) - hash + tagName.charCodeAt(i);
+    hash |= 0;
+  }
+
+  return PIE_CHART_COLORS[Math.abs(hash) % PIE_CHART_COLORS.length];
+};
+
 export const PieChartCard: React.FC<PieChartCardProps> = ({ sessions, allTags, excludeWeekends = false }) => {
   const [viewMode, setViewMode] = useState<ViewMode>("weekly");
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -51,7 +61,7 @@ export const PieChartCard: React.FC<PieChartCardProps> = ({ sessions, allTags, e
         const tag = allTags.find(t => t.name === item.name);
         return {
             ...item,
-            color: tag?.color || PIE_CHART_COLORS[Math.floor(Math.random() * PIE_CHART_COLORS.length)]
+            color: tag?.color || getFallbackPieColor(item.name)
         };
     });
   }, [sessions, viewMode, currentDate, allTags, excludeWeekends]);

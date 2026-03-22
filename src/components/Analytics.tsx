@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Session } from '@/types';
-import { Tag, Sigma, Loader2, X } from 'lucide-react';
+import { Tag, Sigma, Loader2 } from 'lucide-react';
 import { formatDuration } from '../utils/format';
 import { PageLayout } from './layout/PageLayout';
 import { PageHeader } from './layout/PageHeader';

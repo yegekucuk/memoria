@@ -21,7 +21,6 @@ export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     const firstDayOfMonth = new Date(year, month, 1);
-    const lastDayOfMonth = new Date(year, month + 1, 0);
     
     // Adjust start to previous Monday
     const startDay = firstDayOfMonth.getDay();
