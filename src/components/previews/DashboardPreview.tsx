@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Play, Timer, FlaskConical, Tag, Code, LayoutDashboard, BarChart2, Table, Settings, LogOut, Menu, Zap } from 'lucide-react';
+import { Play, Timer, FlaskConical, Tag, Code, LayoutDashboard, BarChart2, Table, Settings, LogOut, Menu, Zap, BookOpen } from 'lucide-react';
 
 export const DashboardPreview: React.FC = () => {
   const [timeTargetEnabled, setTimeTargetEnabled] = useState(false);
@@ -54,6 +54,13 @@ export const DashboardPreview: React.FC = () => {
                                 >
                                     <BarChart2 size={20} />
                                     <p className="text-sm font-medium leading-normal">Analytics</p>
+                                </button>
+                                <button 
+                                  onClick={preventDefault}
+                                  className="flex items-center gap-3 px-3 py-3 rounded-lg w-full text-left text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                                >
+                                    <BookOpen size={20} />
+                                    <p className="text-sm font-medium leading-normal">Journal</p>
                                 </button>
                                 <button 
                                   onClick={preventDefault}

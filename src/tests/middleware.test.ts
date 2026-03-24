@@ -44,6 +44,7 @@ describe('middleware', () => {
       expect(config.matcher).toContain('/api/auth/register');
       expect(config.matcher).toContain('/api/auth/password');
       expect(config.matcher).toContain('/analytics/:path*');
+      expect(config.matcher).toContain('/journal/:path*');
       expect(config.matcher).toContain('/settings/:path*');
       expect(config.matcher).toContain('/sessions/:path*');
     });
@@ -90,6 +91,13 @@ describe('middleware', () => {
 
     it('should redirect /settings to / without token', () => {
       const req = createRequest('/settings');
+      const res = middleware(req);
+      expect(res.status).toBe(307);
+      expect(res.headers.get('location')).toBe('http://localhost:3000/');
+    });
+
+    it('should redirect /journal to / without token', () => {
+      const req = createRequest('/journal');
       const res = middleware(req);
       expect(res.status).toBe(307);
       expect(res.headers.get('location')).toBe('http://localhost:3000/');

@@ -6,6 +6,7 @@ export const PROTECTED_PATHS = [
   '/api/settings',
   '/api/auth/password',
   '/analytics',
+  '/journal',
   '/settings',
   '/sessions',
 ] as const;
@@ -20,6 +21,7 @@ export const MIDDLEWARE_MATCHER = [
   '/api/auth/register',
   '/api/auth/password',
   '/analytics/:path*',
+  '/journal/:path*',
   '/settings/:path*',
   '/sessions/:path*',
 ] as const;
