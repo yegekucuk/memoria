@@ -57,6 +57,7 @@ export const TagsSettings: React.FC = () => {
 
   return (
     <SubSetting 
+      sectionId="tags"
       title="My Tags" 
       subtitle="Manage tags for categorizing your time"
     >

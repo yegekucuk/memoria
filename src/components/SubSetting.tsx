@@ -1,15 +1,69 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { SETTINGS_PANEL_STATE_KEY_PREFIX } from '@/constants';
 
 interface SubSettingProps {
+  sectionId: string;
   title: string;
   subtitle?: string;
   children: React.ReactNode;
+  defaultOpen?: boolean;
 }
 
-export const SubSetting: React.FC<SubSettingProps> = ({ title, subtitle, children }) => {
-  const [isOpen, setIsOpen] = useState(false);
+interface SubSettingContentProps extends SubSettingProps {
+  userId?: string;
+}
+
+const getStoredPanelState = (userId: string, sectionId: string): boolean | null => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const storageKey = `${SETTINGS_PANEL_STATE_KEY_PREFIX}:${userId}:${sectionId}`;
+
+  try {
+    const storedState = localStorage.getItem(storageKey);
+    if (storedState === null) {
+      return null;
+    }
+
+    const parsedState: unknown = JSON.parse(storedState);
+    return typeof parsedState === 'boolean' ? parsedState : null;
+  } catch {
+    return null;
+  }
+};
+
+const SubSettingContent: React.FC<SubSettingContentProps> = ({
+  userId,
+  sectionId,
+  title,
+  subtitle,
+  children,
+  defaultOpen = false,
+}) => {
+  const [isOpen, setIsOpen] = useState(() => {
+    if (!userId) {
+      return defaultOpen;
+    }
+
+    const storedState = getStoredPanelState(userId, sectionId);
+    return storedState ?? defaultOpen;
+  });
+
+  useEffect(() => {
+    if (!userId) {
+      return;
+    }
+
+    const storageKey = `${SETTINGS_PANEL_STATE_KEY_PREFIX}:${userId}:${sectionId}`;
+
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(isOpen));
+    } catch {}
+  }, [isOpen, sectionId, userId]);
 
   return (
     <div className="w-full border-b border-slate-200 dark:border-white/10 last:border-0 pb-6 mb-6 last:pb-0 last:mb-0">
@@ -48,5 +102,18 @@ export const SubSetting: React.FC<SubSettingProps> = ({ title, subtitle, childre
         )}
       </AnimatePresence>
     </div>
+  );
+};
+
+export const SubSetting: React.FC<SubSettingProps> = (props) => {
+  const { user } = useAuth();
+  const userId = user?.id;
+
+  return (
+    <SubSettingContent
+      key={`${userId ?? 'guest'}:${props.sectionId}:${props.defaultOpen ? 'open' : 'closed'}`}
+      userId={userId}
+      {...props}
+    />
   );
 };

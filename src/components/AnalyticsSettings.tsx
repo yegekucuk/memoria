@@ -10,6 +10,7 @@ export const AnalyticsSettings: React.FC = () => {
 
     return (
         <SubSetting
+            sectionId="analytics"
             title="Analytics"
             subtitle="Customize how your data is displayed"
         >
