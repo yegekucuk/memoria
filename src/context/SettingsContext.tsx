@@ -3,7 +3,11 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 import type { Settings } from '@/types';
-import { SETTINGS_EXCLUDE_WEEKENDS_KEY } from '@/constants/storage';
+import { CACHE_SETTINGS_KEY, SETTINGS_EXCLUDE_WEEKENDS_KEY } from '@/constants/storage';
+import { isCacheFresh, readCacheEntry, writeCacheEntry } from '@/lib/clientCache';
+
+const SETTINGS_CACHE_TTL_MS = 60 * 1000;
+const inflightSettingsRequests = new Map<string, Promise<Settings>>();
 
 interface SettingsContextType {
   settings: Settings;
@@ -21,26 +25,54 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   // Fetch settings on load
   useEffect(() => {
     if (user) {
+      const cacheKey = `${CACHE_SETTINGS_KEY}:${user.id}`;
+      const cached = readCacheEntry<Settings>(cacheKey);
+
+      if (cached && isCacheFresh(cached.timestamp, SETTINGS_CACHE_TTL_MS)) {
+        setSettings(cached.data);
+        localStorage.setItem(SETTINGS_EXCLUDE_WEEKENDS_KEY, JSON.stringify(cached.data.excludeWeekends));
+        setIsLoading(false);
+        return;
+      }
+
       setIsLoading(true);
-      fetch('/api/settings')
-        .then((res) => {
-            if (res.ok) return res.json();
+      let request = inflightSettingsRequests.get(cacheKey);
+
+      if (!request) {
+        request = fetch('/api/settings')
+          .then((res) => {
+            if (res.ok) {
+              return res.json();
+            }
             throw new Error('Failed to fetch settings');
-        })
-        .then((data) => {
-            setSettings({ excludeWeekends: data.excludeWeekends });
-            localStorage.setItem(SETTINGS_EXCLUDE_WEEKENDS_KEY, JSON.stringify(data.excludeWeekends));
+          })
+          .then((data) => ({ excludeWeekends: data.excludeWeekends as boolean }))
+          .finally(() => {
+            inflightSettingsRequests.delete(cacheKey);
+          });
+
+        inflightSettingsRequests.set(cacheKey, request);
+      }
+
+      request
+        .then((nextSettings) => {
+            setSettings(nextSettings);
+            localStorage.setItem(SETTINGS_EXCLUDE_WEEKENDS_KEY, JSON.stringify(nextSettings.excludeWeekends));
+            writeCacheEntry(cacheKey, nextSettings);
         })
         .catch((err) => {
             console.error(err);
             // Fallback to local storage if API fails or offline
             const local = localStorage.getItem(SETTINGS_EXCLUDE_WEEKENDS_KEY);
             if (local) {
-                setSettings({ excludeWeekends: JSON.parse(local) });
+                const fallbackSettings = { excludeWeekends: JSON.parse(local) as boolean };
+                setSettings(fallbackSettings);
+                writeCacheEntry(cacheKey, fallbackSettings);
             }
         })
         .finally(() => setIsLoading(false));
     } else {
+        setSettings({ excludeWeekends: false });
         setIsLoading(false);
     }
   }, [user]);
@@ -50,10 +82,12 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
     // Optimistic update
     const newExcludeWeekends = !settings.excludeWeekends;
-    setSettings((prev) => ({ ...prev, excludeWeekends: newExcludeWeekends }));
+    const nextSettings = { ...settings, excludeWeekends: newExcludeWeekends };
+    setSettings(nextSettings);
     
     // Persist locally for immediate feedback/offline
     localStorage.setItem(SETTINGS_EXCLUDE_WEEKENDS_KEY, JSON.stringify(newExcludeWeekends));
+    writeCacheEntry(`${CACHE_SETTINGS_KEY}:${user.id}`, nextSettings);
 
     try {
       const res = await fetch('/api/settings', {
@@ -68,9 +102,11 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     } catch (err) {
       console.error(err);
       // Revert on failure
-      setSettings((prev) => ({ ...prev, excludeWeekends: !newExcludeWeekends }));
+      const revertedSettings = { ...settings, excludeWeekends: !newExcludeWeekends };
+      setSettings(revertedSettings);
       // Revert local storage
       localStorage.setItem(SETTINGS_EXCLUDE_WEEKENDS_KEY, JSON.stringify(!newExcludeWeekends));
+      writeCacheEntry(`${CACHE_SETTINGS_KEY}:${user.id}`, revertedSettings);
     }
   };
 

@@ -12,7 +12,8 @@ jest.mock('@/lib/rateLimit', () => ({
     AUTH_LOGIN:    { windowMs: 900000, max: 5 },
     AUTH_REGISTER: { windowMs: 900000, max: 3 },
     AUTH_PASSWORD: { windowMs: 900000, max: 5 },
-    GENERAL:       { windowMs: 60000,  max: 60 },
+    GENERAL_READ:  { windowMs: 60000,  max: 240 },
+    GENERAL_WRITE: { windowMs: 60000,  max: 60 },
   },
 }));
 
@@ -34,6 +35,40 @@ beforeEach(() => {
 });
 
 describe('middleware', () => {
+  describe('rate limiting - localhost dev bypass', () => {
+    const setNodeEnv = (value: string | undefined) => {
+      (process.env as Record<string, string | undefined>).NODE_ENV = value;
+    };
+
+    const originalNodeEnv = process.env.NODE_ENV;
+
+    afterEach(() => {
+      setNodeEnv(originalNodeEnv);
+    });
+
+    it('should skip rate limiting for localhost in development', () => {
+      setNodeEnv('development');
+
+      const req = createRequest('/api/sessions', { token: 'valid-jwt' });
+      middleware(req);
+
+      expect(mockRateLimit).not.toHaveBeenCalled();
+    });
+
+    it('should still apply rate limiting for localhost outside development', () => {
+      setNodeEnv('test');
+
+      const req = createRequest('/api/sessions', { token: 'valid-jwt' });
+      middleware(req);
+
+      expect(mockRateLimit).toHaveBeenCalledWith(
+        '127.0.0.1',
+        'general-read',
+        { windowMs: 60000, max: 240 }
+      );
+    });
+  });
+
   describe('config matcher', () => {
     it('should include all expected paths in the matcher', () => {
       expect(config.matcher).toContain('/dashboard/:path*');
@@ -167,13 +202,24 @@ describe('middleware', () => {
   });
 
   describe('rate limiting - general', () => {
-    it('should apply general rate limit to API routes', () => {
+    it('should apply general read rate limit to GET API routes', () => {
       const req = createRequest('/api/sessions', { token: 'valid-jwt' });
       middleware(req);
 
       expect(mockRateLimit).toHaveBeenCalledWith(
         '127.0.0.1',
-        'general',
+        'general-read',
+        { windowMs: 60000, max: 240 }
+      );
+    });
+
+    it('should apply general write rate limit to non-GET API routes', () => {
+      const req = createRequest('/api/sessions', { method: 'POST', token: 'valid-jwt' });
+      middleware(req);
+
+      expect(mockRateLimit).toHaveBeenCalledWith(
+        '127.0.0.1',
+        'general-write',
         { windowMs: 60000, max: 60 }
       );
     });
@@ -196,9 +242,9 @@ describe('middleware', () => {
       const req = createRequest('/dashboard', { token: 'valid-jwt' });
       middleware(req);
 
-      // rateLimit should NOT have been called with 'general' store
+      // rateLimit should NOT have been called with general API stores
       const generalCalls = mockRateLimit.mock.calls.filter(
-        (call) => call[1] === 'general'
+        (call) => call[1] === 'general-read' || call[1] === 'general-write'
       );
       expect(generalCalls).toHaveLength(0);
     });

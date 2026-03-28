@@ -1,6 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Tag } from '@/types';
 import { useAuth } from '@/context/AuthContext';
+import { CACHE_TAGS_KEY } from '@/constants';
+import { isCacheFresh, readCacheEntry, writeCacheEntry } from '@/lib/clientCache';
+
+const TAGS_CACHE_TTL_MS = 60 * 1000;
+const inflightTagRequests = new Map<string, Promise<Tag[]>>();
 
 export const useTags = () => {
   const { user } = useAuth();
@@ -10,17 +15,44 @@ export const useTags = () => {
 
   const fetchTags = useCallback(async () => {
     if (!user) {
+        setTags([]);
         setIsLoading(false);
         return;
+    }
+
+    const cacheKey = `${CACHE_TAGS_KEY}:${user.id}`;
+    const cached = readCacheEntry<Tag[]>(cacheKey);
+
+    if (cached && isCacheFresh(cached.timestamp, TAGS_CACHE_TTL_MS)) {
+      setTags(cached.data);
+      setIsLoading(false);
+      setError(null);
+      return;
     }
     
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch('/api/tags');
-      if (!response.ok) throw new Error('Failed to fetch tags');
-      const data = await response.json();
+      let request = inflightTagRequests.get(cacheKey);
+
+      if (!request) {
+        request = fetch('/api/tags')
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error('Failed to fetch tags');
+            }
+            return response.json() as Promise<Tag[]>;
+          })
+          .finally(() => {
+            inflightTagRequests.delete(cacheKey);
+          });
+
+        inflightTagRequests.set(cacheKey, request);
+      }
+
+      const data = await request;
       setTags(data);
+      writeCacheEntry(cacheKey, data);
     } catch (err) {
       console.error(err);
       setError('Failed to load tags');
@@ -53,7 +85,11 @@ export const useTags = () => {
       }
 
       const newTag = await response.json();
-      setTags(prev => [...prev, newTag]);
+      setTags(prev => {
+        const updatedTags = [...prev, newTag];
+        writeCacheEntry(`${CACHE_TAGS_KEY}:${user.id}`, updatedTags);
+        return updatedTags;
+      });
       return newTag;
     } catch (err: unknown) {
         if (err instanceof Error) {
@@ -77,7 +113,11 @@ export const useTags = () => {
           throw new Error('Failed to delete tag');
         }
 
-        setTags(prev => prev.filter(t => t.id !== tagId));
+        setTags(prev => {
+          const updatedTags = prev.filter(t => t.id !== tagId);
+          writeCacheEntry(`${CACHE_TAGS_KEY}:${user.id}`, updatedTags);
+          return updatedTags;
+        });
       } catch (err: unknown) {
         if (err instanceof Error) {
             setError(err.message);
@@ -108,7 +148,11 @@ export const useTags = () => {
       }
 
       const updatedTag = await response.json();
-      setTags(prev => prev.map(t => t.id === tagId ? updatedTag : t));
+      setTags(prev => {
+        const updatedTags = prev.map(t => t.id === tagId ? updatedTag : t);
+        writeCacheEntry(`${CACHE_TAGS_KEY}:${user.id}`, updatedTags);
+        return updatedTags;
+      });
       return updatedTag;
     } catch (err: unknown) {
         if (err instanceof Error) {

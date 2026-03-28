@@ -153,8 +153,13 @@ describe('RATE_LIMITS presets', () => {
     expect(RATE_LIMITS.AUTH_PASSWORD.max).toBe(5);
   });
 
-  it('should have correct GENERAL preset', () => {
-    expect(RATE_LIMITS.GENERAL.windowMs).toBe(60 * 1000);
-    expect(RATE_LIMITS.GENERAL.max).toBe(60);
+  it('should have correct GENERAL_READ preset', () => {
+    expect(RATE_LIMITS.GENERAL_READ.windowMs).toBe(60 * 1000);
+    expect(RATE_LIMITS.GENERAL_READ.max).toBe(240);
+  });
+
+  it('should have correct GENERAL_WRITE preset', () => {
+    expect(RATE_LIMITS.GENERAL_WRITE.windowMs).toBe(60 * 1000);
+    expect(RATE_LIMITS.GENERAL_WRITE.max).toBe(60);
   });
 });

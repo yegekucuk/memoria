@@ -4,7 +4,11 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { Session } from '@/types';
 import type { SessionReportData } from '@/types';
 import { useAuth } from './AuthContext';
-import { TIME_TARGET_KEY, TIME_TARGET_AUDIO_ONLY_KEY } from '@/constants';
+import { CACHE_SESSIONS_KEY, TIME_TARGET_KEY, TIME_TARGET_AUDIO_ONLY_KEY } from '@/constants';
+import { isCacheFresh, readCacheEntry, writeCacheEntry } from '@/lib/clientCache';
+
+const SESSIONS_CACHE_TTL_MS = 60 * 1000;
+const inflightSessionRequests = new Map<string, Promise<Session[]>>();
 
 interface SessionContextType {
   sessions: Session[];
@@ -30,21 +34,64 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   const { user, loading: authLoading } = useAuth();
 
 
-  const refreshSessions = React.useCallback(async (updateLoading = true) => {
+  const loadSessions = React.useCallback(async ({
+    updateLoading = true,
+    allowCache = false,
+  }: {
+    updateLoading?: boolean;
+    allowCache?: boolean;
+  } = {}) => {
     if (!user) return;
-    if (updateLoading) setIsLoading(true);
+
+    const cacheKey = `${CACHE_SESSIONS_KEY}:${user.id}`;
+
+    if (allowCache) {
+      const cached = readCacheEntry<Session[]>(cacheKey);
+      if (cached && isCacheFresh(cached.timestamp, SESSIONS_CACHE_TTL_MS)) {
+        setSessions(cached.data);
+        return;
+      }
+    }
+
+    if (updateLoading) {
+      setIsLoading(true);
+    }
+
     try {
-       const res = await fetch('/api/sessions');
-       const data = await res.json();
-       if (Array.isArray(data)) {
-         setSessions(data);
-       }
+      let request = inflightSessionRequests.get(cacheKey);
+
+      if (!request) {
+        request = fetch('/api/sessions')
+          .then(async (res) => {
+            if (!res.ok) {
+              throw new Error('Failed to fetch sessions');
+            }
+            const data = await res.json();
+            return Array.isArray(data) ? data : [];
+          })
+          .finally(() => {
+            inflightSessionRequests.delete(cacheKey);
+          });
+
+        inflightSessionRequests.set(cacheKey, request);
+      }
+
+      const nextSessions = await request;
+      setSessions(nextSessions);
+      writeCacheEntry(cacheKey, nextSessions);
     } catch (err) {
-       console.error('Failed to load sessions', err);
+      console.error('Failed to load sessions', err);
     } finally {
-       if (updateLoading) setIsLoading(false);
+      if (updateLoading) {
+        setIsLoading(false);
+      }
     }
   }, [user]);
+
+
+  const refreshSessions = React.useCallback(async (updateLoading = true) => {
+    await loadSessions({ updateLoading, allowCache: false });
+  }, [loadSessions]);
 
   // Load from API
   useEffect(() => {
@@ -52,10 +99,10 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
        const init = async () => {
           setIsLoading(true);
           try {
-             await refreshSessions(false);
+             await loadSessions({ updateLoading: false, allowCache: true });
 
              // Fetch active session
-             const activeRes = await fetch('/api/sessions/active');
+              const activeRes = await fetch('/api/sessions/active');
              const activeData = await activeRes.json();
              
              if (activeData && activeData.id) {
@@ -83,12 +130,16 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
 
        init();
          
-       // Clear local storage legacy data
-       localStorage.removeItem('ft_sessions');
+        // Clear local storage legacy data
+        localStorage.removeItem('ft_sessions');
     } else if (!authLoading) {
+        setSessions([]);
+        setActiveSessionId(null);
+        setActiveSessionStartTime(null);
+        setReportData(null);
         setIsLoading(false);
     }
-  }, [user, authLoading, refreshSessions]);
+  }, [user, authLoading, loadSessions]);
 
   const startSession = async () => {
     if (!user) return;
