@@ -8,7 +8,7 @@ import { DashboardPreview } from "@/components/previews/DashboardPreview";
 import { Navbar } from "@/components/landingpage/Navbar";
 import { Hero } from "@/components/landingpage/Hero";
 import { Features } from "@/components/landingpage/Features";
-import { Loader2 } from "lucide-react";
+import { PageGateSkeleton } from "@/components/loading/PageGateSkeleton";
 
 export default function Home() {
   const { isAuthenticated, loading } = useAuth();
@@ -23,11 +23,7 @@ export default function Home() {
   }, [loading, isAuthenticated, router]);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen w-full bg-background-light dark:bg-background-dark">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <PageGateSkeleton />;
   }
 
   // Prevent flash of content if authenticated but waiting for redirect

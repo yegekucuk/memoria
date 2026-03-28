@@ -3,7 +3,7 @@
 import React from 'react';
 import { useSettings } from '@/context/SettingsContext';
 import { SubSetting } from './SubSetting';
-import { Loader2 } from 'lucide-react';
+import { AnalyticsToggleSkeleton } from './loading/AnalyticsToggleSkeleton';
 
 export const AnalyticsSettings: React.FC = () => {
     const { settings, toggleExcludeWeekends, isLoading } = useSettings();
@@ -22,7 +22,7 @@ export const AnalyticsSettings: React.FC = () => {
                     </p>
                 </div>
                 {isLoading ? (
-                     <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                    <AnalyticsToggleSkeleton />
                 ) : (
                     <input
                         type="checkbox"

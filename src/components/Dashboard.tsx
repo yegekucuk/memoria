@@ -1,6 +1,6 @@
 import React from 'react';
 import { Session } from '@/types';
-import { Play, Timer, FlaskConical, Tag, Loader2 } from 'lucide-react';
+import { Play, Timer, FlaskConical, Tag } from 'lucide-react';
 import { formatDuration } from '../utils/format';
 import { useAuth } from '@/context/AuthContext';
 import { PageLayout } from './layout/PageLayout';
@@ -8,6 +8,7 @@ import { PageHeader } from './layout/PageHeader';
 import { useTags } from '@/hooks/useTags';
 import { TIME_TARGET_KEY, TIME_TARGET_AUDIO_ONLY_KEY } from '@/constants';
 import toast from 'react-hot-toast';
+import { DashboardSummarySkeleton } from './loading/DashboardSummarySkeleton';
 
 interface DashboardProps {
   sessions: Session[];
@@ -224,9 +225,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession, 
             <div className="flex flex-col gap-6">
                 <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/5 p-6 shadow-sm min-h-50 flex flex-col justify-center">
                     {isLoading ? (
-                         <div className="flex items-center justify-center h-full w-full py-12">
-                            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                         </div>
+                        <DashboardSummarySkeleton />
                     ) : (
                         <>
                             <div className="flex items-center gap-3 mb-4">

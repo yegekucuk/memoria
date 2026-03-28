@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Session } from '@/types';
-import { Tag, Sigma, Loader2 } from 'lucide-react';
+import { Tag, Sigma } from 'lucide-react';
 import { formatDuration } from '../utils/format';
 import { PageLayout } from './layout/PageLayout';
 import { PageHeader } from './layout/PageHeader';
@@ -11,6 +11,7 @@ import { useTags } from '../hooks/useTags';
 import { WeeklyCalendar } from './analytics/WeeklyCalendar';
 import { MonthlyCalendar } from './analytics/MonthlyCalendar';
 import { useSettings } from '../context/SettingsContext';
+import { AnalyticsSkeleton } from './loading/AnalyticsSkeleton';
 
 interface AnalyticsProps {
   sessions: Session[];
@@ -73,10 +74,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => 
         
         {/* Content Wrapper */}
         {isLoading ? (
-             <div className="flex flex-col h-[60vh] items-center justify-center">
-                <Loader2 className="w-12 h-12 animate-spin text-primary" />
-                <p className="mt-4 text-slate-500 dark:text-slate-400">Loading analytics...</p>
-             </div>
+            <AnalyticsSkeleton />
         ) : (
             <>
                 {/* Main Chart Card */}

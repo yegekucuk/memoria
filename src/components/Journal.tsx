@@ -1,10 +1,11 @@
 import React from 'react';
-import { BookOpenText, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { BookOpenText, ChevronLeft, ChevronRight } from 'lucide-react';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { Session } from '@/types';
 import { formatDuration } from '@/utils/format';
 import { useTags } from '@/hooks/useTags';
+import { JournalEntriesSkeleton } from '@/components/loading/JournalEntriesSkeleton';
 import {
   buildJournalEntries,
   formatJournalDateLabel,
@@ -128,9 +129,7 @@ export const Journal: React.FC<JournalProps> = ({ sessions, isLoading = false })
               <div>
                 <div className="min-h-[300px] px-4 py-6 sm:min-h-[360px] sm:px-6 sm:py-7">
                   {isLoading ? (
-                    <div className="flex h-full min-h-[240px] items-center justify-center">
-                      <Loader2 className="size-8 animate-spin text-primary" />
-                    </div>
+                    <JournalEntriesSkeleton />
                   ) : entries.length > 0 ? (
                     <div className="flex flex-col gap-1 text-slate-800 dark:text-slate-100">
                       {entries.map((entry) => (

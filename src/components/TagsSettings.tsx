@@ -4,12 +4,12 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useTags } from '@/hooks/useTags';
-import { Loader2 } from 'lucide-react';
 import { Tag } from '@/types';
 import { TagForm } from './tags/TagForm';
 import { TagList } from './tags/TagList';
 import { ConfirmationModal } from './ConfirmationModal';
 import { SubSetting } from './SubSetting';
+import { TagsSettingsSkeleton } from './loading/TagsSettingsSkeleton';
 
 export const TagsSettings: React.FC = () => {
   const { user } = useAuth();
@@ -63,9 +63,7 @@ export const TagsSettings: React.FC = () => {
     >
       <div className='w-full space-y-8'>
         {isLoading ? (
-          <div className="flex h-32 items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
+          <TagsSettingsSkeleton />
         ) : (
           <>
             <TagForm 
