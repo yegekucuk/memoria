@@ -28,28 +28,28 @@ const codecPro = localFont({
 
 export const metadata: Metadata = {
   title: {
-    default: "Memoria - Track Your Time",
+    default: "Memoria",
     template: "%s | Memoria",
   },
   description: "Memoria is a powerful time tracking application that helps you monitor your activities and analyze your productivity. Track sessions, view analytics and gain insights into how you spend your time.",
   keywords: ["time tracking", "productivity", "analytics", "session tracking", "time management", "activity tracker"],
-  authors: [{ name: "Memoria Team" }],
-  creator: "Memoria",
-  publisher: "Memoria",
+  authors: [{ name: "yegekucuk" }],
+  creator: "yegekucuk",
+  publisher: "yegekucuk",
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
   openGraph: {
     type: "website",
     locale: "en_US",
     url: "/",
-    title: "Memoria - Track Your Time",
+    title: "Memoria",
     description: "Powerful time tracking application to monitor your activities and boost productivity.",
     siteName: "Memoria",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Memoria - Track Your Time",
+    title: "Memoria",
     description: "Powerful time tracking application to monitor your activities and boost productivity.",
-    creator: "@memoria",
+    creator: "@yegekucuk",
   },
   icons: {
     icon: [
