@@ -52,7 +52,7 @@ export const Hero: React.FC<HeroProps> = ({ onRegisterClick }) => {
           </button>
           <button
             onClick={() => {
-              const element = document.getElementById("how-it-works");
+              const element = document.getElementById("features");
               element?.scrollIntoView({ behavior: "smooth" });
             }}
             className="px-8 py-4 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl text-lg font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-all hover:-translate-y-0.5 cursor-pointer"
