@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { requireAuth, handleApiError, formatSession } from '@/lib/apiUtils';
+import { requireAuth, handleApiError } from '@/lib/apiUtils';
 
 export async function GET(_request: Request) {
   try {
@@ -20,12 +20,9 @@ export async function GET(_request: Request) {
       orderBy: {
         startTime: 'desc',
       },
-      include: {
-        tags: true,
-      },
     });
 
-    return NextResponse.json(pendingSession ? formatSession(pendingSession) : null);
+    return NextResponse.json(pendingSession || null);
   } catch (error) {
     return handleApiError(error, 'Error fetching pending session');
   }

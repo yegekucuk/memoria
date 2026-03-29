@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { requireAuth, handleApiError, formatSession } from '@/lib/apiUtils';
+import { requireAuth, handleApiError } from '@/lib/apiUtils';
 
 export async function GET(_request: Request) {
   try {
@@ -20,7 +20,7 @@ export async function GET(_request: Request) {
       return NextResponse.json(null);
     }
 
-    return NextResponse.json(formatSession(activeSession));
+    return NextResponse.json(activeSession);
   } catch (error) {
     return handleApiError(error, 'Error fetching active session');
   }
@@ -54,12 +54,9 @@ export async function POST(request: Request) {
         startTime: new Date(),
         durationSeconds: 0,
       },
-      include: {
-        tags: true,
-      },
     });
 
-    return NextResponse.json(formatSession(newSession));
+    return NextResponse.json(newSession);
   } catch (error) {
     return handleApiError(error, 'Error starting session');
   }

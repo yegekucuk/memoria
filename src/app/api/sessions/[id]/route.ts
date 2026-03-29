@@ -78,7 +78,7 @@ export async function PATCH(
     const formattedSession = {
       ...updatedSession,
       startTime: updatedSession.startTime.toISOString(),
-      endTime: updatedSession.endTime ? updatedSession.endTime.toISOString() : '',
+      endTime: updatedSession.endTime ? updatedSession.endTime.toISOString() : null,
       tags: updatedSession.tags.map((t) => t.name),
     };
 
