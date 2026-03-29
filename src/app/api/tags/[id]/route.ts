@@ -37,7 +37,7 @@ export async function PUT(
     }
 
     if (tag.userId !== userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     // Check for duplicate name (excluding current tag)
@@ -97,7 +97,7 @@ export async function DELETE(
     }
 
     if (tag.userId !== userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     await prisma.tag.delete({

@@ -2,13 +2,14 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { rateLimit, getClientIp } from '@/lib/rateLimit';
 import { RATE_LIMITS } from '@/constants/rateLimit';
-import { PROTECTED_PATHS } from '@/constants/routes';
+import { AUTH_COOKIE_NAME } from '@/constants/auth';
+import { MIDDLEWARE_MATCHER, PROTECTED_PATHS } from '@/constants/routes';
 
 const LOCALHOST_HOSTNAMES = new Set(['localhost', '127.0.0.1', '::1']);
 const READ_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get('token')?.value;
+  const token = request.cookies.get(AUTH_COOKIE_NAME)?.value;
   const { pathname } = request.nextUrl;
   const method = request.method;
   const isDevLocalRequest =
@@ -88,17 +89,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/dashboard/:path*',
-    '/api/sessions/:path*',
-    '/api/tags/:path*',
-    '/api/settings/:path*',
-    '/api/auth/login',
-    '/api/auth/register',
-    '/api/auth/password',
-    '/analytics/:path*',
-    '/journal/:path*',
-    '/settings/:path*',
-    '/sessions/:path*',
-  ],
+  matcher: MIDDLEWARE_MATCHER,
 };

@@ -84,7 +84,7 @@ describe('SessionsTable', () => {
         {
             id: '3',
             startTime: '2023-01-03T09:00:00Z',
-            endTime: '', // Running, but has notes
+            endTime: null, // Running, but has notes
             durationSeconds: 120, // 2m
             tags: [],
             notes: 'Running notes',
@@ -92,7 +92,7 @@ describe('SessionsTable', () => {
          {
             id: '4',
             startTime: '2023-01-04T10:00:00Z',
-            endTime: '', // Running, but has tags
+            endTime: null, // Running, but has tags
             durationSeconds: 300, 
             tags: ['Work'], // Has tags
             notes: '', 
@@ -100,7 +100,7 @@ describe('SessionsTable', () => {
         {
             id: '5',
             startTime: '2023-01-05T10:00:00Z',
-            endTime: '', // Running
+            endTime: null, // Running
             durationSeconds: 60,
             tags: [], // No tags
             notes: '', // No notes

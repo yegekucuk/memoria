@@ -1,7 +1,7 @@
 export interface Session {
   id: string;
   startTime: string; // ISO string
-  endTime: string; // ISO string
+  endTime: string | null; // ISO string
   durationSeconds: number;
   tags: string[];
   notes: string;

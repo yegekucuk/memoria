@@ -53,7 +53,9 @@ export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
 
     return sessions.filter(s => {
       const sStart = new Date(s.startTime);
-      const sEnd = new Date(s.endTime);
+      const sEnd = s.endTime
+        ? new Date(s.endTime)
+        : new Date(sStart.getTime() + s.durationSeconds * 1000);
       return sStart < dayEnd && sEnd > dayStart;
     });
   };
@@ -80,7 +82,9 @@ export const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
 
           const totalDuration = daySessions.reduce((acc, s) => {
             const sStart = new Date(s.startTime);
-            const sEnd = new Date(s.endTime);
+            const sEnd = s.endTime
+              ? new Date(s.endTime)
+              : new Date(sStart.getTime() + s.durationSeconds * 1000);
             const overlapStart = sStart < dayStart ? dayStart : sStart;
             const overlapEnd = sEnd > dayEnd ? dayEnd : sEnd;
             const duration = Math.max(0, (overlapEnd.getTime() - overlapStart.getTime()) / 1000);
