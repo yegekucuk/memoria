@@ -54,8 +54,9 @@ jest.mock('lucide-react', () => ({
 }));
 
 // Mock child components to isolate Analytics logic
-jest.mock('@/components/analytics/AnalyticsHeader', () => ({
-  AnalyticsHeader: () => <div data-testid="analytics-header">Header</div>,
+
+jest.mock('@/components/layout/PageHeader', () => ({
+  PageHeader: () => <div data-testid="page-header">Header</div>,
 }));
 
 jest.mock('@/components/analytics/ActivityChart', () => ({
@@ -82,6 +83,24 @@ jest.mock('@/components/analytics/ActivityChart', () => ({
 
 jest.mock('@/components/layout/PageLayout', () => ({
   PageLayout: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
+
+jest.mock('@/components/analytics/WeeklyCalendar', () => ({
+  WeeklyCalendar: () => <div data-testid="weekly-calendar">WeeklyCalendar</div>,
+}));
+
+jest.mock('@/components/analytics/MonthlyCalendar', () => ({
+  MonthlyCalendar: () => <div data-testid="monthly-calendar">MonthlyCalendar</div>,
+}));
+
+jest.mock('@/components/analytics/PieChartCard', () => ({
+  PieChartCard: () => <div data-testid="pie-chart-card">PieChartCard</div>,
+}));
+
+jest.mock('@/context/SettingsContext', () => ({
+  useSettings: () => ({
+    settings: { excludeWeekends: false },
+  }),
 }));
 
 describe('Analytics - Tag Filter', () => {

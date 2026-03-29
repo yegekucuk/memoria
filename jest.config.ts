@@ -13,14 +13,8 @@ const config: Config = {
   // Add more setup options before each test is run
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   moduleNameMapper: {
-      // Handle module aliases (this will be automatically configured for you soon)
-      '^@/components/(.*)$': '<rootDir>/src/components/$1',
-      '^@/pages/(.*)$': '<rootDir>/src/pages/$1',
-      '^@/hooks/(.*)$': '<rootDir>/src/hooks/$1',
-      '^@/utils/(.*)$': '<rootDir>/src/utils/$1',
-      '^@/lib/(.*)$': '<rootDir>/src/lib/$1',
-      '^@/middleware$': '<rootDir>/src/middleware',
-    },
+    '^@/(.*)$': '<rootDir>/src/$1',
+  },
 }
  
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

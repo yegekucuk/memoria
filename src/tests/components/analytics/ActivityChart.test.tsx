@@ -47,10 +47,8 @@ describe('ActivityChart', () => {
             />
         );
 
-        // Expect "Average" label
-        const label = screen.getByText('Average');
-        const container = label.closest('div');
-        expect(container).toHaveTextContent('2 hours 0 minutes');
+        expect(screen.getByText('Average')).toBeInTheDocument();
+        expect(screen.getByText('2 hours 0 minutes', { selector: 'span' })).toBeInTheDocument();
     });
 
     it('displays correct average for a partial week (divide by non-future days)', () => {
@@ -73,10 +71,8 @@ describe('ActivityChart', () => {
             />
         );
 
-        // Expect "Average" label
-        const label = screen.getByText('Average');
-        const container = label.closest('div');
-        expect(container).toHaveTextContent('4 hours 0 minutes');
+        expect(screen.getByText('Average')).toBeInTheDocument();
+        expect(screen.getByText('4 hours 0 minutes', { selector: 'span' })).toBeInTheDocument();
     });
 
     it('highlights today label with primary color', () => {
