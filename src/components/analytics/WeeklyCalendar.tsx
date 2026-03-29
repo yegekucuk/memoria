@@ -45,9 +45,7 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
     
     return sessions.filter(s => {
       const sStart = new Date(s.startTime);
-      const sEnd = s.endTime
-        ? new Date(s.endTime)
-        : new Date(sStart.getTime() + s.durationSeconds * 1000);
+      const sEnd = new Date(s.endTime);
       return sStart < endOfWeek && sEnd > startOfWeek;
     });
   }, [sessions, startOfWeek, excludeWeekends]);
@@ -143,9 +141,7 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
                   {/* Sessions in this day */}
                   {weekSessions.map(session => {
                     const sStart = new Date(session.startTime);
-                    const sEnd = session.endTime
-                      ? new Date(session.endTime)
-                      : new Date(sStart.getTime() + session.durationSeconds * 1000);
+                    const sEnd = new Date(session.endTime);
 
                     // Check if session falls on this day
                     const dayStart = new Date(day);
@@ -182,7 +178,7 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
                         <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block z-50">
                           <div className="bg-slate-900 text-white text-[10px] py-1 px-2 rounded whitespace-nowrap shadow-xl">
                             {new Date(session.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} -
-                            {sEnd.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            {new Date(session.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </div>
                         </div>
                       </div>

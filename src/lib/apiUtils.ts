@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getCurrentUser, UserPayload } from '@/lib/auth';
 import { DEFAULT_TAG_COLORS } from '@/constants/colors';
-import type { RawDbSession, Session } from '@/types';
+import type { RawDbSession } from '@/types';
 
 /**
  * Custom error class for API errors with HTTP status codes.
@@ -60,11 +60,11 @@ export function getRandomTagColor(): string {
  * Format a database session object into the shape the frontend expects.
  * Converts Date objects to ISO strings and flattens tag objects to names.
  */
-export function formatSession(session: RawDbSession): Session {
+export function formatSession(session: RawDbSession) {
   return {
     id: session.id,
     startTime: session.startTime.toISOString(),
-    endTime: session.endTime ? session.endTime.toISOString() : null,
+    endTime: session.endTime ? session.endTime.toISOString() : '',
     durationSeconds: session.durationSeconds,
     notes: session.notes || '',
     tags: session.tags.map((t) => t.name),

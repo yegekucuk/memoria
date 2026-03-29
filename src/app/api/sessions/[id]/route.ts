@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { requireAuth, handleApiError, getRandomTagColor, formatSession } from '@/lib/apiUtils';
+import { requireAuth, handleApiError, getRandomTagColor } from '@/lib/apiUtils';
 
 // PATCH /api/sessions/[id]
 // Updates a session (End it, or Save details)
@@ -75,7 +75,14 @@ export async function PATCH(
     });
 
     // Format response to match frontend expectations (flatten tags)
-    return NextResponse.json(formatSession(updatedSession));
+    const formattedSession = {
+      ...updatedSession,
+      startTime: updatedSession.startTime.toISOString(),
+      endTime: updatedSession.endTime ? updatedSession.endTime.toISOString() : '',
+      tags: updatedSession.tags.map((t) => t.name),
+    };
+
+    return NextResponse.json(formattedSession);
   } catch (error) {
     return handleApiError(error, 'Error updating session');
   }
