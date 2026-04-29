@@ -71,7 +71,7 @@ function generateCard(
   if (!ctx) return;
 
   const w = 600;
-  const h = 360;
+  const h = 420;
   canvas.width = w;
   canvas.height = h;
 
@@ -132,6 +132,8 @@ function generateCard(
   const startX = 40;
   const startY = 158;
 
+  const rows = 2;
+
   stats.forEach((stat, i) => {
     const col = i % cols;
     const row = Math.floor(i / cols);
@@ -163,9 +165,10 @@ function generateCard(
   });
 
   // Footer
+  const footerY = startY + rows * (cardH + gap) + 28;
   ctx.fillStyle = '#94a3b8';
   ctx.font = '11px sans-serif';
-  ctx.fillText('Track your focus time at memoria.yegekucuk.me', 40, h - 36);
+  ctx.fillText('Track your focus time at memoria.yegekucuk.me', 40, footerY);
 }
 
 export const ShareCard: React.FC<ShareCardProps> = ({ sessions }) => {
