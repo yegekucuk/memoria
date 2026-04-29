@@ -71,7 +71,7 @@ function generateCard(
   if (!ctx) return;
 
   const w = 600;
-  const h = 340;
+  const h = 360;
   canvas.width = w;
   canvas.height = h;
 
@@ -117,7 +117,7 @@ function generateCard(
   ctx.lineTo(w - 40, 138);
   ctx.stroke();
 
-  // Stat cards
+  // Stat cards — 2x2 grid
   const stats = [
     { label: 'Total Hours', value: data.totalHours.toFixed(1) + 'h', color: '#137fec' },
     { label: 'Sessions', value: String(data.sessionCount), color: '#8b5cf6' },
@@ -125,36 +125,41 @@ function generateCard(
     { label: 'Streak', value: data.streak + ' days', color: '#f97316' },
   ];
 
-  const cardW = 118;
-  const startX = 40;
+  const cardW = 252;
+  const cardH = 80;
+  const cols = 2;
   const gap = 16;
+  const startX = 40;
+  const startY = 158;
 
   stats.forEach((stat, i) => {
-    const x = startX + i * (cardW + gap);
-    const y = 158;
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    const x = startX + col * (cardW + gap);
+    const y = startY + row * (cardH + gap);
 
     // Card bg
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
     ctx.beginPath();
-    ctx.roundRect(x, y, cardW, 90, 12);
+    ctx.roundRect(x, y, cardW, cardH, 12);
     ctx.fill();
 
     // Card border
     ctx.strokeStyle = stat.color + '20';
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.roundRect(x, y, cardW, 90, 12);
+    ctx.roundRect(x, y, cardW, cardH, 12);
     ctx.stroke();
 
     // Value
     ctx.fillStyle = stat.color;
-    ctx.font = 'bold 20px sans-serif';
-    ctx.fillText(stat.value, x + 12, y + 38);
+    ctx.font = 'bold 18px sans-serif';
+    ctx.fillText(stat.value, x + 14, y + 34);
 
     // Label
     ctx.fillStyle = '#64748b';
     ctx.font = '11px sans-serif';
-    ctx.fillText(stat.label, x + 12, y + 62);
+    ctx.fillText(stat.label, x + 14, y + 58);
   });
 
   // Footer
