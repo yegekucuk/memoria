@@ -2,8 +2,6 @@
 
 import React, { useMemo } from 'react';
 import { Session } from '@/types';
-import { Tag, Sigma } from 'lucide-react';
-import { formatDuration } from '../utils/format';
 import { PageLayout } from './layout/PageLayout';
 import { PageHeader } from './layout/PageHeader';
 import { useAnalyticsData } from '../hooks/useAnalyticsData';
@@ -15,6 +13,7 @@ import { WeeklyCalendar } from './analytics/WeeklyCalendar';
 import { MonthlyCalendar } from './analytics/MonthlyCalendar';
 import { useSettings } from '../context/SettingsContext';
 import { AnalyticsSkeleton } from './loading/AnalyticsSkeleton';
+import { FocusInsights } from './FocusInsights';
 
 interface AnalyticsProps {
   sessions: Session[];
@@ -45,20 +44,6 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => 
     isNextDisabled,
     filteredSessions: currentViewSessions,
   } = useAnalyticsData(filteredSessions);
-
-  // Insights always use unfiltered sessions so they don't change with tag filter
-  const totalHoursAllTime = useMemo(() => {
-    return sessions.reduce((acc, s) => acc + s.durationSeconds, 0) / 3600;
-  }, [sessions]);
-
-  const { topTagName, topTagPct } = useMemo(() => {
-    const tagCounts: Record<string, number> = {};
-    sessions.forEach(s => s.tags.forEach(t => tagCounts[t] = (tagCounts[t] || 0) + s.durationSeconds));
-    const topEntry = Object.entries(tagCounts).sort((a, b) => b[1] - a[1])[0];
-    const name = topEntry ? topEntry[0] : 'None';
-    const pct = topEntry ? Math.round((topEntry[1] / 3600 / (totalHoursAllTime || 1)) * 100) : 0;
-    return { topTagName: name, topTagPct: pct };
-  }, [sessions, totalHoursAllTime]);
 
   return (
     <PageLayout className="animate-in slide-in-from-bottom-4 duration-500">
@@ -107,40 +92,11 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => 
                     </div>
                 </ActivityChart>
 
-                {/* Insights Grid */}
-                <div className="flex flex-col gap-4">
-                    <h2 className="text-xl font-bold leading-tight tracking-[-0.015em] pt-2 text-slate-900 dark:text-white">Key Insights</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Focus Insights */}
+                <FocusInsights sessions={sessions} isLoading={isLoading} />
 
-                        <div className="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm flex flex-col gap-3">
-                            <div className="flex items-center gap-3">
-                                <div className="size-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
-                                    <Tag size={24} />
-                                </div>
-                                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Most Productive Tag</p>
-                            </div>
-                            <div>
-                                <p className="text-3xl font-bold text-slate-900 dark:text-white truncate">{topTagName}</p>
-                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{topTagPct}% of total time</p>
-                            </div>
-                        </div>
-                        <div className="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm flex flex-col gap-3">
-                            <div className="flex items-center gap-3">
-                                <div className="size-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400">
-                                    <Sigma size={24} />
-                                </div>
-                                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Hours</p>
-                            </div>
-                            <div>
-                                <p className="text-3xl font-bold text-slate-900 dark:text-white">{formatDuration(totalHoursAllTime)}</p>
-                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">All time</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Pie Chart */}
-                    <PieChartCard sessions={sessions} allTags={allTags} excludeWeekends={settings.excludeWeekends} />
-                </div>
+                {/* Pie Chart */}
+              <PieChartCard sessions={sessions} allTags={allTags} excludeWeekends={settings.excludeWeekends} />
             </>
         )}
     </PageLayout>

@@ -51,6 +51,10 @@ jest.mock('lucide-react', () => ({
   Sigma: () => <span>Sigma</span>,
   Loader2: () => <span>Loader2</span>,
   X: () => <span>X</span>,
+  TrendingUp: () => <span>TrendingUp</span>,
+  Clock: () => <span>Clock</span>,
+  Target: () => <span>Target</span>,
+  Zap: () => <span>Zap</span>,
 }));
 
 // Mock child components to isolate Analytics logic
