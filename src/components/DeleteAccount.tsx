@@ -49,12 +49,12 @@ export const DeleteAccount: React.FC = () => {
     return (
       <div className="rounded-2xl border border-red-200 dark:border-red-900/30 bg-white dark:bg-surface-dark p-6 shadow-sm">
         <div className="flex items-center gap-3 mb-4">
-          <div className="p-2 bg-red-500/10 rounded-lg text-red-500">
-            <Trash2 size={20} />
+          <div className="text-red-500">
+            <Trash2 size={18} />
           </div>
-          <div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Delete Account</h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
+            <div className="flex flex-col gap-0.5">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Delete Account</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
               Permanently remove your account and all data. This action cannot be undone.
             </p>
           </div>
@@ -72,10 +72,10 @@ export const DeleteAccount: React.FC = () => {
   return (
     <div className="rounded-2xl border border-red-200 dark:border-red-900/30 bg-white dark:bg-surface-dark p-6 shadow-sm">
       <div className="flex items-center gap-3 mb-4">
-        <div className="p-2 bg-red-500/10 rounded-lg text-red-500">
-          <Trash2 size={20} />
+        <div className="text-red-500">
+          <Trash2 size={18} />
         </div>
-        <div>
+        <div className="flex flex-col gap-0.5">
           <h3 className="text-lg font-bold text-slate-900 dark:text-white">Confirm Deletion</h3>
           <p className="text-sm text-slate-500 dark:text-slate-400">
             Enter your password to permanently delete your account.

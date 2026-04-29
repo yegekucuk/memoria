@@ -36,7 +36,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, onClose, 
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
             <div className="bg-white dark:bg-surface-dark rounded-2xl p-6 max-w-md w-full shadow-xl border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-200">
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Enable Notifications</h3>
-                <p className="text-slate-600 dark:text-slate-300 mb-6">
+                <p className="text-slate-600 dark:text-slate-300 mb-6 text-sm">
                     To receive an alert when you reach your time target, please allow notifications when prompted by your browser.
                 </p>
                 <div className="flex justify-end gap-3">

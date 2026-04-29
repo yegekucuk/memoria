@@ -97,7 +97,7 @@ export const StreakHeatmap: React.FC<StreakHeatmapProps> = ({ sessions, isLoadin
     <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-6 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2.5">
-          <Calendar size={18} className="text-slate-500 dark:text-slate-400" />
+          <Calendar size={16} className="text-slate-500 dark:text-slate-400" />
           <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">
             Activity
           </h3>

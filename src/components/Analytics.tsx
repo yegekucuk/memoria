@@ -109,7 +109,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => 
 
                 {/* Insights Grid */}
                 <div className="flex flex-col gap-4">
-                    <h2 className="text-[22px] font-bold leading-tight tracking-[-0.015em] pt-2 text-slate-900 dark:text-white">Key Insights</h2>
+                    <h2 className="text-xl font-bold leading-tight tracking-[-0.015em] pt-2 text-slate-900 dark:text-white">Key Insights</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                         <div className="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm flex flex-col gap-3">
@@ -117,11 +117,11 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => 
                                 <div className="size-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
                                     <Tag size={24} />
                                 </div>
-                                <p className="text-[#6b7280] dark:text-[#9dabb9] text-sm font-medium">Most Productive Tag</p>
+                                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Most Productive Tag</p>
                             </div>
                             <div>
                                 <p className="text-3xl font-bold text-slate-900 dark:text-white truncate">{topTagName}</p>
-                                <p className="text-xs text-[#6b7280] dark:text-[#9dabb9] mt-1">{topTagPct}% of total time</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{topTagPct}% of total time</p>
                             </div>
                         </div>
                         <div className="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm flex flex-col gap-3">
@@ -129,11 +129,11 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => 
                                 <div className="size-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400">
                                     <Sigma size={24} />
                                 </div>
-                                <p className="text-[#6b7280] dark:text-[#9dabb9] text-sm font-medium">Total Hours</p>
+                                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Hours</p>
                             </div>
                             <div>
                                 <p className="text-3xl font-bold text-slate-900 dark:text-white">{formatDuration(totalHoursAllTime)}</p>
-                                <p className="text-xs text-[#6b7280] dark:text-[#9dabb9] mt-1">All time</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">All time</p>
                             </div>
                         </div>
                     </div>

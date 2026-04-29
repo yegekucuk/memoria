@@ -42,7 +42,7 @@ export const ActivityChart: React.FC<ActivityChartProps> = ({
 
   return (
     <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10 p-6 lg:p-8 shadow-sm">
-      <div className="flex justify-between items-start mb-8">
+      <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="text-lg font-bold mb-1 text-slate-900 dark:text-white capitalize">
             {viewMode} Activity
