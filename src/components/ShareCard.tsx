@@ -183,8 +183,8 @@ export const ShareCard: React.FC<ShareCardProps> = ({ sessions }) => {
     <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-6 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2.5">
-          <Share2 size={16} className="text-primary" />
-          <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">Share Stats</h3>
+          <Share2 size={18} className="text-primary" />
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white">Share Stats</h3>
         </div>
         <button
           onClick={handleDownload}
