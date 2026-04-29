@@ -18,7 +18,8 @@ function generateCard(
     topTag: string;
     streak: number;
     month: string;
-  }
+  },
+  logo: HTMLImageElement | null
 ) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
@@ -47,44 +48,27 @@ function generateCard(
   ctx.fill();
   ctx.restore();
 
-  // Logo — rounded square with 'm'
-  const logoX = 40;
-  const logoY = 32;
-  const logoSize = 24;
-  ctx.fillStyle = '#137fec';
-  ctx.beginPath();
-  ctx.roundRect(logoX, logoY, logoSize, logoSize, 6);
-  ctx.fill();
-
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 14px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('m', logoX + logoSize / 2, logoY + logoSize / 2);
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'alphabetic';
-
-  // Title
-  ctx.fillStyle = '#137fec';
-  ctx.font = 'bold 16px sans-serif';
-  ctx.fillText('memoria', logoX + logoSize + 10, 50);
+  // Logo
+  if (logo) {
+    ctx.drawImage(logo, 36, 28, 110, 28);
+  }
 
   // Month
   ctx.fillStyle = '#64748b';
   ctx.font = '13px sans-serif';
-  ctx.fillText(data.month, 40, 72);
+  ctx.fillText(data.month, 40, 80);
 
   // Name
   ctx.fillStyle = '#1e293b';
   ctx.font = 'bold 22px sans-serif';
-  ctx.fillText(`${data.name}'s Focus Stats`, 40, 112);
+  ctx.fillText(`${data.name}'s Focus Stats`, 40, 118);
 
   // Divider
   ctx.strokeStyle = 'rgba(0,0,0,0.08)';
   ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.moveTo(40, 132);
-  ctx.lineTo(w - 40, 132);
+  ctx.moveTo(40, 138);
+  ctx.lineTo(w - 40, 138);
   ctx.stroke();
 
   // Stat cards
@@ -136,6 +120,18 @@ function generateCard(
 export const ShareCard: React.FC<ShareCardProps> = ({ sessions }) => {
   const { user } = useAuth();
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
+  const logoRef = React.useRef<HTMLImageElement | null>(null);
+  const [logoReady, setLogoReady] = React.useState(false);
+
+  // Load logo image
+  React.useEffect(() => {
+    const img = new Image();
+    img.src = '/memoria-logo-3-removebg.png';
+    img.onload = () => {
+      logoRef.current = img;
+      setLogoReady(true);
+    };
+  }, []);
 
   const cardData = React.useMemo(() => {
     const now = new Date();
@@ -184,9 +180,9 @@ export const ShareCard: React.FC<ShareCardProps> = ({ sessions }) => {
 
   React.useEffect(() => {
     if (canvasRef.current) {
-      generateCard(canvasRef.current, cardData);
+      generateCard(canvasRef.current, cardData, logoRef.current);
     }
-  }, [cardData]);
+  }, [cardData, logoReady]);
 
   const handleDownload = () => {
     if (!canvasRef.current) return;
