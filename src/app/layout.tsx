@@ -69,13 +69,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+    <html lang="en" className="scroll-smooth">
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){var t=localStorage.getItem('memoria-theme');if(t==='light')return;if(t==='dark'){document.documentElement.classList.add('dark');return}if(window.matchMedia('(prefers-color-scheme:dark)').matches)document.documentElement.classList.add('dark')})()`,
-          }}
-        />
       </head>
       <body className={`${inter.variable} ${codecPro.variable} font-sans antialiased`}>
         <ThemeProvider>
