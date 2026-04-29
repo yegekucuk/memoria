@@ -5,6 +5,7 @@ import "./globals.css";
 import { SessionProvider } from '@/context/SessionContext';
 import { AuthProvider } from '@/context/AuthContext';
 import { SettingsProvider } from '@/context/SettingsContext';
+import { ThemeProvider } from '@/context/ThemeContext';
 import { Layout } from '@/components/Layout';
 import { Toaster } from 'react-hot-toast';
 
@@ -72,9 +73,10 @@ export default function RootLayout({
       <head>
       </head>
       <body className={`${inter.variable} ${codecPro.variable} font-sans antialiased`}>
-        <AuthProvider>
-          <SettingsProvider>
-            <SessionProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <SettingsProvider>
+              <SessionProvider>
               <Layout>
                 {children}
               </Layout>
@@ -90,6 +92,7 @@ export default function RootLayout({
             </SessionProvider>
           </SettingsProvider>
         </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -6,6 +6,7 @@ import { PageLayout } from '@/components/layout/PageLayout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { ChangePassword } from '@/components/ChangePassword';
 import { FocusGoalSettings } from '@/components/FocusGoalSettings';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { DeleteAccount } from '@/components/DeleteAccount';
 
 export default function SettingsPage() {
@@ -32,6 +33,10 @@ export default function SettingsPage() {
 
           <section id="focus-goals">
               <FocusGoalSettings />
+          </section>
+
+          <section id="appearance">
+              <ThemeSwitcher />
           </section>
 
           <section id="account">
