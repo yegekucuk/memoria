@@ -229,7 +229,7 @@ export const ShareCard: React.FC<ShareCardProps> = ({ sessions }) => {
           </button>
           <button
             onClick={() => downloadCard(yearlyData, `memoria-${yearlyData.label}.png`)}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition-colors cursor-pointer border border-slate-200 dark:border-white/10"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold bg-primary text-white hover:bg-blue-600 transition-colors cursor-pointer"
           >
             <Download size={14} />
             Yearly

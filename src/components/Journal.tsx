@@ -59,16 +59,12 @@ export const Journal: React.FC<JournalProps> = ({ sessions, isLoading = false })
   };
 
   return (
-      <section className="relative overflow-hidden rounded-2xl bg-mesh border border-slate-200 dark:border-white/10 shadow-lg">
-        <div className="absolute inset-0 bg-mesh opacity-50 pointer-events-none"></div>
-        <div className="absolute -right-20 -top-20 w-64 h-64 bg-primary/20 rounded-full blur-[80px] pointer-events-none"></div>
-
-        <div className="relative z-10 rounded-2xl">
+      <section className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-6 shadow-sm">
           <div className="px-4 py-5 sm:px-8 sm:py-7">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
                 <div className="flex flex-col gap-0.5">
-                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">List of Sessions</h2>
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">Sessions List</h2>
                   <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{dateLabel}</p>
                 </div>
               </div>
@@ -172,7 +168,6 @@ export const Journal: React.FC<JournalProps> = ({ sessions, isLoading = false })
               )}
             </div>
           </div>
-        </div>
       </section>
   );
 };
