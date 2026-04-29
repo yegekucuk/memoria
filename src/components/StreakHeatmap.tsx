@@ -117,7 +117,7 @@ export const StreakHeatmap: React.FC<StreakHeatmapProps> = ({ sessions, isLoadin
     return labels;
   }, [grid]);
 
-  const CELL = 'size-5 rounded-[3px]';
+  const CELL_COLOR = 'rounded-[3px]';
   const GAP = 'gap-[3px]';
   const INTENSITY_BLUE: Record<number, string> = {
     0: 'bg-slate-100 dark:bg-white/[0.04]',
@@ -126,6 +126,22 @@ export const StreakHeatmap: React.FC<StreakHeatmapProps> = ({ sessions, isLoadin
     3: 'bg-blue-500 dark:bg-blue-500',
     4: 'bg-blue-600 dark:bg-blue-400',
   };
+
+  const numCols = grid.numCols;
+
+  // Build month label spans relative to column count
+  const monthSpans = React.useMemo(() => {
+    const spans: { label: string; cols: number }[] = [];
+    for (let i = 0; i < monthLabels.length; i++) {
+      const curr = monthLabels[i];
+      const next = monthLabels[i + 1];
+      spans.push({
+        label: curr.label,
+        cols: (next ? next.col : numCols) - curr.col,
+      });
+    }
+    return spans;
+  }, [monthLabels, numCols]);
 
   return (
     <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-6 shadow-sm">
@@ -145,78 +161,67 @@ export const StreakHeatmap: React.FC<StreakHeatmapProps> = ({ sessions, isLoadin
       </div>
 
       {isLoading ? (
-        <div className={`flex ${GAP}`}>
+        <div className={`w-full flex ${GAP}`}>
           {Array.from({ length: WEEKS_TO_SHOW + 1 }).map((_, w) => (
-            <div key={w} className={`flex flex-col ${GAP}`}>
+            <div key={w} className={`flex-1 flex flex-col ${GAP}`}>
               {Array.from({ length: 7 }).map((_, d) => (
-                <div key={d} className={`${CELL} bg-slate-100 dark:bg-white/5 animate-pulse`} />
+                <div key={d} className={`w-full aspect-square ${CELL_COLOR} bg-slate-100 dark:bg-white/5 animate-pulse`} />
               ))}
             </div>
           ))}
         </div>
       ) : (
-        <div className="overflow-x-auto -mx-1 px-1">
-          <div className="flex min-w-fit">
+        <div className="w-full">
+          {/* Month labels */}
+          <div className={`flex ${GAP} mb-0.5`}>
+            {monthSpans.map((m, i) => (
+              <span
+                key={i}
+                className="text-[10px] text-slate-400 dark:text-slate-600 leading-none"
+                style={{ flex: m.cols }}
+              >
+                {m.label}
+              </span>
+            ))}
+          </div>
+
+          <div className={`flex w-full ${GAP}`}>
             {/* Day labels */}
-            <div className={`flex flex-col ${GAP} pr-2`} style={{ paddingTop: 20 }}>
+            <div className={`flex flex-col ${GAP} justify-between py-[2px]`}>
               {DAY_SHORT.map((label, i) => (
-                <div key={i} className={`${CELL} flex items-center text-[10px] text-slate-400 dark:text-slate-600 leading-none`}>
+                <div key={i} className="flex-1 flex items-center text-[10px] text-slate-400 dark:text-slate-600 leading-none">
                   {label}
                 </div>
               ))}
             </div>
 
-            <div>
-              {/* Month labels */}
-              <div className="flex h-5 mb-0.5 relative">
-                {monthLabels.map((m, i) => {
-                  const prevCol = i > 0 ? monthLabels[i - 1].col : 0;
-                  const span = m.col - prevCol;
+            {/* Grid columns */}
+            {Array.from({ length: numCols }).map((_, col) => (
+              <div key={col} className={`flex-1 flex flex-col ${GAP}`}>
+                {Array.from({ length: 7 }).map((_, row) => {
+                  const cell = grid.rows[row][col];
+                  if (!cell) {
+                    return <div key={row} className={`w-full aspect-square ${CELL_COLOR}`} />;
+                  }
                   return (
-                    <span
-                      key={i}
-                      className="text-[10px] text-slate-400 dark:text-slate-600 leading-none"
-                      style={{
-                        width: `${span * 23}px`,
-                        marginLeft: i === 0 ? `${m.col * 23}px` : undefined,
-                      }}
-                    >
-                      {m.label}
-                    </span>
+                    <div
+                      key={row}
+                      className={`w-full aspect-square ${CELL_COLOR} ${INTENSITY_BLUE[cell.intensity]}`}
+                      title={`${cell.date}${cell.intensity > 0 ? ` · Active` : ''}`}
+                    />
                   );
                 })}
               </div>
+            ))}
+          </div>
 
-              {/* Grid */}
-              <div className={`flex ${GAP}`}>
-                {Array.from({ length: grid.numCols }).map((_, col) => (
-                  <div key={col} className={`flex flex-col ${GAP}`}>
-                    {Array.from({ length: 7 }).map((_, row) => {
-                      const cell = grid.rows[row][col];
-                      if (!cell) {
-                        return <div key={row} className={CELL} />;
-                      }
-                      return (
-                        <div
-                          key={row}
-                          className={`${CELL} ${INTENSITY_BLUE[cell.intensity]}`}
-                          title={`${cell.date}${cell.intensity > 0 ? ` · Active` : ''}`}
-                        />
-                      );
-                    })}
-                  </div>
-                ))}
-              </div>
-
-              {/* Legend */}
-              <div className="flex items-center justify-end gap-[3px] mt-2.5">
-                <span className="text-[10px] text-slate-400 dark:text-slate-500 mr-1">Less</span>
-                {[0, 1, 2, 3, 4].map(level => (
-                  <div key={level} className={`${CELL} ${INTENSITY_BLUE[level]}`} />
-                ))}
-                <span className="text-[10px] text-slate-400 dark:text-slate-500 ml-1">More</span>
-              </div>
-            </div>
+          {/* Legend */}
+          <div className="flex items-center justify-end gap-[3px] mt-2.5 mr-0" style={{ marginRight: 'calc(100% / 7 + 3px)' }}>
+            <span className="text-[10px] text-slate-400 dark:text-slate-500 mr-1">Less</span>
+            {[0, 1, 2, 3, 4].map(level => (
+              <div key={level} className={`size-3.5 rounded-[3px] ${INTENSITY_BLUE[level]}`} />
+            ))}
+            <span className="text-[10px] text-slate-400 dark:text-slate-500 ml-1">More</span>
           </div>
         </div>
       )}
