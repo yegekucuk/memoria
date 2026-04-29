@@ -4,8 +4,8 @@ import { AnalyticsSettings } from '@/components/AnalyticsSettings';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { PageHeader } from '@/components/layout/PageHeader';
-
 import { ChangePassword } from '@/components/ChangePassword';
+import { DeleteAccount } from '@/components/DeleteAccount';
 
 export default function SettingsPage() {
   return (
@@ -27,6 +27,10 @@ export default function SettingsPage() {
 
           <section id="analytics">
               <AnalyticsSettings />
+          </section>
+
+          <section id="account">
+              <DeleteAccount />
           </section>
         </div>
       </PageLayout>
