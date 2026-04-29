@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { requireAuth, handleApiError } from '@/lib/apiUtils';
+import { requireAuth, handleApiError, formatSession } from '@/lib/apiUtils';
 
 export async function GET(_request: Request) {
   try {
@@ -20,7 +20,7 @@ export async function GET(_request: Request) {
       return NextResponse.json(null);
     }
 
-    return NextResponse.json(activeSession);
+    return NextResponse.json(formatSession(activeSession));
   } catch (error) {
     return handleApiError(error, 'Error fetching active session');
   }
@@ -32,7 +32,9 @@ export async function POST(request: Request) {
 
     try {
       await request.json();
-    } catch {}
+    } catch {
+      // Parse body for future use (e.g. tags, notes)
+    }
 
     const existingActive = await prisma.session.findFirst({
       where: {
@@ -43,7 +45,7 @@ export async function POST(request: Request) {
 
     if (existingActive) {
       return NextResponse.json(
-        { error: 'Session already active', session: existingActive },
+        { error: 'Session already active', session: formatSession(existingActive) },
         { status: 409 }
       );
     }
@@ -56,7 +58,7 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json(newSession);
+    return NextResponse.json(formatSession(newSession));
   } catch (error) {
     return handleApiError(error, 'Error starting session');
   }
