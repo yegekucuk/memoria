@@ -8,6 +8,7 @@ import { SessionPagination } from './sessions/SessionPagination';
 import { SessionTableRow } from './sessions/SessionTableRow';
 import { useTags } from '@/hooks/useTags';
 import { toast } from 'react-hot-toast';
+import { useTagToggle } from '@/hooks/useTagToggle';
 import { exportSessionsCSV } from '@/utils/sessionHelpers';
 
 interface SessionsTableProps {
@@ -25,11 +26,16 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [searchNotes, setSearchNotes] = useState('');
-  const [selectedFilterTags, setSelectedFilterTags] = useState<string[]>([]);
+  const { selectedTags: selectedFilterTags, toggleTag: toggleFilterTag, setSelectedTags: setSelectedFilterTags } = useTagToggle();
 
   // Pagination State
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [startDate, endDate, searchNotes, selectedFilterTags]);
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -40,11 +46,6 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
     }
     setter(val);
   };
-
-  // Reset page when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [startDate, endDate, searchNotes, selectedFilterTags]);
 
   const handleSaveEdit = async (id: string, updates: Pick<Session, 'tags' | 'notes'>) => {
     const res = await fetch(`/api/sessions/${id}`, {
@@ -70,12 +71,6 @@ export const SessionsTable: React.FC<SessionsTableProps> = ({ sessions, onUpdate
     } finally {
       setIsDeleting(false);
     }
-  };
-
-  const toggleFilterTag = (tagName: string) => {
-    setSelectedFilterTags(prev =>
-      prev.includes(tagName) ? prev.filter(t => t !== tagName) : [...prev, tagName]
-    );
   };
 
   const handleExportCSV = () => {

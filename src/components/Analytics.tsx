@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Session } from '@/types';
 import { Tag, Sigma } from 'lucide-react';
 import { formatDuration } from '../utils/format';
@@ -8,6 +8,7 @@ import { useAnalyticsData } from '../hooks/useAnalyticsData';
 import { ActivityChart } from './analytics/ActivityChart';
 import { PieChartCard } from './analytics/PieChartCard';
 import { useTags } from '../hooks/useTags';
+import { useTagToggle } from '../hooks/useTagToggle';
 import { WeeklyCalendar } from './analytics/WeeklyCalendar';
 import { MonthlyCalendar } from './analytics/MonthlyCalendar';
 import { useSettings } from '../context/SettingsContext';
@@ -21,15 +22,7 @@ interface AnalyticsProps {
 export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => {
   const { tags: allTags } = useTags();
   const { settings } = useSettings();
-  const [selectedFilterTags, setSelectedFilterTags] = useState<string[]>([]);
-
-  const toggleFilterTag = (tagName: string) => {
-    setSelectedFilterTags(prev =>
-      prev.includes(tagName)
-        ? prev.filter(t => t !== tagName)
-        : [...prev, tagName]
-    );
-  };
+  const { selectedTags: selectedFilterTags, toggleTag: toggleFilterTag, setSelectedTags: setSelectedFilterTags } = useTagToggle();
 
   const filteredSessions = useMemo(() => {
     if (selectedFilterTags.length === 0) return sessions;

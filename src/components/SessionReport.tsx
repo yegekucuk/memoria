@@ -3,6 +3,7 @@ import { Session } from '@/types';
 import { CheckCircle, Loader2 } from 'lucide-react';
 import { useTags } from '@/hooks/useTags';
 import { TagSelector } from './TagSelector';
+import { useTagToggle } from '@/hooks/useTagToggle';
 import { formatDurationHMS } from '@/utils/format';
 import { validateSessionForm } from '@/utils/sessionHelpers';
 
@@ -19,19 +20,13 @@ export const SessionReport: React.FC<SessionReportProps> = ({
   onDiscard 
 }) => {
   const [notes, setNotes] = useState('');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const { selectedTags, toggleTag } = useTagToggle();
   const [isSaving, setIsSaving] = useState(false);
   const [isDiscarding, setIsDiscarding] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
   const { tags: availableTags } = useTags();
   const isProcessing = isSaving || isDiscarding;
-
-  const toggleTag = (tagName: string) => {
-    setSelectedTags(prev =>
-      prev.includes(tagName) ? prev.filter(t => t !== tagName) : [...prev, tagName]
-    );
-  };
 
   const handleSave = async () => {
     if (isProcessing) return;

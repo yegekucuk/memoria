@@ -3,6 +3,7 @@ import { Session } from '@/types';
 import { X, CheckCircle, Loader2 } from 'lucide-react';
 import { useTags } from '@/hooks/useTags';
 import { TagSelector } from './TagSelector';
+import { useTagToggle } from '@/hooks/useTagToggle';
 import { validateSessionForm } from '@/utils/sessionHelpers';
 
 interface EditSessionModalProps {
@@ -19,7 +20,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
   onSave 
 }) => {
   const [notes, setNotes] = useState(session.notes || '');
-  const [selectedTags, setSelectedTags] = useState<string[]>(session.tags);
+  const { selectedTags, toggleTag, setSelectedTags } = useTagToggle(session.tags);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,13 +32,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
         setSelectedTags(session.tags);
         setError(null);
     }
-  }, [isOpen, session]);
-
-  const toggleTag = (tagName: string) => {
-    setSelectedTags(prev =>
-      prev.includes(tagName) ? prev.filter(t => t !== tagName) : [...prev, tagName]
-    );
-  };
+  }, [isOpen, session, setSelectedTags]);
 
   const handleSave = async () => {
     if (isSaving) return;
