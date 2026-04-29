@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useMemo, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import type { Settings } from '@/types';
 import { CACHE_SETTINGS_KEY, SETTINGS_EXCLUDE_WEEKENDS_KEY } from '@/constants/storage';
@@ -77,7 +77,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user]);
 
-  const toggleExcludeWeekends = async () => {
+  const toggleExcludeWeekends = useCallback(async () => {
     if (!user) return;
 
     // Optimistic update
@@ -108,10 +108,16 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem(SETTINGS_EXCLUDE_WEEKENDS_KEY, JSON.stringify(!newExcludeWeekends));
       writeCacheEntry(`${CACHE_SETTINGS_KEY}:${user.id}`, revertedSettings);
     }
-  };
+  }, [user, settings]);
+
+  const value = useMemo(() => ({
+    settings,
+    toggleExcludeWeekends,
+    isLoading,
+  }), [settings, toggleExcludeWeekends, isLoading]);
 
   return (
-    <SettingsContext.Provider value={{ settings, toggleExcludeWeekends, isLoading }}>
+    <SettingsContext.Provider value={value}>
       {children}
     </SettingsContext.Provider>
   );

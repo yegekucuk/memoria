@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useMemo, useCallback } from 'react';
 import { Session } from '@/types';
 import type { SessionReportData } from '@/types';
 import { useAuth } from './AuthContext';
@@ -141,7 +141,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user, authLoading, loadSessions]);
 
-  const startSession = async () => {
+  const startSession = useCallback(async () => {
     if (!user) return;
     try {
         const res = await fetch('/api/sessions/active', {
@@ -157,9 +157,9 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     } catch (e) {
         console.error("Failed to start session", e);
     }
-  };
+  }, [user]);
 
-  const endSession = async (durationSeconds: number, startTime: Date) => {
+  const endSession = useCallback(async (durationSeconds: number, startTime: Date) => {
     if (!activeSessionId) return;
 
     try {
@@ -185,9 +185,9 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     } catch (e) {
         console.error("Failed to end session", e);
     }
-  };
+  }, [activeSessionId]);
 
-  const saveSession = async (data: Pick<Session, 'tags' | 'notes'>) => {
+  const saveSession = useCallback(async (data: Pick<Session, 'tags' | 'notes'>) => {
     if (!reportData || !user) return;
 
     try {
@@ -196,12 +196,11 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
              headers: { 'Content-Type': 'application/json' },
              body: JSON.stringify({
                  notes: data.notes,
-                 tags: data.tags // API handles connecting tags
+                 tags: data.tags
              })
         });
         
         if (res.ok) {
-             // Fetch latest data from server instead of local update to ensure strict sync
              await refreshSessions();
         }
     } catch (e) {
@@ -211,9 +210,9 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     setReportData(null);
     localStorage.removeItem(TIME_TARGET_KEY);
     localStorage.removeItem(TIME_TARGET_AUDIO_ONLY_KEY);
-  };
+  }, [reportData, user, refreshSessions]);
 
-  const discardSession = async () => {
+  const discardSession = useCallback(async () => {
     if (!reportData) return;
     try {
         await fetch(`/api/sessions/${reportData.sessionId}`, {
@@ -226,20 +225,22 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     setReportData(null);
     localStorage.removeItem(TIME_TARGET_KEY);
     localStorage.removeItem(TIME_TARGET_AUDIO_ONLY_KEY);
-  };
+  }, [reportData, refreshSessions]);
+
+  const value = useMemo(() => ({
+    sessions,
+    activeSessionStartTime,
+    reportData,
+    isLoading,
+    startSession,
+    endSession,
+    saveSession,
+    discardSession,
+    refreshSessions,
+  }), [sessions, activeSessionStartTime, reportData, isLoading, startSession, endSession, saveSession, discardSession, refreshSessions]);
 
   return (
-    <SessionContext.Provider value={{
-      sessions,
-      activeSessionStartTime,
-      reportData,
-      isLoading,
-      startSession,
-      endSession,
-      saveSession,
-      discardSession,
-      refreshSessions
-    }}>
+    <SessionContext.Provider value={value}>
       {children}
     </SessionContext.Provider>
   );
