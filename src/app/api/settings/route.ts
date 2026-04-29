@@ -15,8 +15,8 @@ export async function GET() {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // If settings don't exist, return default false (schema default)
-    const settings = user.settings || { excludeWeekends: false };
+    // If settings don't exist, return default
+    const settings = user.settings || { excludeWeekends: false, dailyGoalMinutes: null, weeklyGoalMinutes: null };
 
     return NextResponse.json(settings);
   } catch (error) {
@@ -28,7 +28,7 @@ export async function PATCH(req: Request) {
   try {
     const currentUser = await requireAuth();
 
-    const { excludeWeekends } = await req.json();
+    const { excludeWeekends, dailyGoalMinutes, weeklyGoalMinutes } = await req.json();
 
     if (typeof excludeWeekends !== 'boolean') {
       return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
@@ -42,12 +42,22 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
+    const updateData: Record<string, unknown> = { excludeWeekends };
+    if (dailyGoalMinutes !== undefined) {
+      updateData.dailyGoalMinutes = dailyGoalMinutes === null ? null : Number(dailyGoalMinutes);
+    }
+    if (weeklyGoalMinutes !== undefined) {
+      updateData.weeklyGoalMinutes = weeklyGoalMinutes === null ? null : Number(weeklyGoalMinutes);
+    }
+
     const updatedSettings = await prisma.settings.upsert({
       where: { userId: user.id },
-      update: { excludeWeekends },
+      update: updateData,
       create: {
         userId: user.id,
         excludeWeekends,
+        dailyGoalMinutes: dailyGoalMinutes === null ? null : Number(dailyGoalMinutes) || null,
+        weeklyGoalMinutes: weeklyGoalMinutes === null ? null : Number(weeklyGoalMinutes) || null,
       },
     });
 

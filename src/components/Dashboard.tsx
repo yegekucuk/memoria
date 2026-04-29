@@ -12,6 +12,7 @@ import { TIME_TARGET_KEY, TIME_TARGET_AUDIO_ONLY_KEY } from '@/constants';
 import toast from 'react-hot-toast';
 import { Journal } from '@/components/Journal';
 import { SkeletonBlock } from '@/components/loading/SkeletonBlock';
+import { useSettings } from '@/context/SettingsContext';
 
 interface DashboardProps {
   sessions: Session[];
@@ -54,31 +55,96 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, onClose, 
     );
 };
 
+const GoalRing: React.FC<{ current: number; target: number; label: string }> = ({ current, target, label }) => {
+  const pct = Math.min(current / target, 1);
+  const radius = 18;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference * (1 - pct);
+
+  const currentHours = current / 3600;
+  const targetHours = target / 3600;
+
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <div className="relative size-12">
+        <svg className="size-12 -rotate-90" viewBox="0 0 44 44">
+          <circle
+            cx="22" cy="22" r={radius}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            className="text-slate-200 dark:text-slate-700"
+          />
+          <circle
+            cx="22" cy="22" r={radius}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            className="text-primary transition-all duration-700"
+          />
+        </svg>
+        <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-slate-600 dark:text-slate-300">
+          {Math.round(pct * 100)}%
+        </span>
+      </div>
+      <div className="text-center">
+        <p className="text-[10px] font-semibold text-slate-400 dark:text-slate-500">{label}</p>
+        <p className="text-[10px] font-medium text-slate-500 dark:text-slate-400">
+          {currentHours.toFixed(1)}/{targetHours}h
+        </p>
+      </div>
+    </div>
+  );
+};
+
 
 export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession, isLoading }) => {
   const { user } = useAuth();
   // Calculate today's stats
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  
-  const todaysSessions = sessions.map(session => {
-      const sTime = new Date(session.startTime);
-      const sessionEnd = new Date(sTime.getTime() + session.durationSeconds * 1000);
-      
-      const overlapStart = sTime > today ? sTime : today;
-      const overlapEnd = sessionEnd < tomorrow ? sessionEnd : tomorrow;
-      
-      const durationForThisDay = Math.max(0, (overlapEnd.getTime() - overlapStart.getTime()) / 1000);
-      
+  const todayTs = React.useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d.getTime();
+  }, []);
+  const tomorrowTs = todayTs + 86400000;
+
+  const todaysSessions = React.useMemo(() => sessions.map(session => {
+      const sTime = new Date(session.startTime).getTime();
+      const sessionEnd = sTime + session.durationSeconds * 1000;
+
+      const overlapStart = sTime > todayTs ? sTime : todayTs;
+      const overlapEnd = sessionEnd < tomorrowTs ? sessionEnd : tomorrowTs;
+
+      const durationForThisDay = Math.max(0, (overlapEnd - overlapStart) / 1000);
+
       return {
           ...session,
           durationSeconds: durationForThisDay
       };
-  }).filter(s => s.durationSeconds > 0);
+  }).filter(s => s.durationSeconds > 0), [sessions, todayTs, tomorrowTs]);
 
   const totalSecondsToday = todaysSessions.reduce((acc, curr) => acc + curr.durationSeconds, 0);
+
+  const { settings } = useSettings();
+
+  // Calculate this week's stats (Monday-Sunday)
+  const weekStartTs = React.useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    const dow = d.getDay();
+    const offset = dow === 0 ? -6 : 1 - dow;
+    d.setDate(d.getDate() + offset);
+    return d.getTime();
+  }, []);
+
+  const totalSecondsWeek = React.useMemo(() => {
+    return sessions
+      .filter(s => new Date(s.startTime).getTime() >= weekStartTs)
+      .reduce((acc, s) => acc + s.durationSeconds, 0);
+  }, [sessions, weekStartTs]);
 
   const { tags } = useTags();
   const [isStarting, setIsStarting] = React.useState(false);
@@ -221,6 +287,26 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession, 
                         Total Today: <span className="font-bold text-slate-700 dark:text-slate-200">{formatDuration(totalSecondsToday / 3600)}</span>
                       </p>
                     )}
+
+                    {/* Goal Progress */}
+                    {!isLoading && (settings.dailyGoalMinutes || settings.weeklyGoalMinutes) ? (
+                      <div className="flex items-center justify-center gap-5 pt-1">
+                        {settings.dailyGoalMinutes ? (
+                          <GoalRing
+                            current={totalSecondsToday}
+                            target={settings.dailyGoalMinutes * 60}
+                            label="Daily"
+                          />
+                        ) : null}
+                        {settings.weeklyGoalMinutes ? (
+                          <GoalRing
+                            current={totalSecondsWeek}
+                            target={settings.weeklyGoalMinutes * 60}
+                            label="Weekly"
+                          />
+                        ) : null}
+                      </div>
+                    ) : null}
                 </div>
             </div>
         </section>

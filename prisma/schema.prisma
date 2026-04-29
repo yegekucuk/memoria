@@ -23,6 +23,8 @@ model User {
 model Settings {
   id              String   @id @default(cuid())
   excludeWeekends Boolean  @default(false)
+  dailyGoalMinutes   Int?
+  weeklyGoalMinutes  Int?
   
   userId          String   @unique
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)

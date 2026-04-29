@@ -19,7 +19,7 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 
 export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
-  const [settings, setSettings] = useState<Settings>({ excludeWeekends: false });
+  const [settings, setSettings] = useState<Settings>({ excludeWeekends: false, dailyGoalMinutes: null, weeklyGoalMinutes: null });
   const [isLoading, setIsLoading] = useState(true);
 
   // Fetch settings on load
@@ -72,7 +72,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
         })
         .finally(() => setIsLoading(false));
     } else {
-        setSettings({ excludeWeekends: false });
+        setSettings({ excludeWeekends: false, dailyGoalMinutes: null, weeklyGoalMinutes: null });
         setIsLoading(false);
     }
   }, [user]);

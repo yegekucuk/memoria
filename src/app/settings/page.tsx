@@ -5,6 +5,7 @@ import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { ChangePassword } from '@/components/ChangePassword';
+import { FocusGoalSettings } from '@/components/FocusGoalSettings';
 import { DeleteAccount } from '@/components/DeleteAccount';
 
 export default function SettingsPage() {
@@ -27,6 +28,10 @@ export default function SettingsPage() {
 
           <section id="analytics">
               <AnalyticsSettings />
+          </section>
+
+          <section id="focus-goals">
+              <FocusGoalSettings />
           </section>
 
           <section id="account">

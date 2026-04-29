@@ -52,7 +52,7 @@ export async function DELETE(req: Request) {
     await prisma.$transaction([
       prisma.session.deleteMany({ where: { userId: userPayload.id } }),
       prisma.tag.deleteMany({ where: { userId: userPayload.id } }),
-      prisma.userSettings.deleteMany({ where: { userId: userPayload.id } }),
+      prisma.settings.deleteMany({ where: { userId: userPayload.id } }),
       prisma.user.delete({ where: { id: userPayload.id } }),
     ]);
 
