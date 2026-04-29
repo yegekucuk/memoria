@@ -28,16 +28,6 @@
   --font-mono: monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --scrollbar-track: #1c232d;
-    --scrollbar-thumb: #2d96ff;
-    --scrollbar-thumb-hover: #5ab0ff;
-  }
-}
-
 .dark {
   --background: #0a0a0a;
   --foreground: #ededed;
