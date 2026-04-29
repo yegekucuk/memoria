@@ -77,6 +77,8 @@ describe('middleware', () => {
       expect(config.matcher).toContain('/api/settings/:path*');
       expect(config.matcher).toContain('/api/auth/login');
       expect(config.matcher).toContain('/api/auth/register');
+      expect(config.matcher).toContain('/api/auth/me');
+      expect(config.matcher).toContain('/api/auth/logout');
       expect(config.matcher).toContain('/api/auth/password');
       expect(config.matcher).toContain('/analytics/:path*');
       expect(config.matcher).toContain('/settings/:path*');

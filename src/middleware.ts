@@ -95,6 +95,8 @@ export const config = {
     '/api/settings/:path*',
     '/api/auth/login',
     '/api/auth/register',
+    '/api/auth/me',
+    '/api/auth/logout',
     '/api/auth/password',
     '/analytics/:path*',
     '/settings/:path*',
