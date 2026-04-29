@@ -1,9 +1,62 @@
 'use client';
 
 import React from 'react';
-import { Session } from '@/types';
+import { Session, User } from '@/types';
 import { Download, Share2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+
+interface ShareCardData {
+  name: string;
+  totalHours: number;
+  sessionCount: number;
+  topTag: string;
+  streak: number;
+  label: string;
+}
+
+function computePeriodData(
+  sessions: Session[],
+  periodStart: Date,
+  label: string,
+  user: User | null
+): ShareCardData {
+  const periodSessions = sessions.filter(s => new Date(s.startTime) >= periodStart);
+  const totalHours = periodSessions.reduce((a, s) => a + s.durationSeconds, 0) / 3600;
+
+  const tagTime = new Map<string, number>();
+  periodSessions.forEach(s => {
+    s.tags.forEach(t => tagTime.set(t, (tagTime.get(t) || 0) + s.durationSeconds));
+  });
+  let topTag = '';
+  let topSec = 0;
+  tagTime.forEach((sec, tag) => {
+    if (sec > topSec) { topSec = sec; topTag = tag; }
+  });
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  let streak = 0;
+  const check = new Date(today);
+  while (true) {
+    const key = check.toISOString().split('T')[0];
+    const hasSession = sessions.some(s => {
+      const sd = new Date(s.startTime);
+      return sd.toISOString().split('T')[0] === key && s.durationSeconds > 0;
+    });
+    if (hasSession) { streak++; check.setDate(check.getDate() - 1); }
+    else if (check.getTime() === today.getTime()) { check.setDate(check.getDate() - 1); continue; }
+    else break;
+  }
+
+  return {
+    name: user?.name || user?.email?.split('@')[0] || 'User',
+    totalHours,
+    sessionCount: periodSessions.length,
+    topTag,
+    streak,
+    label,
+  };
+}
 
 interface ShareCardProps {
   sessions: Session[];
@@ -11,14 +64,7 @@ interface ShareCardProps {
 
 function generateCard(
   canvas: HTMLCanvasElement,
-  data: {
-    name: string;
-    totalHours: number;
-    sessionCount: number;
-    topTag: string;
-    streak: number;
-    month: string;
-  },
+  data: ShareCardData,
   logo: HTMLImageElement | null
 ) {
   const ctx = canvas.getContext('2d');
@@ -56,7 +102,7 @@ function generateCard(
   // Month
   ctx.fillStyle = '#64748b';
   ctx.font = '13px sans-serif';
-  ctx.fillText(data.month, 40, 80);
+  ctx.fillText(data.label, 40, 80);
 
   // Name
   ctx.fillStyle = '#1e293b';
@@ -133,63 +179,37 @@ export const ShareCard: React.FC<ShareCardProps> = ({ sessions }) => {
     };
   }, []);
 
-  const cardData = React.useMemo(() => {
+  const monthlyData = React.useMemo(() => {
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const monthLabel = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const label = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    return computePeriodData(sessions, monthStart, label, user);
+  }, [sessions, user]);
 
-    const monthSessions = sessions.filter(s => new Date(s.startTime) >= monthStart);
-    const totalHours = monthSessions.reduce((a, s) => a + s.durationSeconds, 0) / 3600;
-
-    // Top tag
-    const tagTime = new Map<string, number>();
-    monthSessions.forEach(s => {
-      s.tags.forEach(t => tagTime.set(t, (tagTime.get(t) || 0) + s.durationSeconds));
-    });
-    let topTag = '';
-    let topSec = 0;
-    tagTime.forEach((sec, tag) => {
-      if (sec > topSec) { topSec = sec; topTag = tag; }
-    });
-
-    // Streak
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    let streak = 0;
-    const check = new Date(today);
-    while (true) {
-      const key = check.toISOString().split('T')[0];
-      const hasSession = sessions.some(s => {
-        const sd = new Date(s.startTime);
-        return sd.toISOString().split('T')[0] === key && s.durationSeconds > 0;
-      });
-      if (hasSession) { streak++; check.setDate(check.getDate() - 1); }
-      else if (check.getTime() === today.getTime()) { check.setDate(check.getDate() - 1); continue; }
-      else break;
-    }
-
-    return {
-      name: user?.name || user?.email?.split('@')[0] || 'User',
-      totalHours,
-      sessionCount: monthSessions.length,
-      topTag,
-      streak,
-      month: monthLabel,
-    };
+  const yearlyData = React.useMemo(() => {
+    const now = new Date();
+    const yearStart = new Date(now.getFullYear(), 0, 1);
+    return computePeriodData(sessions, yearStart, String(now.getFullYear()), user);
   }, [sessions, user]);
 
   React.useEffect(() => {
     if (canvasRef.current) {
-      generateCard(canvasRef.current, cardData, logoRef.current);
+      generateCard(canvasRef.current, monthlyData, logoRef.current);
     }
-  }, [cardData, logoReady]);
+  }, [monthlyData, logoReady]);
 
-  const handleDownload = () => {
+  const downloadCard = (data: ShareCardData, filename: string) => {
     if (!canvasRef.current) return;
-    const link = document.createElement('a');
-    link.download = `memoria-${cardData.month.toLowerCase().replace(' ', '-')}.png`;
-    link.href = canvasRef.current.toDataURL('image/png');
-    link.click();
+    generateCard(canvasRef.current, data, logoRef.current);
+    setTimeout(() => {
+      if (!canvasRef.current) return;
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = canvasRef.current.toDataURL('image/png');
+      link.click();
+      // Restore monthly preview
+      generateCard(canvasRef.current, monthlyData, logoRef.current);
+    }, 100);
   };
 
   return (
@@ -199,13 +219,22 @@ export const ShareCard: React.FC<ShareCardProps> = ({ sessions }) => {
           <Share2 size={18} className="text-primary" />
           <h3 className="text-lg font-bold text-slate-900 dark:text-white">Share Stats</h3>
         </div>
-        <button
-          onClick={handleDownload}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-primary text-white hover:bg-blue-600 transition-colors cursor-pointer"
-        >
-          <Download size={16} />
-          Download PNG
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => downloadCard(monthlyData, `memoria-${monthlyData.label.toLowerCase().replace(' ', '-')}.png`)}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold bg-primary text-white hover:bg-blue-600 transition-colors cursor-pointer"
+          >
+            <Download size={14} />
+            Monthly
+          </button>
+          <button
+            onClick={() => downloadCard(yearlyData, `memoria-${yearlyData.label}.png`)}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition-colors cursor-pointer border border-slate-200 dark:border-white/10"
+          >
+            <Download size={14} />
+            Yearly
+          </button>
+        </div>
       </div>
 
       <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-white/10">
