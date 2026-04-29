@@ -9,6 +9,7 @@ import { useTags } from '@/hooks/useTags';
 import { TIME_TARGET_KEY, TIME_TARGET_AUDIO_ONLY_KEY } from '@/constants';
 import toast from 'react-hot-toast';
 import { Journal } from '@/components/Journal';
+import { SkeletonBlock } from '@/components/loading/SkeletonBlock';
 
 interface DashboardProps {
   sessions: Session[];
@@ -209,6 +210,15 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession, 
                             </div>
                         )}
                     </div>
+
+                    {/* Total Hours Today */}
+                    {isLoading ? (
+                      <SkeletonBlock className="h-5 w-32 rounded-md self-center" />
+                    ) : (
+                      <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium text-center">
+                        Total Today: <span className="font-bold text-slate-700 dark:text-slate-200">{formatDuration(totalSecondsToday / 3600)}</span>
+                      </p>
+                    )}
                 </div>
             </div>
         </section>
@@ -218,12 +228,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession, 
             onClose={() => setShowNotificationModal(false)} 
             onUnderstand={handleUnderstandNotification} 
         />
-
-        {/* Total Hours Today */}
-        <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/5 p-6 shadow-sm">
-            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Total Hours Today</p>
-            <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{formatDuration(totalSecondsToday / 3600)}</p>
-        </div>
 
         {/* Journal */}
         <Journal sessions={sessions} isLoading={isLoading} />
