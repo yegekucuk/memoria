@@ -14,6 +14,7 @@ import { Journal } from '@/components/Journal';
 import { SkeletonBlock } from '@/components/loading/SkeletonBlock';
 import { useSettings } from '@/context/SettingsContext';
 import { StreakHeatmap } from '@/components/StreakHeatmap';
+import { FocusInsights } from '@/components/FocusInsights';
 
 interface DashboardProps {
   sessions: Session[];
@@ -320,6 +321,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession, 
 
         {/* Streak & Heatmap */}
         <StreakHeatmap sessions={sessions} isLoading={isLoading} />
+
+        {/* Focus Insights */}
+        <FocusInsights sessions={sessions} isLoading={isLoading} />
 
         {/* Journal */}
         <Journal sessions={sessions} isLoading={isLoading} />
