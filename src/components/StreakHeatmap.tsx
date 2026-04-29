@@ -10,88 +10,122 @@ interface StreakHeatmapProps {
 }
 
 const MONTHS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const DAYS_SHORT = ['', 'M', '', 'W', '', 'F', ''];
+const DAY_SHORT = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
+const WEEKS_TO_SHOW = 12;
+
+type Cell = {
+  date: string;
+  intensity: 0 | 1 | 2 | 3 | 4;
+};
 
 function getIntensity(durationSeconds: number): 0 | 1 | 2 | 3 | 4 {
   if (durationSeconds <= 0) return 0;
-  if (durationSeconds < 1800) return 1; // < 30min
-  if (durationSeconds < 7200) return 2; // < 2h
-  if (durationSeconds < 14400) return 3; // < 4h
-  return 4; // 4h+
+  if (durationSeconds < 1800) return 1;
+  if (durationSeconds < 7200) return 2;
+  if (durationSeconds < 14400) return 3;
+  return 4;
+}
+
+function formatDateKey(d: Date): string {
+  return d.toISOString().split('T')[0];
 }
 
 export const StreakHeatmap: React.FC<StreakHeatmapProps> = ({ sessions, isLoading }) => {
-  const heatmapData = React.useMemo(() => {
+  const grid = React.useMemo(() => {
     const today = new Date();
-    today.setHours(23, 59, 59, 999);
+    today.setHours(0, 0, 0, 0);
 
-    // Build a map of date -> total seconds
+    // Start from Monday, 12 weeks ago
+    const start = new Date(today);
+    start.setDate(start.getDate() - (WEEKS_TO_SHOW * 7 - 1));
+    // Align to Monday (Sun=0 → shift back to previous Monday)
+    const startDow = start.getDay();
+    const mondayOffset = startDow === 0 ? 6 : startDow - 1;
+    start.setDate(start.getDate() - mondayOffset);
+
+    // Build date → seconds map
     const dayMap = new Map<string, number>();
     sessions.forEach(s => {
-      const d = new Date(s.startTime);
-      const key = d.toISOString().split('T')[0];
+      const key = formatDateKey(new Date(s.startTime));
       dayMap.set(key, (dayMap.get(key) || 0) + s.durationSeconds);
     });
 
-    // Generate last 84 days (12 weeks)
-    const cells: { date: string; intensity: 0 | 1 | 2 | 3 | 4; dayOfWeek: number }[] = [];
-    for (let i = 83; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      const key = d.toISOString().split('T')[0];
-      cells.push({
+    // Build grid: rows[dayOfWeek 0=Sun..6=Sat] → columns[week index]
+    const totalDays = Math.floor((today.getTime() - start.getTime()) / 86400000) + 1;
+    const numCols = Math.ceil(totalDays / 7);
+
+    const rows: (Cell | null)[][] = Array.from({ length: 7 }, () =>
+      Array.from({ length: numCols }, () => null)
+    );
+
+    for (let i = 0; i < totalDays; i++) {
+      const d = new Date(start);
+      d.setDate(d.getDate() + i);
+      const key = formatDateKey(d);
+      const row = d.getDay(); // 0=Sun .. 6=Sat
+      const col = Math.floor(i / 7);
+      rows[row][col] = {
         date: key,
         intensity: getIntensity(dayMap.get(key) || 0),
-        dayOfWeek: d.getDay(),
-      });
+      };
     }
 
-    return cells;
+    return { rows, numCols, start };
   }, [sessions]);
 
   const currentStreak = React.useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
     let streak = 0;
     const check = new Date(today);
 
     while (true) {
-      const key = check.toISOString().split('T')[0];
+      const key = formatDateKey(check);
       const hasSession = sessions.some(s => {
-        const sDate = new Date(s.startTime);
-        return sDate.toISOString().split('T')[0] === key && s.durationSeconds > 0;
+        return formatDateKey(new Date(s.startTime)) === key && s.durationSeconds > 0;
       });
 
       if (hasSession) {
         streak++;
         check.setDate(check.getDate() - 1);
       } else if (check.getTime() === today.getTime()) {
-        // Today hasn't happened yet, check yesterday
         check.setDate(check.getDate() - 1);
         continue;
       } else {
         break;
       }
     }
-
     return streak;
   }, [sessions]);
 
-  // Determine which months to show labels
-  const monthLabels: { label: string; col: number }[] = [];
-  heatmapData.forEach((cell, i) => {
-    const d = new Date(cell.date);
-    if (d.getDate() <= 7) {
-      monthLabels.push({ label: MONTHS_SHORT[d.getMonth()], col: Math.floor(i / 7) });
+  // Month labels: find first occurrence of each month
+  const monthLabels = React.useMemo(() => {
+    const labels: { label: string; col: number }[] = [];
+    for (let col = 0; col < grid.numCols; col++) {
+      for (let row = 0; row < 7; row++) {
+        const cell = grid.rows[row][col];
+        if (cell) {
+          const d = new Date(cell.date);
+          const month = MONTHS_SHORT[d.getMonth()];
+          if (labels.length === 0 || labels[labels.length - 1].label !== month) {
+            labels.push({ label: month, col });
+          }
+          break;
+        }
+      }
     }
-  });
+    return labels;
+  }, [grid]);
 
-  // Devivi into rows of 7 (weeks)
-  const weekRows: typeof heatmapData[] = [];
-  for (let i = 0; i < heatmapData.length; i += 7) {
-    weekRows.push(heatmapData.slice(i, i + 7));
-  }
+  const CELL = 'size-5 rounded-[3px]';
+  const GAP = 'gap-[3px]';
+  const INTENSITY_BLUE: Record<number, string> = {
+    0: 'bg-slate-100 dark:bg-white/[0.04]',
+    1: 'bg-blue-300 dark:bg-blue-800',
+    2: 'bg-blue-400 dark:bg-blue-600',
+    3: 'bg-blue-500 dark:bg-blue-500',
+    4: 'bg-blue-600 dark:bg-blue-400',
+  };
 
   return (
     <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-6 shadow-sm">
@@ -111,81 +145,76 @@ export const StreakHeatmap: React.FC<StreakHeatmapProps> = ({ sessions, isLoadin
       </div>
 
       {isLoading ? (
-        <div className="flex gap-1">
-          {Array.from({ length: 12 }).map((_, w) => (
-            <div key={w} className="flex flex-col gap-1">
+        <div className={`flex ${GAP}`}>
+          {Array.from({ length: WEEKS_TO_SHOW + 1 }).map((_, w) => (
+            <div key={w} className={`flex flex-col ${GAP}`}>
               {Array.from({ length: 7 }).map((_, d) => (
-                <div key={d} className="size-3 rounded-sm bg-slate-100 dark:bg-white/5 animate-pulse" />
+                <div key={d} className={`${CELL} bg-slate-100 dark:bg-white/5 animate-pulse`} />
               ))}
             </div>
           ))}
         </div>
       ) : (
         <div className="overflow-x-auto -mx-1 px-1">
-          <div className="flex gap-1 min-w-fit">
+          <div className="flex min-w-fit">
             {/* Day labels */}
-            <div className="flex flex-col gap-1 pr-2 pt-5">
-              {DAYS_SHORT.map((d, i) => (
-                <div key={i} className="h-3 text-[9px] text-slate-400 dark:text-slate-600 leading-3">
-                  {d}
+            <div className={`flex flex-col ${GAP} pr-2`} style={{ paddingTop: 20 }}>
+              {DAY_SHORT.map((label, i) => (
+                <div key={i} className={`${CELL} flex items-center text-[10px] text-slate-400 dark:text-slate-600 leading-none`}>
+                  {label}
                 </div>
               ))}
             </div>
 
             <div>
               {/* Month labels */}
-              <div className="flex mb-1" style={{ paddingLeft: 0 }}>
-                {monthLabels.map((m, i) => (
-                  <span
-                    key={i}
-                    className="text-[9px] text-slate-400 dark:text-slate-600"
-                    style={{ width: `${14 * 1}px`, marginLeft: i === 0 ? 0 : undefined }}
-                  >
-                    {m.label}
-                  </span>
-                ))}
+              <div className="flex h-5 mb-0.5 relative">
+                {monthLabels.map((m, i) => {
+                  const prevCol = i > 0 ? monthLabels[i - 1].col : 0;
+                  const span = m.col - prevCol;
+                  return (
+                    <span
+                      key={i}
+                      className="text-[10px] text-slate-400 dark:text-slate-600 leading-none"
+                      style={{
+                        width: `${span * 23}px`,
+                        marginLeft: i === 0 ? `${m.col * 23}px` : undefined,
+                      }}
+                    >
+                      {m.label}
+                    </span>
+                  );
+                })}
               </div>
 
               {/* Grid */}
-              <div className="flex gap-1">
-                {weekRows.map((week, wi) => (
-                  <div key={wi} className="flex flex-col gap-1">
-                    {week.map((cell, di) => (
-                      <div
-                        key={di}
-                        className="size-3 rounded-sm"
-                        style={{
-                          backgroundColor: cell.intensity === 0
-                            ? undefined
-                            : `rgba(59, 130, 246, ${cell.intensity * 0.25})`,
-                        }}
-                        title={`${cell.date}: ${cell.intensity > 0 ? 'Active' : 'No sessions'}`}
-                      >
-                        {cell.intensity === 0 && (
-                          <div className="size-3 rounded-sm bg-slate-100 dark:bg-white/[0.03]" />
-                        )}
-                      </div>
-                    ))}
+              <div className={`flex ${GAP}`}>
+                {Array.from({ length: grid.numCols }).map((_, col) => (
+                  <div key={col} className={`flex flex-col ${GAP}`}>
+                    {Array.from({ length: 7 }).map((_, row) => {
+                      const cell = grid.rows[row][col];
+                      if (!cell) {
+                        return <div key={row} className={CELL} />;
+                      }
+                      return (
+                        <div
+                          key={row}
+                          className={`${CELL} ${INTENSITY_BLUE[cell.intensity]}`}
+                          title={`${cell.date}${cell.intensity > 0 ? ` · Active` : ''}`}
+                        />
+                      );
+                    })}
                   </div>
                 ))}
               </div>
 
               {/* Legend */}
-              <div className="flex items-center justify-end gap-1 mt-2">
-                <span className="text-[9px] text-slate-400 dark:text-slate-500 mr-1">Less</span>
+              <div className="flex items-center justify-end gap-[3px] mt-2.5">
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 mr-1">Less</span>
                 {[0, 1, 2, 3, 4].map(level => (
-                  <div
-                    key={level}
-                    className="size-2.5 rounded-sm"
-                    style={{
-                      backgroundColor: level === 0
-                        ? 'var(--tw-slate-100)'
-                        : `rgba(59, 130, 246, ${level * 0.25})`,
-                    }}
-                    title={`Level ${level}`}
-                  />
+                  <div key={level} className={`${CELL} ${INTENSITY_BLUE[level]}`} />
                 ))}
-                <span className="text-[9px] text-slate-400 dark:text-slate-500 ml-1">More</span>
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 ml-1">More</span>
               </div>
             </div>
           </div>
