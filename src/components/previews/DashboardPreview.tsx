@@ -130,7 +130,7 @@ export const DashboardPreview: React.FC = () => {
                                         <span className='text-xs sm:text-base'>Start New Working Session</span>
                                     </button>
 
-                                    <div className="flex flex-col w-full gap-3 bg-white/50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
+                                    <div className="flex flex-col w-full gap-3 bg-white/50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-white/10 backdrop-blur-sm">
                                         <label className="flex items-center justify-between cursor-pointer group">
                                             <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Time Target</span>
                                             <div className="relative inline-flex items-center">
@@ -166,7 +166,7 @@ export const DashboardPreview: React.FC = () => {
                         <div className="flex flex-col gap-6">
                             {/* Daily Summary */}
                             <div className="flex flex-col gap-6">
-                                <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/5 p-6 shadow-sm min-h-[200px] flex flex-col justify-center">
+                                <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10 p-6 shadow-sm min-h-[200px] flex flex-col justify-center">
                                     <>
                                         <div className="flex items-center gap-3 mb-4">
                                             <div className="p-2 bg-primary/10 rounded-lg text-primary">

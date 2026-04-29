@@ -41,7 +41,7 @@ export const ActivityChart: React.FC<ActivityChartProps> = ({
   const [isTotal, setIsTotal] = React.useState(false);
 
   return (
-    <div className="bg-white dark:bg-[#1c232d] rounded-xl border border-[#e5e7eb] dark:border-[#283039] p-6 lg:p-8 shadow-sm">
+    <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10 p-6 lg:p-8 shadow-sm">
       <div className="flex justify-between items-start mb-8">
         <div>
           <h3 className="text-lg font-bold mb-1 text-slate-900 dark:text-white capitalize">
@@ -142,7 +142,7 @@ export const ActivityChart: React.FC<ActivityChartProps> = ({
       </div>
 
       {/* Custom Visual Bar Chart */}
-      <div className="relative h-75 w-full flex items-end gap-1 sm:gap-2 md:gap-3 justify-between px-2 pb-6 border-b border-[#e5e7eb] dark:border-[#283039] pl-10">
+      <div className="relative h-75 w-full flex items-end gap-1 sm:gap-2 md:gap-3 justify-between px-2 pb-6 border-b border-slate-200 dark:border-white/10 pl-10">
         {/* Y-Axis Labels */}
         <div className="absolute left-0 top-0 bottom-6 flex flex-col justify-between text-xs text-[#9dabb9] font-medium text-right pr-2 h-full w-10">
           <span>{maxVal}h</span>
@@ -193,7 +193,7 @@ export const ActivityChart: React.FC<ActivityChartProps> = ({
 
       {/* Children Container (Calendar) */}
       {children && (
-        <div className="mt-8 pt-6 border-t border-[#e5e7eb] dark:border-[#283039]">
+        <div className="mt-8 pt-6 border-t border-slate-200 dark:border-white/10">
             {children}
         </div>
       )}

@@ -56,7 +56,7 @@ export const TagItem: React.FC<TagItemProps> = ({ tag, onUpdate, onDelete, isDel
 
   return (
     <div
-      className="flex items-center justify-between p-3 rounded-lg bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/5 shadow-sm group hover:border-primary/30 transition-all"
+      className="flex items-center justify-between p-3 rounded-lg bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 shadow-sm group hover:border-primary/30 transition-all"
     >
       {isEditing ? (
         <div className="flex-1 flex flex-col gap-2">

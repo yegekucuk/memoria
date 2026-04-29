@@ -69,14 +69,14 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
       />
       
       {/* Modal Content */}
-      <div className="relative bg-[#111418] dark:bg-[#1a2027] w-full max-w-lg rounded-xl shadow-xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200 border border-[#283039]">
+      <div className="relative bg-white dark:bg-surface-dark w-full max-w-lg rounded-2xl shadow-xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200 border border-slate-200 dark:border-slate-800">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-[#283039] flex items-center justify-between">
-          <h2 className="text-xl font-bold text-white">Edit Session</h2>
+        <div className="px-6 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">Edit Session</h2>
           <button 
             onClick={onClose}
             disabled={isSaving}
-            className="p-2 hover:bg-[#283039] rounded-full transition-colors text-[#9dabb9]"
+            className="p-2 hover:bg-slate-100 dark:hover:bg-white/10 rounded-full transition-colors text-slate-500 dark:text-slate-400"
           >
             <X size={20} />
           </button>
@@ -97,7 +97,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                 <textarea 
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    className="form-input w-full resize-none rounded-lg text-white placeholder:text-[#6b7280] bg-[#222831] border border-[#283039] focus:border-primary focus:ring-1 focus:ring-primary min-h-[140px] p-4 text-sm font-normal leading-relaxed transition-all outline-none disabled:opacity-50" 
+                    className="form-input w-full resize-none rounded-lg text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 focus:border-primary focus:ring-1 focus:ring-primary min-h-[140px] p-4 text-sm font-normal leading-relaxed transition-all outline-none disabled:opacity-50" 
                     placeholder="Describe what you accomplished..."
                     disabled={isSaving}
                 ></textarea>
@@ -113,7 +113,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                 <button 
                   onClick={onClose}
                   disabled={isSaving}
-                  className="px-6 py-3 rounded-lg bg-transparent border border-[#3e4856] text-[#9dabb9] font-bold text-sm hover:text-white hover:bg-[#283039] transition-colors cursor-pointer disabled:opacity-50"
+                  className="px-6 py-3 rounded-lg bg-transparent border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 font-bold text-sm hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50"
                 >
                     Cancel
                 </button>

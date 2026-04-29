@@ -75,7 +75,7 @@ export const PieChartCard: React.FC<PieChartCardProps> = ({ sessions, allTags, e
   const isAccordionOpen = !isDesktopViewport || isDesktopOpen;
 
   return (
-    <div className="bg-white dark:bg-[#1c232d] rounded-xl border border-[#e5e7eb] dark:border-[#283039] p-6 lg:p-8 shadow-sm flex flex-col">
+    <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10 p-6 lg:p-8 shadow-sm flex flex-col">
       <button
         onClick={() => {
           if (isDesktopViewport) {

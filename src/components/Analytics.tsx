@@ -112,7 +112,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => 
                     <h2 className="text-[22px] font-bold leading-tight tracking-[-0.015em] pt-2 text-slate-900 dark:text-white">Key Insights</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                        <div className="bg-white dark:bg-[#1c232d] p-5 rounded-xl border border-[#e5e7eb] dark:border-[#283039] shadow-sm flex flex-col gap-3">
+                        <div className="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm flex flex-col gap-3">
                             <div className="flex items-center gap-3">
                                 <div className="size-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
                                     <Tag size={24} />
@@ -124,7 +124,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => 
                                 <p className="text-xs text-[#6b7280] dark:text-[#9dabb9] mt-1">{topTagPct}% of total time</p>
                             </div>
                         </div>
-                        <div className="bg-white dark:bg-[#1c232d] p-5 rounded-xl border border-[#e5e7eb] dark:border-[#283039] shadow-sm flex flex-col gap-3">
+                        <div className="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm flex flex-col gap-3">
                             <div className="flex items-center gap-3">
                                 <div className="size-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400">
                                     <Sigma size={24} />

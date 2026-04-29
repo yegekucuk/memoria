@@ -4,7 +4,7 @@ import { SkeletonBlock } from './SkeletonBlock';
 export const TagsSettingsSkeleton: React.FC = () => {
   return (
     <div className="w-full space-y-8" aria-busy="true" aria-live="polite">
-      <div className="rounded-2xl border border-slate-200 dark:border-white/5 bg-white dark:bg-surface-dark p-6 shadow-sm">
+      <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-6 shadow-sm">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
             <SkeletonBlock className="h-4 w-28" />

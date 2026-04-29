@@ -37,7 +37,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       />
       
       {/* Modal Content */}
-      <div className="relative bg-white dark:bg-surface-dark w-full max-w-sm rounded-xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative bg-white dark:bg-surface-dark w-full max-w-sm rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-slate-200 dark:border-slate-800">
         <div className="p-6">
           <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
             {title}

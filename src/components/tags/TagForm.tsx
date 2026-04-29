@@ -38,7 +38,7 @@ export const TagForm: React.FC<TagFormProps> = ({ onAddTag, isLoading, error }) 
   };
 
   return (
-    <div className="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-sm">
+    <div className="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm">
       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Add New Tag</h3>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex flex-col md:flex-row gap-4">

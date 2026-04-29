@@ -59,7 +59,7 @@ export const Features = () => {
                     Start New Working Session
                   </button>
 
-                  <div className="flex flex-col w-full gap-3 bg-white/50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
+                  <div className="flex flex-col w-full gap-3 bg-white/50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-white/10 backdrop-blur-sm">
                     <label className="flex items-center justify-between cursor-pointer">
                       <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Time Target</span>
                       <div className="relative inline-flex items-center">

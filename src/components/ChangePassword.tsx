@@ -56,7 +56,7 @@ export const ChangePassword = () => {
 
   return (
     <SubSetting sectionId="password" title="Change Password" defaultOpen>
-      <div className="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-sm">
+      <div className="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm">
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 flex flex-col gap-2">
