@@ -41,6 +41,9 @@ export async function POST(request: Request) {
         userId: user.id,
         endTime: null,
       },
+      include: {
+        tags: true,
+      },
     });
 
     if (existingActive) {
@@ -55,6 +58,9 @@ export async function POST(request: Request) {
         userId: user.id,
         startTime: new Date(),
         durationSeconds: 0,
+      },
+      include: {
+        tags: true,
       },
     });
 
