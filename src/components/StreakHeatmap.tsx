@@ -161,7 +161,7 @@ export const StreakHeatmap: React.FC<StreakHeatmapProps> = ({ sessions, isLoadin
       </div>
 
       {isLoading ? (
-        <div className={`w-full flex ${GAP}`}>
+        <div className={`w-full max-w-lg mx-auto flex ${GAP}`}>
           {Array.from({ length: WEEKS_TO_SHOW + 1 }).map((_, w) => (
             <div key={w} className={`flex-1 flex flex-col ${GAP}`}>
               {Array.from({ length: 7 }).map((_, d) => (
@@ -171,7 +171,7 @@ export const StreakHeatmap: React.FC<StreakHeatmapProps> = ({ sessions, isLoadin
           ))}
         </div>
       ) : (
-        <div className="w-full">
+        <div className="w-full max-w-lg mx-auto">
           {/* Month labels */}
           <div className={`flex ${GAP} mb-0.5`}>
             {monthSpans.map((m, i) => (
