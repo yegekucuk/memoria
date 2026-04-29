@@ -214,7 +214,7 @@ export const ShareCard: React.FC<ShareCardProps> = ({ sessions }) => {
 
   return (
     <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-6 shadow-sm">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <Share2 size={18} className="text-primary" />
           <h3 className="text-lg font-bold text-slate-900 dark:text-white">Share Stats</h3>
@@ -237,13 +237,7 @@ export const ShareCard: React.FC<ShareCardProps> = ({ sessions }) => {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-white/10">
-        <canvas
-          ref={canvasRef}
-          className="w-full h-auto"
-          style={{ maxWidth: '100%' }}
-        />
-      </div>
+      <canvas ref={canvasRef} className="hidden" />
     </div>
   );
 };
