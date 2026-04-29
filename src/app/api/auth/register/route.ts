@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import { registerSchema } from '@/lib/validations/auth';
 import { setAuthCookie } from '@/lib/auth';
 import { DEFAULT_TAG_COLORS, BCRYPT_SALT_ROUNDS } from '@/constants';
+import { handleApiError } from '@/lib/apiUtils';
 
 export async function POST(req: Request) {
   try {
@@ -61,10 +62,6 @@ export async function POST(req: Request) {
 
     return response;
   } catch (error) {
-    console.error('Registration error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Registration error');
   }
 }

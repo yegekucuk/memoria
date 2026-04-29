@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { loginSchema } from '@/lib/validations/auth';
 import { setAuthCookie } from '@/lib/auth';
+import { handleApiError } from '@/lib/apiUtils';
 
 export async function POST(req: Request) {
   try {
@@ -49,10 +50,6 @@ export async function POST(req: Request) {
 
     return response;
   } catch (error) {
-    console.error('Login error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Login error');
   }
 }
