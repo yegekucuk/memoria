@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useMemo, useState } from 'react';
 import { Tag, X } from 'lucide-react';
 import { Tag as TagType } from '@/types';

@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useMemo } from 'react';
 import { Session } from '@/types';
 import { Tag, Sigma } from 'lucide-react';

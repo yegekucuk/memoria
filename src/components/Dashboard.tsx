@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Session } from '@/types';
 import { Play } from 'lucide-react';

@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Clock, StopCircle, Target } from 'lucide-react';
 import { formatDurationHMS } from '@/utils/format';

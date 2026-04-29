@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { Session } from '@/types';
 import { Tag, Calendar, Clock, Timer } from 'lucide-react';

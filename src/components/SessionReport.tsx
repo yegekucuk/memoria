@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { Session } from '@/types';
 import { CheckCircle, Loader2 } from 'lucide-react';
