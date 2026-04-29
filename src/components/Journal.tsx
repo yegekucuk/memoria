@@ -1,7 +1,5 @@
 import React from 'react';
 import { BookOpenText, ChevronLeft, ChevronRight } from 'lucide-react';
-import { PageHeader } from '@/components/layout/PageHeader';
-import { PageLayout } from '@/components/layout/PageLayout';
 import { Session } from '@/types';
 import { formatDuration } from '@/utils/format';
 import { useTags } from '@/hooks/useTags';
@@ -61,12 +59,6 @@ export const Journal: React.FC<JournalProps> = ({ sessions, isLoading = false })
   };
 
   return (
-    <PageLayout className="animate-in slide-in-from-bottom-4 duration-500">
-      <PageHeader
-        title="Journal"
-        description="Your daily deep-work log, rendered exactly from your session notes."
-      />
-
       <section className="relative overflow-hidden rounded-2xl border border-slate-200/90 bg-white/90 shadow-sm dark:border-slate-700/60 dark:bg-[#1c232d]/90">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_100%_0%,rgba(30,64,175,0.08),transparent_45%)] dark:bg-[radial-gradient(circle_at_100%_0%,rgba(59,130,246,0.15),transparent_45%)]" />
 
@@ -189,6 +181,5 @@ export const Journal: React.FC<JournalProps> = ({ sessions, isLoading = false })
           </div>
         </div>
       </section>
-    </PageLayout>
   );
 };

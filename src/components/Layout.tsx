@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, BarChart2, BookOpen, LogIn, LogOut, Settings, Table, Menu } from 'lucide-react';
+import { LayoutDashboard, BarChart2, LogIn, LogOut, Settings, Table, Menu } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { AuthModal } from '@/components/AuthModal';
 import { useState, useEffect, useRef } from 'react';
@@ -129,7 +129,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                     {[
                       { href: '/dashboard', icon: <LayoutDashboard size={24} />, label: 'Dashboard' },
                       { href: '/analytics', icon: <BarChart2 size={24} />, label: 'Analytics' },
-                      { href: '/journal', icon: <BookOpen size={24} />, label: 'Journal' },
                       { href: '/sessions', icon: <Table size={24} />, label: 'Sessions' },
                       { href: '/settings', icon: <Settings size={24} />, label: 'Settings' },
                     ].map(({ href, icon, label }) => (

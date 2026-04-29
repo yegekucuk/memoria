@@ -1,6 +1,6 @@
 import React from 'react';
 import { Session } from '@/types';
-import { Play, Timer, FlaskConical, Tag } from 'lucide-react';
+import { Play } from 'lucide-react';
 import { formatDuration } from '../utils/format';
 import { useAuth } from '@/context/AuthContext';
 import { PageLayout } from './layout/PageLayout';
@@ -8,7 +8,7 @@ import { PageHeader } from './layout/PageHeader';
 import { useTags } from '@/hooks/useTags';
 import { TIME_TARGET_KEY, TIME_TARGET_AUDIO_ONLY_KEY } from '@/constants';
 import toast from 'react-hot-toast';
-import { DashboardSummarySkeleton } from './loading/DashboardSummarySkeleton';
+import { Journal } from '@/components/Journal';
 
 interface DashboardProps {
   sessions: Session[];
@@ -219,60 +219,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession, 
             onUnderstand={handleUnderstandNotification} 
         />
 
-        {/* Dashboard Grid */}
-        <div className="flex flex-col gap-6">
-            {/* Daily Summary */}
-            <div className="flex flex-col gap-6">
-                <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/5 p-6 shadow-sm min-h-50 flex flex-col justify-center">
-                    {isLoading ? (
-                        <DashboardSummarySkeleton />
-                    ) : (
-                        <>
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="p-2 bg-primary/10 rounded-lg text-primary">
-                                    <Timer size={24} />
-                                </div>
-                                <h3 className="text-slate-900 dark:text-white text-lg font-bold">Daily Summary</h3>
-                            </div>
-                            <div className="flex flex-col gap-1 mb-6">
-                                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Total Hours Today</p>
-                                <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{formatDuration(totalSecondsToday / 3600)}</p>
-                            </div>
-                            <div className="h-px bg-slate-100 dark:bg-white/10 w-full mb-4"></div>
-                            <div className="flex flex-col gap-4">
-                                <div className="flex items-center justify-between">
-                                    <p className="text-xs font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wider">Today&apos;s Sessions</p>
-                                </div>
-                                {todaysSessions.slice().reverse().map((session, i) => {
-                                   const colors = [
-                                       'bg-purple-500/10 text-purple-500',
-                                       'bg-orange-500/10 text-orange-500',
-                                       'bg-pink-500/10 text-pink-500',
-                                       'bg-blue-500/10 text-blue-500',
-                                       'bg-teal-500/10 text-teal-500',
-                                       'bg-indigo-500/10 text-indigo-500'
-                                   ];
-                                   const colorClass = colors[i % colors.length];
-                                   
-                                   return (
-                                   <div key={i} className="flex items-center gap-3">
-                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${colorClass}`}>
-                                            {session.tags[0] === 'Math' ? <FlaskConical size={20} /> : <Tag size={20} />}
-                                        </div>
-                                        <div className="flex flex-col flex-1 min-w-0">
-                                            <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{session.tags[0] || 'Uncategorized'}</p>
-                                            <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{session.notes || 'No notes'}</p>
-                                        </div>
-                                        <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">{Math.floor(session.durationSeconds / 60)}m</p>
-                                    </div>
-                                )})}
-                                {todaysSessions.length === 0 && <p className="text-sm text-slate-500">No sessions today.</p>}
-                            </div>
-                        </>
-                    )}
-                </div>
-            </div>
+        {/* Total Hours Today */}
+        <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/5 p-6 shadow-sm">
+            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Total Hours Today</p>
+            <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{formatDuration(totalSecondsToday / 3600)}</p>
         </div>
+
+        {/* Journal */}
+        <Journal sessions={sessions} isLoading={isLoading} />
     </PageLayout>
   );
 };

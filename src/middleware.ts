@@ -97,7 +97,6 @@ export const config = {
     '/api/auth/register',
     '/api/auth/password',
     '/analytics/:path*',
-    '/journal/:path*',
     '/settings/:path*',
     '/sessions/:path*',
   ],
