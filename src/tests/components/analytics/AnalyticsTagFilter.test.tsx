@@ -103,8 +103,24 @@ jest.mock('@/components/analytics/PieChartCard', () => ({
 
 jest.mock('@/context/SettingsContext', () => ({
   useSettings: () => ({
-    settings: { excludeWeekends: false },
+    settings: { excludeWeekends: false, dailyGoalMinutes: null, weeklyGoalMinutes: null },
+    toggleExcludeWeekends: () => {},
+    isLoading: false,
   }),
+}));
+
+jest.mock('@/context/AuthContext', () => ({
+  useAuth: () => ({
+    user: { id: '1', email: 'test@test.com', name: 'Test' },
+    loading: false,
+    isAuthenticated: true,
+    login: () => {},
+    logout: () => {},
+  }),
+}));
+
+jest.mock('@/components/ShareCard', () => ({
+  ShareCard: () => <div data-testid="share-card">ShareCard</div>,
 }));
 
 describe('Analytics - Tag Filter', () => {

@@ -13,7 +13,6 @@ import toast from 'react-hot-toast';
 import { Journal } from '@/components/Journal';
 import { SkeletonBlock } from '@/components/loading/SkeletonBlock';
 import { useSettings } from '@/context/SettingsContext';
-import { ShareCard } from '@/components/ShareCard';
 
 interface DashboardProps {
   sessions: Session[];
@@ -317,9 +316,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession, 
             onClose={() => setShowNotificationModal(false)} 
             onUnderstand={handleUnderstandNotification} 
         />
-
-        {/* Share Card */}
-        {!isLoading && <ShareCard sessions={sessions} />}
 
         {/* Journal */}
         <Journal sessions={sessions} isLoading={isLoading} />

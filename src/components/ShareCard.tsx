@@ -47,10 +47,27 @@ function generateCard(
   ctx.fill();
   ctx.restore();
 
+  // Logo — rounded square with 'm'
+  const logoX = 40;
+  const logoY = 32;
+  const logoSize = 24;
+  ctx.fillStyle = '#137fec';
+  ctx.beginPath();
+  ctx.roundRect(logoX, logoY, logoSize, logoSize, 6);
+  ctx.fill();
+
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 14px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('m', logoX + logoSize / 2, logoY + logoSize / 2);
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+
   // Title
   ctx.fillStyle = '#137fec';
   ctx.font = 'bold 16px sans-serif';
-  ctx.fillText('Memoria', 40, 50);
+  ctx.fillText('memoria', logoX + logoSize + 10, 50);
 
   // Month
   ctx.fillStyle = '#64748b';
@@ -113,7 +130,7 @@ function generateCard(
   // Footer
   ctx.fillStyle = '#94a3b8';
   ctx.font = '11px sans-serif';
-  ctx.fillText('Track your focus time at memoria.app', 40, h - 36);
+  ctx.fillText('Track your focus time at memoria.yegekucuk.me', 40, h - 36);
 }
 
 export const ShareCard: React.FC<ShareCardProps> = ({ sessions }) => {

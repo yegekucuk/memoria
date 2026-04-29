@@ -14,6 +14,7 @@ import { MonthlyCalendar } from './analytics/MonthlyCalendar';
 import { useSettings } from '../context/SettingsContext';
 import { AnalyticsSkeleton } from './loading/AnalyticsSkeleton';
 import { FocusInsights } from './FocusInsights';
+import { ShareCard } from './ShareCard';
 
 interface AnalyticsProps {
   sessions: Session[];
@@ -94,6 +95,9 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => 
 
                 {/* Focus Insights */}
                 <FocusInsights sessions={sessions} isLoading={isLoading} />
+
+                {/* Share Card */}
+                {!isLoading && <ShareCard sessions={sessions} />}
 
                 {/* Pie Chart */}
               <PieChartCard sessions={sessions} allTags={allTags} excludeWeekends={settings.excludeWeekends} />
