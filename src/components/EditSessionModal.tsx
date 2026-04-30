@@ -93,7 +93,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
 
             {/* Notes Input */}
             <div className="flex flex-col gap-2">
-                <label className="text-white text-sm font-medium leading-normal">Session Notes <span className="text-red-500">*</span></label>
+                <label className="text-slate-900 dark:text-white text-sm font-medium leading-normal">Session Notes <span className="text-red-500">*</span></label>
                 <textarea 
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}

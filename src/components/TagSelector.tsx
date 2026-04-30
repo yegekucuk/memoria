@@ -45,10 +45,10 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
 
   return (
     <div className="flex flex-col gap-2">
-      <label className="text-white text-sm font-medium leading-normal">
+      <label className="text-slate-900 dark:text-white text-sm font-medium leading-normal">
         Categorize Session <span className="text-red-500">*</span>
       </label>
-      <div className="flex flex-wrap gap-2 p-2 rounded-lg bg-[#222831] border border-[#283039] focus-within:ring-1 focus-within:ring-primary/50 focus-within:border-primary/50 transition-all min-h-[50px]">
+      <div className="flex flex-wrap gap-2 p-2 rounded-lg bg-slate-100 dark:bg-[#222831] border border-slate-200 dark:border-[#283039] focus-within:ring-1 focus-within:ring-primary/50 focus-within:border-primary/50 transition-all min-h-[50px]">
         {selectedTags.map(tag => {
           const tagColor = availableTags.find(t => t.name === tag)?.color;
           return (
@@ -70,7 +70,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
           );
         })}
         <input
-          className="bg-transparent border-none text-white text-sm placeholder:text-[#6b7280] focus:ring-0 grow min-w-[120px] h-8 outline-none"
+          className="bg-transparent border-none text-slate-900 dark:text-white text-sm placeholder:text-slate-400 dark:placeholder:text-[#6b7280] focus:ring-0 grow min-w-[120px] h-8 outline-none"
           placeholder="Search tags..."
           type="text"
           value={customTag}
@@ -86,7 +86,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
               key={tag.id}
               onClick={() => onToggle(tag.name)}
               disabled={disabled}
-              className="flex max-w-full items-center gap-1 rounded-md bg-[#283039] px-2 py-1 text-xs text-[#9dabb9] transition-colors hover:bg-[#3e4856] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex max-w-full items-center gap-1 rounded-md bg-slate-100 dark:bg-[#283039] px-2 py-1 text-xs text-slate-600 dark:text-[#9dabb9] transition-colors hover:bg-slate-200 dark:hover:bg-[#3e4856] hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-transparent disabled:cursor-not-allowed disabled:opacity-50"
             >
               <div className="w-2 h-2 rounded-full" style={{ backgroundColor: tag.color }}></div>
               <span className="max-w-36 truncate whitespace-nowrap">{tag.name}</span>
