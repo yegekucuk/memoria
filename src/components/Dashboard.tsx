@@ -56,7 +56,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, onClose, 
 };
 
 const GoalRing: React.FC<{ current: number; target: number; label: string }> = ({ current, target, label }) => {
-  const pct = Math.min(current / target, 1);
+  const pct = target <= 0 ? 0 : Math.min(current / target, 1);
   const radius = 18;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference * (1 - pct);
@@ -226,58 +226,81 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession, 
             description={new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
         />
         
-        {/* CTA Section */}
-        <section className="relative overflow-hidden rounded-2xl bg-mesh border border-slate-200 dark:border-white/10 shadow-lg group">
-            <div className="absolute inset-0 bg-mesh opacity-50 pointer-events-none"></div>
-            <div className="absolute -right-20 -top-20 w-64 h-64 bg-primary/20 rounded-full blur-[80px] pointer-events-none"></div>
-            <div className="relative z-10 flex flex-col items-center justify-center gap-6 px-6 py-10">
-                <div className="flex flex-col gap-3 text-center">
-                    <h2 className="text-slate-900 dark:text-white text-xl sm:text-3xl font-bold leading-tight">
-                        Ready to focus?
-                    </h2>
-                    <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-base font-normal leading-relaxed">
-                        Hit the button below and start new working session.
-                    </p>
-                </div>
+         {/* CTA Section */}
+         <section className="relative overflow-hidden rounded-2xl bg-mesh border border-slate-200 dark:border-white/10 shadow-lg group">
+             <div className="absolute inset-0 bg-mesh opacity-50 pointer-events-none"></div>
+             <div className="absolute -right-20 -top-20 w-64 h-64 bg-primary/20 rounded-full blur-[80px] pointer-events-none"></div>
+             <div className="relative z-10 flex flex-col items-center justify-center gap-6 px-6 py-10">
+                 <div className="flex flex-col gap-3 text-center">
+                     {isLoading ? (
+                       <>
+                         <SkeletonBlock className="h-8 w-56 rounded-xl mx-auto" />
+                         <SkeletonBlock className="h-5 w-80 rounded-lg mx-auto" />
+                       </>
+                     ) : (
+                       <>
+                         <h2 className="text-slate-900 dark:text-white text-xl sm:text-3xl font-bold leading-tight">
+                             Ready to focus?
+                         </h2>
+                         <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-base font-normal leading-relaxed">
+                             Hit the button below and start new working session.
+                         </p>
+                       </>
+                     )}
+                 </div>
 
-                <div className="flex flex-col items-center gap-4 w-full max-w-xs">
-                    <button 
-                        onClick={handleStartSession} 
-                        disabled={isStarting}
-                        className="flex w-full items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 whitespace-nowrap cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-md"
-                    >
-                        <Play size={20} fill="currentColor" />
-                        <span className='text-xs sm:text-base'>{isStarting ? 'Starting...' : 'Start New Working Session'}</span>
-                    </button>
-
-                    <div className="flex flex-col w-full gap-3 bg-white/50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-white/10 backdrop-blur-sm">
-                        <label className="flex items-center justify-between cursor-pointer group">
-                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Time Target</span>
-                            <div className="relative inline-flex items-center">
-                                <input 
-                                    type="checkbox" 
-                                    className="sr-only peer"
-                                    checked={timeTargetEnabled}
-                                    onChange={(e) => setTimeTargetEnabled(e.target.checked)}
-                                />
-                                <div className="w-9 h-5 bg-slate-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-slate-600 peer-checked:bg-primary"></div>
-                            </div>
-                        </label>
-                        
-                        {timeTargetEnabled && (
-                            <div className="flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
-                                <input 
-                                    type="number" 
-                                    min="1"
-                                    placeholder="Enter minutes"
-                                    value={timeTargetMinutes}
-                                    onChange={(e) => setTimeTargetMinutes(e.target.value === '' ? '' : parseInt(e.target.value))}
-                                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-medium"
-                                />
-                                <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">min</span>
-                            </div>
-                        )}
-                    </div>
+                 <div className="flex flex-col items-center gap-4 w-full max-w-xs">
+                     {isLoading ? (
+                       <SkeletonBlock className="h-12 w-full rounded-xl" />
+                     ) : (
+                       <button 
+                           onClick={handleStartSession} 
+                           disabled={isStarting}
+                           className="flex w-full items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 whitespace-nowrap cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-md"
+                       >
+                           <Play size={20} fill="currentColor" />
+                           <span className='text-xs sm:text-base'>{isStarting ? 'Starting...' : 'Start New Working Session'}</span>
+                       </button>
+                     )}
+ 
+                     {isLoading ? (
+                       <div className="flex flex-col w-full gap-3 bg-white/50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-white/10 backdrop-blur-sm">
+                         <div className="flex items-center justify-between">
+                           <SkeletonBlock className="h-4 w-24 rounded-md" />
+                           <SkeletonBlock className="h-5 w-9 rounded-full" />
+                         </div>
+                         <SkeletonBlock className="h-10 w-full rounded-lg" />
+                       </div>
+                     ) : (
+                       <div className="flex flex-col w-full gap-3 bg-white/50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-white/10 backdrop-blur-sm">
+                           <label className="flex items-center justify-between cursor-pointer group">
+                               <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Time Target</span>
+                               <div className="relative inline-flex items-center">
+                                   <input 
+                                       type="checkbox" 
+                                       className="sr-only peer"
+                                       checked={timeTargetEnabled}
+                                       onChange={(e) => setTimeTargetEnabled(e.target.checked)}
+                                   />
+                                   <div className="w-9 h-5 bg-slate-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-slate-600 peer-checked:bg-primary"></div>
+                               </div>
+                           </label>
+                           
+                           {timeTargetEnabled && (
+                               <div className="flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                                   <input 
+                                       type="number" 
+                                       min="1"
+                                       placeholder="Enter minutes"
+                                       value={timeTargetMinutes}
+                                       onChange={(e) => setTimeTargetMinutes(e.target.value === '' ? '' : parseInt(e.target.value))}
+                                       className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-medium"
+                                   />
+                                   <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">min</span>
+                               </div>
+                           )}
+                       </div>
+                     )}
 
                     {/* Total Hours Today */}
                     {isLoading ? (
@@ -288,28 +311,33 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession, 
                       </p>
                     )}
 
-                    {/* Goal Progress */}
-                    {!isLoading && (settings.dailyGoalMinutes || settings.weeklyGoalMinutes) ? (
-                      <div className="flex items-center justify-center gap-5 pt-1">
-                        {settings.dailyGoalMinutes ? (
-                          <GoalRing
-                            current={totalSecondsToday}
-                            target={settings.dailyGoalMinutes * 60}
-                            label="Daily"
-                          />
-                        ) : null}
-                        {settings.weeklyGoalMinutes ? (
-                          <GoalRing
-                            current={totalSecondsWeek}
-                            target={settings.weeklyGoalMinutes * 60}
-                            label="Weekly"
-                          />
-                        ) : null}
-                      </div>
-                    ) : null}
-                </div>
-            </div>
-        </section>
+                     {/* Goal Progress */}
+                     {isLoading ? (
+                       <div className="flex items-center justify-center gap-5 pt-1">
+                         <SkeletonBlock className="size-12 rounded-full" />
+                         <SkeletonBlock className="size-12 rounded-full" />
+                       </div>
+                     ) : (settings.dailyGoalMinutes || settings.weeklyGoalMinutes) ? (
+                       <div className="flex items-center justify-center gap-5 pt-1">
+                         {settings.dailyGoalMinutes ? (
+                           <GoalRing
+                             current={totalSecondsToday}
+                             target={settings.dailyGoalMinutes * 60}
+                             label="Daily"
+                           />
+                         ) : null}
+                         {settings.weeklyGoalMinutes ? (
+                           <GoalRing
+                             current={totalSecondsWeek}
+                             target={settings.weeklyGoalMinutes * 60}
+                             label="Weekly"
+                           />
+                         ) : null}
+                       </div>
+                     ) : null}
+                 </div>
+             </div>
+         </section>
 
         <NotificationModal 
             isOpen={showNotificationModal} 
@@ -317,8 +345,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions, onStartSession, 
             onUnderstand={handleUnderstandNotification} 
         />
 
-        {/* Journal */}
-        <Journal sessions={sessions} isLoading={isLoading} />
-    </PageLayout>
-  );
+         {/* Journal */}
+         <Journal sessions={sessions} isLoading={!!isLoading} />
+     </PageLayout>
+   );
 };
