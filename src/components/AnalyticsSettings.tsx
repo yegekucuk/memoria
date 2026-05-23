@@ -5,7 +5,7 @@ import { useSettings } from '@/context/SettingsContext';
 import { SubSetting } from './SubSetting';
 
 export const AnalyticsSettings: React.FC = () => {
-    const { settings, toggleExcludeWeekends, isLoading } = useSettings();
+    const { settings, toggleExcludeWeekends } = useSettings();
 
     return (
         <SubSetting
