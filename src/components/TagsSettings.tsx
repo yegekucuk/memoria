@@ -9,7 +9,6 @@ import { TagForm } from './tags/TagForm';
 import { TagList } from './tags/TagList';
 import { ConfirmationModal } from './ConfirmationModal';
 import { SubSetting } from './SubSetting';
-import { TagsSettingsSkeleton } from './loading/TagsSettingsSkeleton';
 
 export const TagsSettings: React.FC = () => {
   const { user } = useAuth();
@@ -62,25 +61,19 @@ export const TagsSettings: React.FC = () => {
       subtitle="Manage tags for categorizing your time"
     >
       <div className='w-full space-y-8'>
-        {isLoading ? (
-          <TagsSettingsSkeleton />
-        ) : (
-          <>
-            <TagForm 
-              onAddTag={handleCreateTag} 
-              isLoading={isCreating} 
-              error={hookError} 
-            />
-            
-            <TagList 
-              tags={tags} 
-              onUpdateTag={handleUpdateTag} 
-              onDeleteTag={handleDeleteClick} 
-              deletingId={deletingId}
-              isLoading={isLoading}
-            />
-          </>
-        )}
+        <TagForm 
+          onAddTag={handleCreateTag} 
+          isLoading={isCreating} 
+          error={hookError} 
+        />
+        
+        <TagList 
+          tags={tags} 
+          onUpdateTag={handleUpdateTag} 
+          onDeleteTag={handleDeleteClick} 
+          deletingId={deletingId}
+          isLoading={isLoading}
+        />
       </div>
 
       <ConfirmationModal
