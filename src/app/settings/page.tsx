@@ -37,9 +37,6 @@ export default function SettingsPage() {
 
           <section id="appearance">
               <ThemeSwitcher />
-          </section>
-
-          <section id="account">
               <DeleteAccount />
           </section>
         </div>
