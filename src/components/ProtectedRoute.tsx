@@ -3,7 +3,6 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { PageGateSkeleton } from '@/components/loading/PageGateSkeleton';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -20,7 +19,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }, [loading, isAuthenticated, router]);
 
   if (loading) {
-    return <PageGateSkeleton />;
+    // Root Layout already renders shell (sidebar/topbar). Avoid full-page skeleton here.
+    return null;
   }
 
   if (!isAuthenticated) {
