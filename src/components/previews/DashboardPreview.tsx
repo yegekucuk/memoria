@@ -1,14 +1,54 @@
 import React, { useState } from 'react';
-import { Play, Timer, FlaskConical, Tag, Code, LayoutDashboard, BarChart2, Table, Settings, LogOut, Menu, Zap, BookOpen } from 'lucide-react';
+import { Play, LayoutDashboard, BarChart2, Table, Settings, LogOut, Menu, ChevronLeft, ChevronRight } from 'lucide-react';
+
+const GoalRing: React.FC<{ current: number; target: number; label: string }> = ({ current, target, label }) => {
+  const pct = target <= 0 ? 0 : Math.min(current / target, 1);
+  const radius = 18;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference * (1 - pct);
+
+  const currentHours = current / 3600;
+  const targetHours = target / 3600;
+
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <div className="relative w-12 h-12">
+        <svg className="w-12 h-12 -rotate-90" viewBox="0 0 44 44">
+          <circle
+            cx="22" cy="22" r={radius}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            className="text-slate-200 dark:text-slate-700"
+          />
+          <circle
+            cx="22" cy="22" r={radius}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            className="text-primary transition-all duration-700"
+          />
+        </svg>
+        <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-slate-600 dark:text-slate-300">
+          {Math.round(pct * 100)}%
+        </span>
+      </div>
+      <div className="text-center">
+        <p className="text-[10px] font-semibold text-slate-400 dark:text-slate-500">{label}</p>
+        <p className="text-[10px] font-medium text-slate-500 dark:text-slate-400">
+          {currentHours.toFixed(1)}/{targetHours}h
+        </p>
+      </div>
+    </div>
+  );
+};
 
 export const DashboardPreview: React.FC = () => {
   const [timeTargetEnabled, setTimeTargetEnabled] = useState(false);
   const [timeTargetMinutes, setTimeTargetMinutes] = useState<number | ''>('');
-
-  const handleStartSession = (e: React.MouseEvent) => {
-      e.preventDefault();
-      // No action
-  };
 
   const preventDefault = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -27,7 +67,7 @@ export const DashboardPreview: React.FC = () => {
             </div>
 
             {/* Application Layout */}
-            <div className="flex h-[600px] w-full relative">
+            <div className="flex h-[750px] w-full relative">
                 
                 {/* Sidebar - Desktop */}
                 <aside className="hidden md:flex w-64 flex-col border-r border-slate-200 dark:border-white/10 bg-white dark:bg-background-dark h-full shrink-0">
@@ -59,13 +99,6 @@ export const DashboardPreview: React.FC = () => {
                                   onClick={preventDefault}
                                   className="flex items-center gap-3 px-3 py-3 rounded-lg w-full text-left text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
                                 >
-                                    <BookOpen size={20} />
-                                    <p className="text-sm font-medium leading-normal">Journal</p>
-                                </button>
-                                <button 
-                                  onClick={preventDefault}
-                                  className="flex items-center gap-3 px-3 py-3 rounded-lg w-full text-left text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
-                                >
                                     <Table size={20} />
                                     <p className="text-sm font-medium leading-normal">Sessions</p>
                                 </button>
@@ -87,7 +120,7 @@ export const DashboardPreview: React.FC = () => {
                             >
                                 <LogOut size={20} />
                                 <p className="text-sm font-medium leading-normal">Logout</p>
-                            </button>
+                             </button>
                         </div>
                     </div>
                 </aside>
@@ -102,10 +135,15 @@ export const DashboardPreview: React.FC = () => {
                 {/* Main Content Area */}
                 <main className="flex-1 flex flex-col h-full bg-background-light dark:bg-background-dark overflow-y-auto w-full">
                     <div className="w-full max-w-[1200px] mx-auto p-4 md:p-8 flex flex-col gap-8">
+                        
                         {/* Header Section - Static for preview */}
                         <div className="flex flex-col gap-1 mt-12 md:mt-0">
-                            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Welcome back, Jane!</h1>
-                            <p className="text-slate-500 dark:text-slate-400 font-medium">Wednesday, February 11</p>
+                            <h1 className="text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em] text-slate-900 dark:text-white">
+                                Welcome back, Jane!
+                            </h1>
+                            <p className="text-slate-500 dark:text-slate-400 text-base font-normal">
+                                Wednesday, February 11
+                            </p>
                         </div>
                         
                         {/* CTA Section */}
@@ -123,11 +161,11 @@ export const DashboardPreview: React.FC = () => {
                                 </div>
                                 <div className="flex flex-col items-center gap-4 w-full max-w-xs">
                                     <button 
-                                        onClick={handleStartSession} 
+                                        onClick={preventDefault} 
                                         className="flex w-full items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 whitespace-nowrap cursor-pointer text-center"
                                     >
                                         <Play size={20} fill="currentColor" />
-                                        <span className='text-xs sm:text-base'>Start New Working Session</span>
+                                        <span className="text-xs sm:text-base">Start New Working Session</span>
                                     </button>
 
                                     <div className="flex flex-col w-full gap-3 bg-white/50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-white/10 backdrop-blur-sm">
@@ -158,86 +196,164 @@ export const DashboardPreview: React.FC = () => {
                                             </div>
                                         )}
                                     </div>
+
+                                    {/* Total Hours Today */}
+                                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium text-center">
+                                        Total Today: <span className="font-bold text-slate-700 dark:text-slate-200">5h 30m</span>
+                                    </p>
+
+                                    {/* Goal Progress - Circle rings matching real app */}
+                                    <div className="flex items-center justify-center gap-5 pt-1">
+                                        <GoalRing
+                                            current={5.5 * 3600}
+                                            target={8 * 3600}
+                                            label="Daily"
+                                        />
+                                        <GoalRing
+                                            current={24 * 3600}
+                                            target={40 * 3600}
+                                            label="Weekly"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </section>
 
-                        {/* Dashboard Grid */}
-                        <div className="flex flex-col gap-6">
-                            {/* Daily Summary */}
-                            <div className="flex flex-col gap-6">
-                                <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10 p-6 shadow-sm min-h-[200px] flex flex-col justify-center">
-                                    <>
-                                        <div className="flex items-center gap-3 mb-4">
-                                            <div className="p-2 bg-primary/10 rounded-lg text-primary">
-                                                <Timer size={24} />
-                                            </div>
-                                            <h3 className="text-slate-900 dark:text-white text-lg font-bold">Daily Summary</h3>
+                        {/* Sessions List (Journal View) - Timeline matching Journal.tsx */}
+                        <section className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-6 shadow-sm">
+                            <div className="px-4 py-5 sm:px-8 sm:py-7">
+                                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex flex-col gap-0.5">
+                                            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Sessions List</h2>
+                                            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Today - February 11</p>
                                         </div>
-                                        <div className="flex flex-col gap-1 mb-6">
-                                            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Total Hours Today</p>
-                                            <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">5 hours 30 minutes</p>
-                                        </div>
-                                        <div className="h-px bg-slate-100 dark:bg-white/10 w-full mb-4"></div>
-                                        <div className="flex flex-col gap-4">
-                                            <div className="flex items-center justify-between">
-                                                <p className="text-xs font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wider">Today&apos;s Sessions</p>
-                                            </div>
-                                            
-                                            {/* Session 1: Reading */}
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-purple-500/10 text-purple-500">
-                                                    <Tag size={20} />
-                                                </div>
-                                                <div className="flex flex-col flex-1 min-w-0">
-                                                    <p className="text-sm font-bold text-slate-900 dark:text-white truncate">Reading</p>
-                                                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Sapiens</p>
-                                                </div>
-                                                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">30m</p>
-                                            </div>
+                                    </div>
 
-                                             {/* Session 2: Coding */}
-                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-blue-500/10 text-blue-500">
-                                                    <Code size={20} />
-                                                </div>
-                                                <div className="flex flex-col flex-1 min-w-0">
-                                                    <p className="text-sm font-bold text-slate-900 dark:text-white truncate">Coding</p>
-                                                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Working on the JWT authentication</p>
-                                                </div>
-                                                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">90m</p>
-                                            </div>
+                                    <div className="flex items-center gap-2 self-end sm:self-auto">
+                                        <button
+                                            onClick={preventDefault}
+                                            className="rounded-full border border-primary/30 px-3 py-1.5 text-xs font-semibold tracking-wide text-primary transition-colors hover:bg-primary/10 cursor-pointer dark:border-primary/40 dark:text-primary dark:hover:bg-primary/20"
+                                        >
+                                            Today
+                                        </button>
+                                        <button
+                                            onClick={preventDefault}
+                                            className="flex w-9 h-9 items-center justify-center rounded-full border border-primary/30 text-primary transition-colors hover:bg-primary/10 cursor-pointer dark:border-primary/40 dark:text-primary dark:hover:bg-primary/20"
+                                        >
+                                            <ChevronLeft size={18} />
+                                        </button>
+                                        <button
+                                            disabled
+                                            className="flex w-9 h-9 items-center justify-center rounded-full border transition-colors border-slate-200 text-slate-300 dark:border-slate-700 dark:text-slate-600 cursor-not-allowed"
+                                        >
+                                            <ChevronRight size={18} />
+                                        </button>
+                                    </div>
+                                </div>
 
+                                <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-slate-50/80 px-3 py-1.5 text-xs font-semibold tracking-wide text-slate-600 dark:border-slate-600/70 dark:bg-slate-800/70 dark:text-slate-300">
+                                    <span>3 entries</span>
+                                    <span className="text-slate-300 dark:text-slate-600">•</span>
+                                    <span>5h 30m</span>
+                                </div>
 
+                                <div className="mt-6">
+                                    <div className="flex flex-col">
+                                        {/* Entry 1 */}
+                                        <div className="relative pl-8 pb-6 group last:pb-0">
+                                            <div className="absolute left-[7.5px] top-5 bottom-0 w-px bg-slate-200 dark:bg-slate-700/60" />
+                                            <span className="absolute left-0 top-4 z-10 w-4 h-4 rounded-full border-[2.5px] border-primary bg-white dark:bg-surface-dark ring-4 ring-primary/[0.07] dark:ring-primary/10" />
 
-                                            {/* Session 4: Meditation */}
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-teal-500/10 text-teal-500">
-                                                    <Zap size={20} />
+                                            <div className="flex flex-col gap-2.5 pt-0.5">
+                                                <div className="flex items-center gap-2.5 flex-wrap">
+                                                    <span className="font-mono text-xs font-semibold tracking-wide text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-white/[0.04] px-2.5 py-1 rounded-lg">
+                                                        04:30 PM
+                                                    </span>
+                                                    <span className="font-mono text-xs font-bold text-primary bg-primary/[0.06] dark:bg-primary/10 px-2.5 py-1 rounded-lg">
+                                                        3h 10m
+                                                    </span>
                                                 </div>
-                                                <div className="flex flex-col flex-1 min-w-0">
-                                                    <p className="text-sm font-bold text-slate-900 dark:text-white truncate">Meditation</p>
-                                                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Mindfulness practice</p>
-                                                </div>
-                                                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">20m</p>
-                                            </div>
 
-                                            {/* Session 5: Studying */}
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-pink-500/10 text-pink-500">
-                                                    <FlaskConical size={20} />
+                                                <div className="flex flex-wrap gap-1">
+                                                    <span
+                                                        className="inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium bg-pink-500/10 text-pink-500 border-pink-500/20"
+                                                    >
+                                                        Studying
+                                                    </span>
                                                 </div>
-                                                <div className="flex flex-col flex-1 min-w-0">
-                                                    <p className="text-sm font-bold text-slate-900 dark:text-white truncate">Studying</p>
-                                                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Preparing for exams</p>
-                                                </div>
-                                                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">190m</p>
+
+                                                <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                                                    Preparing for exams
+                                                </p>
                                             </div>
                                         </div>
-                                    </>
+
+                                        {/* Entry 2 */}
+                                        <div className="relative pl-8 pb-6 group last:pb-0">
+                                            <div className="absolute left-[7.5px] top-5 bottom-0 w-px bg-slate-200 dark:bg-slate-700/60" />
+                                            <span className="absolute left-0 top-4 z-10 w-4 h-4 rounded-full border-[2.5px] border-primary bg-white dark:bg-surface-dark ring-4 ring-primary/[0.07] dark:ring-primary/10" />
+
+                                            <div className="flex flex-col gap-2.5 pt-0.5">
+                                                <div className="flex items-center gap-2.5 flex-wrap">
+                                                    <span className="font-mono text-xs font-semibold tracking-wide text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-white/[0.04] px-2.5 py-1 rounded-lg">
+                                                        10:15 AM
+                                                    </span>
+                                                    <span className="font-mono text-xs font-bold text-primary bg-primary/[0.06] dark:bg-primary/10 px-2.5 py-1 rounded-lg">
+                                                        1h 30m
+                                                    </span>
+                                                </div>
+
+                                                <div className="flex flex-wrap gap-1">
+                                                    <span
+                                                        className="inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium bg-blue-500/10 text-blue-500 border-blue-500/20"
+                                                    >
+                                                        Coding
+                                                    </span>
+                                                </div>
+
+                                                <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                                                    Working on the JWT authentication
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {/* Entry 3 */}
+                                        <div className="relative pl-8 pb-6 group last:pb-0">
+                                            <span className="absolute left-0 top-4 z-10 w-4 h-4 rounded-full border-[2.5px] border-primary bg-white dark:bg-surface-dark ring-4 ring-primary/[0.07] dark:ring-primary/10" />
+
+                                            <div className="flex flex-col gap-2.5 pt-0.5">
+                                                <div className="flex items-center gap-2.5 flex-wrap">
+                                                    <span className="font-mono text-xs font-semibold tracking-wide text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-white/[0.04] px-2.5 py-1 rounded-lg">
+                                                        09:30 AM
+                                                    </span>
+                                                    <span className="font-mono text-xs font-bold text-primary bg-primary/[0.06] dark:bg-primary/10 px-2.5 py-1 rounded-lg">
+                                                        30m
+                                                    </span>
+                                                </div>
+
+                                                <div className="flex flex-wrap gap-1">
+                                                    <span
+                                                        className="inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium bg-purple-500/10 text-purple-500 border-purple-500/20"
+                                                    >
+                                                        Reading
+                                                    </span>
+                                                    <span
+                                                        className="inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium bg-teal-500/10 text-teal-500 border-teal-500/20"
+                                                    >
+                                                        Meditation
+                                                    </span>
+                                                </div>
+
+                                                <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                                                    Sapiens reading session and morning mindfulness
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </section>
                     </div>
                 </main>
             </div>
