@@ -3,14 +3,12 @@ import type { NextRequest } from 'next/server';
 import { rateLimit, getClientIp } from '@/lib/rateLimit';
 import { RATE_LIMITS } from '@/constants/rateLimit';
 import { PROTECTED_PATHS } from '@/constants/routes';
-import { AUTH_COOKIE_NAME } from '@/constants/auth';
-import { jwtVerify } from 'jose';
 
 const LOCALHOST_HOSTNAMES = new Set(['localhost', '127.0.0.1', '::1']);
 const READ_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
-export async function middleware(request: NextRequest) {
-  const token = request.cookies.get(AUTH_COOKIE_NAME)?.value;
+export function middleware(request: NextRequest) {
+  const token = request.cookies.get('token')?.value;
   const { pathname } = request.nextUrl;
   const method = request.method;
   const isDevLocalRequest =
@@ -84,35 +82,6 @@ export async function middleware(request: NextRequest) {
     }
     // Pages redirect to login
     return NextResponse.redirect(new URL('/', request.url));
-  }
-
-  if (isProtected && token) {
-    const secret = process.env.JWT_SECRET;
-    if (!secret) {
-      // Mirror server-side hard requirement. Avoid silently accepting tokens.
-      return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 });
-    }
-
-    try {
-      // Edge-safe JWT verification. We only care that signature+exp are valid.
-      const key = new TextEncoder().encode(secret);
-      await jwtVerify(token, key);
-    } catch {
-      // Token expired/invalid: clear cookie to stop redirect loops.
-      const response = pathname.startsWith('/api/')
-        ? NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-        : NextResponse.redirect(new URL('/', request.url));
-      response.cookies.set({
-        name: AUTH_COOKIE_NAME,
-        value: '',
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        path: '/',
-        maxAge: 0,
-      });
-      return response;
-    }
   }
 
   return NextResponse.next();

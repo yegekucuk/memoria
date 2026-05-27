@@ -7,7 +7,7 @@ export async function GET() {
     const currentUser = await requireAuth();
 
     const user = await prisma.user.findUnique({
-      where: { id: currentUser.id },
+      where: { email: currentUser.email },
       include: { settings: true },
     });
 
@@ -35,7 +35,7 @@ export async function PATCH(req: Request) {
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: currentUser.id },
+      where: { email: currentUser.email },
     });
 
     if (!user) {

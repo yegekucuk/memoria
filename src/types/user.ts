@@ -6,4 +6,6 @@ export interface User {
 
 export interface UserPayload {
   id: string;
+  email: string;
+  name?: string | null;
 }
