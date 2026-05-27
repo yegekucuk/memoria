@@ -39,7 +39,8 @@ export async function getCurrentUser(): Promise<UserPayload | null> {
  * Used by both login and register routes.
  */
 export function setAuthCookie(response: NextResponse, user: { id: string; email: string; name?: string | null }): void {
-  const token = signToken({ id: user.id, email: user.email, name: user.name });
+  // Keep JWT payload minimal; all user data comes from DB.
+  const token = signToken({ id: user.id });
 
   response.cookies.set({
     name: AUTH_COOKIE_NAME,
