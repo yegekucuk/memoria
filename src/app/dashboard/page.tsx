@@ -4,6 +4,7 @@ import { useSession } from '@/context/SessionContext';
 import { Dashboard } from '@/components/Dashboard';
 import { ActiveSession } from '@/components/ActiveSession';
 import { SessionReport } from '@/components/SessionReport';
+import { LoadingScreen } from '@/components/LoadingScreen';
 
 export default function DashboardPage() {
   const { 
@@ -16,6 +17,10 @@ export default function DashboardPage() {
     discardSession,
     isLoading
   } = useSession();
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   if (activeSessionStartTime) {
       return (
@@ -36,7 +41,7 @@ export default function DashboardPage() {
             onDiscard={discardSession}
         />
       )}
-      <Dashboard sessions={sessions} onStartSession={startSession} isLoading={isLoading} />
+      <Dashboard sessions={sessions} onStartSession={startSession} />
     </>
   );
 }

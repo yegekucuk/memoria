@@ -7,12 +7,11 @@ import { formatDuration } from '@/utils/format';
 
 interface FocusInsightsProps {
   sessions: Session[];
-  isLoading?: boolean;
 }
 
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-export const FocusInsights: React.FC<FocusInsightsProps> = ({ sessions, isLoading }) => {
+export const FocusInsights: React.FC<FocusInsightsProps> = ({ sessions }) => {
   const completed = React.useMemo(() => sessions.filter(s => s.durationSeconds > 0), [sessions]);
 
   const insights = React.useMemo(() => {
@@ -64,24 +63,6 @@ export const FocusInsights: React.FC<FocusInsightsProps> = ({ sessions, isLoadin
       totalHours: completed.reduce((a, s) => a + s.durationSeconds, 0) / 3600,
     };
   }, [completed]);
-
-  if (isLoading) {
-    return (
-      <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-6 shadow-sm">
-        <div className="flex items-center gap-2 mb-4">
-          <TrendingUp size={18} className="text-slate-400" />
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="flex flex-col gap-2 p-3 rounded-xl bg-slate-50 dark:bg-white/[0.02] animate-pulse">
-              <div className="h-3 w-16 bg-slate-200 dark:bg-white/10 rounded" />
-              <div className="h-5 w-20 bg-slate-200 dark:bg-white/10 rounded" />
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
 
   if (!insights) {
     return (

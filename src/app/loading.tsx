@@ -1,6 +1,6 @@
 import React from 'react';
-import { PageGateSkeleton } from '@/components/loading/PageGateSkeleton';
+import { LoadingScreen } from '@/components/LoadingScreen';
 
 export default function Loading() {
-  return <PageGateSkeleton />;
+  return <LoadingScreen />;
 }

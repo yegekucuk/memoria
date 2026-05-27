@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { rateLimit, getClientIp } from '@/lib/rateLimit';
 import { RATE_LIMITS } from '@/constants/rateLimit';
-import { MIDDLEWARE_MATCHER, PROTECTED_PATHS } from '@/constants/routes';
+import { PROTECTED_PATHS } from '@/constants/routes';
 import { AUTH_COOKIE_NAME } from '@/constants/auth';
 import { jwtVerify } from 'jose';
 
@@ -119,5 +119,19 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [...MIDDLEWARE_MATCHER],
+  // Next.js requires `matcher` to be statically analyzable.
+  matcher: [
+    '/dashboard/:path*',
+    '/api/sessions/:path*',
+    '/api/tags/:path*',
+    '/api/settings/:path*',
+    '/api/auth/login',
+    '/api/auth/register',
+    '/api/auth/me',
+    '/api/auth/logout',
+    '/api/auth/password',
+    '/analytics/:path*',
+    '/settings/:path*',
+    '/sessions/:path*',
+  ],
 };

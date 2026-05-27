@@ -12,16 +12,14 @@ import { useTagToggle } from '../hooks/useTagToggle';
 import { WeeklyCalendar } from './analytics/WeeklyCalendar';
 import { MonthlyCalendar } from './analytics/MonthlyCalendar';
 import { useSettings } from '../context/SettingsContext';
-import { AnalyticsSkeleton } from './loading/AnalyticsSkeleton';
 import { FocusInsights } from './FocusInsights';
 import { ShareCard } from './ShareCard';
 
 interface AnalyticsProps {
   sessions: Session[];
-  isLoading?: boolean;
 }
 
-export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => {
+export const Analytics: React.FC<AnalyticsProps> = ({ sessions }) => {
   const { tags: allTags } = useTags();
   const { settings } = useSettings();
   const { selectedTags: selectedFilterTags, toggleTag: toggleFilterTag, setSelectedTags: setSelectedFilterTags } = useTagToggle();
@@ -53,56 +51,49 @@ export const Analytics: React.FC<AnalyticsProps> = ({ sessions, isLoading }) => 
         description="View your productivity analytics."
       />
         
-        {/* Content Wrapper */}
-        {isLoading ? (
-            <AnalyticsSkeleton />
-        ) : (
-            <>
-                {/* Main Chart Card */}
-                <ActivityChart 
-                    chartData={chartData}
-                    maxVal={maxVal}
-                    viewMode={viewMode}
-                    totalPeriodHours={totalPeriodHours}
-                    allTags={allTags}
-                    selectedFilterTags={selectedFilterTags}
-                    onToggleFilterTag={toggleFilterTag}
-                    onClearFilters={() => setSelectedFilterTags([])}
-                    onPrev={handlePrev}
-                    onNext={handleNext}
-                    dateLabel={dateLabel}
-                    setViewMode={setViewMode}
-                    isNextDisabled={isNextDisabled}
-                >
-                    {/* Calendar View */}
-                    <div className="flex flex-col gap-4">
-                        <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-slate-900 dark:text-white capitalize">{viewMode} Calendar</h2>
-                        {viewMode === 'weekly' ? (
-                            <WeeklyCalendar 
-                                sessions={currentViewSessions} 
-                                currentDate={chartData[0]?.fullDate ? new Date(chartData[0].fullDate) : new Date()}
-                                excludeWeekends={settings.excludeWeekends}
-                            />
-                        ) : (
-                            <MonthlyCalendar 
-                                sessions={currentViewSessions} 
-                                currentDate={chartData[0]?.fullDate ? new Date(chartData[0].fullDate) : new Date()}
-                                excludeWeekends={settings.excludeWeekends}
-                            />
-                        )}
-                    </div>
-                </ActivityChart>
+        {/* Main Chart Card */}
+        <ActivityChart 
+            chartData={chartData}
+            maxVal={maxVal}
+            viewMode={viewMode}
+            totalPeriodHours={totalPeriodHours}
+            allTags={allTags}
+            selectedFilterTags={selectedFilterTags}
+            onToggleFilterTag={toggleFilterTag}
+            onClearFilters={() => setSelectedFilterTags([])}
+            onPrev={handlePrev}
+            onNext={handleNext}
+            dateLabel={dateLabel}
+            setViewMode={setViewMode}
+            isNextDisabled={isNextDisabled}
+        >
+            {/* Calendar View */}
+            <div className="flex flex-col gap-4">
+                <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-slate-900 dark:text-white capitalize">{viewMode} Calendar</h2>
+                {viewMode === 'weekly' ? (
+                    <WeeklyCalendar 
+                        sessions={currentViewSessions} 
+                        currentDate={chartData[0]?.fullDate ? new Date(chartData[0].fullDate) : new Date()}
+                        excludeWeekends={settings.excludeWeekends}
+                    />
+                ) : (
+                    <MonthlyCalendar 
+                        sessions={currentViewSessions} 
+                        currentDate={chartData[0]?.fullDate ? new Date(chartData[0].fullDate) : new Date()}
+                        excludeWeekends={settings.excludeWeekends}
+                    />
+                )}
+            </div>
+        </ActivityChart>
 
-                {/* Focus Insights */}
-                <FocusInsights sessions={sessions} isLoading={isLoading} />
+        {/* Focus Insights */}
+        <FocusInsights sessions={sessions} />
 
-                {/* Share Card */}
-                {!isLoading && <ShareCard sessions={sessions} />}
+        {/* Share Card */}
+        <ShareCard sessions={sessions} />
 
-                {/* Pie Chart */}
-              <PieChartCard sessions={sessions} allTags={allTags} excludeWeekends={settings.excludeWeekends} />
-            </>
-        )}
+        {/* Pie Chart */}
+      <PieChartCard sessions={sessions} allTags={allTags} excludeWeekends={settings.excludeWeekends} />
     </PageLayout>
   );
 };

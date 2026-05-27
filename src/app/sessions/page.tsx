@@ -6,9 +6,14 @@ import { PageLayout } from '@/components/layout/PageLayout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { SessionsTable } from '@/components/SessionsTable';
 import { useSession } from '@/context/SessionContext';
+import { LoadingScreen } from '@/components/LoadingScreen';
 
 export default function SessionsPage() {
-  const { sessions, refreshSessions } = useSession();
+  const { sessions, refreshSessions, isLoading } = useSession();
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <ProtectedRoute>
@@ -21,7 +26,7 @@ export default function SessionsPage() {
         <div className="mt-8">
             <SessionsTable 
                 sessions={sessions} 
-                onUpdate={() => refreshSessions(false)} // refresh but don't set global loading state to avoid flicker
+                onUpdate={() => refreshSessions()} 
             />
         </div>
       </PageLayout>

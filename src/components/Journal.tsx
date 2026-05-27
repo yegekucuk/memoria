@@ -3,7 +3,6 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Session } from '@/types';
 import { formatDuration } from '@/utils/format';
 import { useTags } from '@/hooks/useTags';
-import { JournalEntriesSkeleton } from '@/components/loading/JournalEntriesSkeleton';
 import {
   buildJournalEntries,
   formatJournalDateLabel,
@@ -15,10 +14,9 @@ import {
 
 interface JournalProps {
   sessions: Session[];
-  isLoading?: boolean;
 }
 
-export const Journal: React.FC<JournalProps> = ({ sessions, isLoading = false }) => {
+export const Journal: React.FC<JournalProps> = ({ sessions }) => {
   const { tags: allTags } = useTags();
 
   const [selectedDate, setSelectedDate] = React.useState<Date>(() => {
@@ -110,11 +108,7 @@ export const Journal: React.FC<JournalProps> = ({ sessions, isLoading = false })
             </div>
 
             <div className="mt-6">
-              {isLoading ? (
-                <div className="min-h-[200px] flex items-center justify-center">
-                  <JournalEntriesSkeleton />
-                </div>
-              ) : entries.length > 0 ? (
+              {entries.length > 0 ? (
                 <div className="flex flex-col">
                   {entries.map((entry, i) => (
                     <div key={entry.id} className="relative pl-8 pb-6 group last:pb-0">

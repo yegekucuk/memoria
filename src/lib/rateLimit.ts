@@ -111,5 +111,3 @@ export function getClientIp(request: { headers: { get(name: string): string | nu
   }
   return request.headers.get('x-real-ip') || 'unknown';
 }
-
-

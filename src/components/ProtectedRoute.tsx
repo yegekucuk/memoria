@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { LoadingScreen } from '@/components/LoadingScreen';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -19,8 +20,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }, [loading, isAuthenticated, router]);
 
   if (loading) {
-    // Root Layout already renders shell (sidebar/topbar). Avoid full-page skeleton here.
-    return null;
+    return <LoadingScreen />;
   }
 
   if (!isAuthenticated) {

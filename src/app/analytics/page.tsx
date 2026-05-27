@@ -2,9 +2,14 @@
 
 import { useSession } from '@/context/SessionContext';
 import { Analytics } from '@/components/Analytics';
+import { LoadingScreen } from '@/components/LoadingScreen';
 
 
 export default function AnalyticsPage() {
     const { sessions, isLoading } = useSession();
-    return <Analytics sessions={sessions} isLoading={isLoading} />;
+    if (isLoading) {
+        return <LoadingScreen />;
+    }
+
+    return <Analytics sessions={sessions} />;
 }

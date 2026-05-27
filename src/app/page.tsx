@@ -8,7 +8,7 @@ import { DashboardPreview } from "@/components/previews/DashboardPreview";
 import { Navbar } from "@/components/landingpage/Navbar";
 import { Hero } from "@/components/landingpage/Hero";
 import { Features } from "@/components/landingpage/Features";
-import { LandingSkeleton } from "@/components/loading/LandingSkeleton";
+import { LoadingScreen } from "@/components/LoadingScreen";
 
 export default function Home() {
   const { isAuthenticated, loading } = useAuth();
@@ -23,7 +23,7 @@ export default function Home() {
   }, [loading, isAuthenticated, router]);
 
   if (loading) {
-    return <LandingSkeleton />;
+    return <LoadingScreen />;
   }
 
   // Prevent flash of content if authenticated but waiting for redirect
