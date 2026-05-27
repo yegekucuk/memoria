@@ -10,10 +10,7 @@ import {
   AlertCircle, 
   Plus, 
   Minus, 
-  Sparkles, 
-  Trash2, 
-  Target, 
-  Calendar 
+  Trash2 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -146,37 +143,32 @@ export const FocusGoalSettings: React.FC = () => {
       title="Focus Goals"
       subtitle="Set daily and weekly targets to stay motivated"
     >
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4">
         
         {/* Daily Goal Card */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/5 hover:border-slate-300/80 dark:hover:border-white/10 transition-all flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="flex items-start gap-3.5">
-            <div className="p-2.5 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary shrink-0 mt-0.5">
-              <Target size={20} className="stroke-[2.5]" />
-            </div>
-            <div>
-              <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                Daily Goal
-              </h4>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-                Target active focus time per day
-              </p>
-            </div>
+        <div className="p-3 sm:p-4 rounded-xl bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/5 hover:border-slate-300/80 dark:hover:border-white/10 transition-all flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div>
+            <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+              Daily Goal
+            </h4>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Target active focus time per day
+            </p>
           </div>
 
-          <div className="flex flex-col items-start md:items-end gap-1 shrink-0">
+          <div className="flex flex-col items-start md:items-end gap-1.5 shrink-0">
             {/* Input Controls */}
             <div className="flex items-center gap-1 bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl p-1 shadow-sm group focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
               <button
                 type="button"
                 onClick={() => stepDaily(-30)}
-                className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+                className="p-1 text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
                 title="-30 minutes"
               >
                 <Minus size={14} />
               </button>
 
-              <div className="flex items-center gap-0.5 px-1.5">
+              <div className="flex items-center gap-0.5 px-1">
                 <input
                   type="number"
                   min="0"
@@ -191,7 +183,7 @@ export const FocusGoalSettings: React.FC = () => {
 
               <span className="text-slate-300 dark:text-slate-700 font-bold select-none">:</span>
 
-              <div className="flex items-center gap-0.5 px-1.5">
+              <div className="flex items-center gap-0.5 px-1">
                 <input
                   type="number"
                   min="0"
@@ -207,7 +199,7 @@ export const FocusGoalSettings: React.FC = () => {
               <button
                 type="button"
                 onClick={() => stepDaily(30)}
-                className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+                className="p-1 text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
                 title="+30 minutes"
               >
                 <Plus size={14} />
@@ -215,7 +207,7 @@ export const FocusGoalSettings: React.FC = () => {
             </div>
 
             {/* Presets */}
-            <div className="flex flex-wrap items-center gap-1 mt-1.5">
+            <div className="flex flex-wrap items-center gap-1">
               {[60, 120, 180, 240, 480].map((mins) => {
                 const isSelected = dailyMinutes === mins;
                 return (
@@ -248,34 +240,29 @@ export const FocusGoalSettings: React.FC = () => {
         </div>
 
         {/* Weekly Goal Card */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/5 hover:border-slate-300/80 dark:hover:border-white/10 transition-all flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="flex items-start gap-3.5">
-            <div className="p-2.5 rounded-xl bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-500 shrink-0 mt-0.5">
-              <Calendar size={20} className="stroke-[2.5]" />
-            </div>
-            <div>
-              <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                Weekly Goal
-              </h4>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-                Target active focus time per week
-              </p>
-            </div>
+        <div className="p-3 sm:p-4 rounded-xl bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/5 hover:border-slate-300/80 dark:hover:border-white/10 transition-all flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div>
+            <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+              Weekly Goal
+            </h4>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Target active focus time per week
+            </p>
           </div>
 
-          <div className="flex flex-col items-start md:items-end gap-1 shrink-0">
+          <div className="flex flex-col items-start md:items-end gap-1.5 shrink-0">
             {/* Input Controls */}
             <div className="flex items-center gap-1 bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl p-1 shadow-sm group focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
               <button
                 type="button"
                 onClick={() => stepWeekly(-60)}
-                className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+                className="p-1 text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
                 title="-1 hour"
               >
                 <Minus size={14} />
               </button>
 
-              <div className="flex items-center gap-0.5 px-1.5">
+              <div className="flex items-center gap-0.5 px-1">
                 <input
                   type="number"
                   min="0"
@@ -288,9 +275,9 @@ export const FocusGoalSettings: React.FC = () => {
                 <span className="text-xs text-slate-400 dark:text-slate-500 font-bold select-none">h</span>
               </div>
 
-              <span className="text-slate-300 dark:text-slate-700 font-bold select-none">:</span>
+              <span className="text-slate-300 dark:text-slate-700 font-bold select-none font-mono">:</span>
 
-              <div className="flex items-center gap-0.5 px-1.5">
+              <div className="flex items-center gap-0.5 px-1">
                 <input
                   type="number"
                   min="0"
@@ -306,7 +293,7 @@ export const FocusGoalSettings: React.FC = () => {
               <button
                 type="button"
                 onClick={() => stepWeekly(60)}
-                className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+                className="p-1 text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
                 title="+1 hour"
               >
                 <Plus size={14} />
@@ -314,7 +301,7 @@ export const FocusGoalSettings: React.FC = () => {
             </div>
 
             {/* Presets */}
-            <div className="flex flex-wrap items-center gap-1 mt-1.5">
+            <div className="flex flex-wrap items-center gap-1">
               {[300, 600, 1200, 1800, 2400].map((mins) => {
                 const isSelected = weeklyMinutes === mins;
                 return (
@@ -347,7 +334,7 @@ export const FocusGoalSettings: React.FC = () => {
         </div>
 
         {/* Sync Footer */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-4 pt-4 border-t border-slate-200/60 dark:border-white/5">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-3 pt-3 border-t border-slate-200/60 dark:border-white/5">
           
           {/* Status Indicators */}
           <div className="flex items-center h-8">
@@ -358,10 +345,10 @@ export const FocusGoalSettings: React.FC = () => {
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -5 }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30"
+                  className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30"
                 >
-                  <Check size={13} className="stroke-[3]" />
-                  <span>All changes saved</span>
+                  <Check size={12} className="stroke-[3]" />
+                  <span>Saved</span>
                 </motion.div>
               )}
 
@@ -371,10 +358,10 @@ export const FocusGoalSettings: React.FC = () => {
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -5 }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/30"
+                  className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/30"
                 >
-                  <Loader2 size={13} className="animate-spin stroke-[3]" />
-                  <span>Saving changes...</span>
+                  <Loader2 size={12} className="animate-spin stroke-[3]" />
+                  <span>Saving...</span>
                 </motion.div>
               )}
 
@@ -384,7 +371,7 @@ export const FocusGoalSettings: React.FC = () => {
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -5 }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/30 shadow-sm"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/30"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
                   <span>Unsaved changes</span>
@@ -397,22 +384,10 @@ export const FocusGoalSettings: React.FC = () => {
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -5 }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30"
+                  className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30"
                 >
-                  <AlertCircle size={13} className="stroke-[2.5]" />
+                  <AlertCircle size={12} className="stroke-[2.5]" />
                   <span>Failed to save</span>
-                </motion.div>
-              )}
-
-              {displayStatus === 'idle' && (
-                <motion.div
-                  key="idle"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 0.5 }}
-                  className="text-xs text-slate-400 dark:text-slate-500 font-semibold pl-2 select-none flex items-center gap-1"
-                >
-                  <Sparkles size={11} />
-                  <span>Goals are synchronized</span>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -423,7 +398,7 @@ export const FocusGoalSettings: React.FC = () => {
             type="button"
             disabled={!hasChanges || saveStatus === 'saving'}
             onClick={handleSave}
-            className={`w-full sm:w-auto relative inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 cursor-pointer ${
+            className={`w-full sm:w-auto relative inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
               hasChanges && saveStatus !== 'saving'
                 ? 'bg-primary text-white shadow-md hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-primary/50'
                 : 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-200/50 dark:border-white/5'
@@ -431,7 +406,7 @@ export const FocusGoalSettings: React.FC = () => {
           >
             {saveStatus === 'saving' ? (
               <>
-                <Loader2 size={16} className="animate-spin" />
+                <Loader2 size={14} className="animate-spin" />
                 <span>Saving...</span>
               </>
             ) : (
