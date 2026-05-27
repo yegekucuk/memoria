@@ -4,6 +4,7 @@ export const PROTECTED_PATHS = [
   '/api/sessions',
   '/api/tags',
   '/api/settings',
+  '/api/auth/me',
   '/api/auth/password',
   '/analytics',
   '/settings',

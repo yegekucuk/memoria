@@ -4,6 +4,13 @@
 import { NextRequest } from 'next/server';
 import { middleware, config } from '@/middleware';
 
+process.env.JWT_SECRET ||= 'test-jwt-secret';
+
+// Mock jose so we don't depend on JWT parsing in unit tests.
+jest.mock('jose', () => ({
+  jwtVerify: jest.fn(async () => ({ payload: {} })),
+}));
+
 // Mock the rateLimit module
 jest.mock('@/lib/rateLimit', () => ({
   rateLimit: jest.fn().mockReturnValue({ success: true, remaining: 59, resetTime: Date.now() + 60000 }),
@@ -46,20 +53,20 @@ describe('middleware', () => {
       setNodeEnv(originalNodeEnv);
     });
 
-    it('should skip rate limiting for localhost in development', () => {
+    it('should skip rate limiting for localhost in development', async () => {
       setNodeEnv('development');
 
       const req = createRequest('/api/sessions', { token: 'valid-jwt' });
-      middleware(req);
+      await middleware(req);
 
       expect(mockRateLimit).not.toHaveBeenCalled();
     });
 
-    it('should still apply rate limiting for localhost outside development', () => {
+    it('should still apply rate limiting for localhost outside development', async () => {
       setNodeEnv('test');
 
       const req = createRequest('/api/sessions', { token: 'valid-jwt' });
-      middleware(req);
+      await middleware(req);
 
       expect(mockRateLimit).toHaveBeenCalledWith(
         '127.0.0.1',
@@ -87,68 +94,68 @@ describe('middleware', () => {
   });
 
   describe('authentication', () => {
-    it('should return 401 for protected API routes without token', () => {
+    it('should return 401 for protected API routes without token', async () => {
       const req = createRequest('/api/sessions');
-      const res = middleware(req);
+      const res = await middleware(req);
       expect(res.status).toBe(401);
     });
 
-    it('should return 401 for /api/settings without token', () => {
+    it('should return 401 for /api/settings without token', async () => {
       const req = createRequest('/api/settings');
-      const res = middleware(req);
+      const res = await middleware(req);
       expect(res.status).toBe(401);
     });
 
-    it('should return 401 for /api/auth/password without token', () => {
+    it('should return 401 for /api/auth/password without token', async () => {
       const req = createRequest('/api/auth/password', { method: 'POST' });
-      const res = middleware(req);
+      const res = await middleware(req);
       expect(res.status).toBe(401);
     });
 
-    it('should return 401 for /api/tags without token', () => {
+    it('should return 401 for /api/tags without token', async () => {
       const req = createRequest('/api/tags');
-      const res = middleware(req);
+      const res = await middleware(req);
       expect(res.status).toBe(401);
     });
 
-    it('should redirect page routes to / without token', () => {
+    it('should redirect page routes to / without token', async () => {
       const req = createRequest('/dashboard');
-      const res = middleware(req);
+      const res = await middleware(req);
       expect(res.status).toBe(307);
       expect(res.headers.get('location')).toBe('http://localhost:3000/');
     });
 
-    it('should redirect /analytics to / without token', () => {
+    it('should redirect /analytics to / without token', async () => {
       const req = createRequest('/analytics');
-      const res = middleware(req);
+      const res = await middleware(req);
       expect(res.status).toBe(307);
       expect(res.headers.get('location')).toBe('http://localhost:3000/');
     });
 
-    it('should redirect /settings to / without token', () => {
+    it('should redirect /settings to / without token', async () => {
       const req = createRequest('/settings');
-      const res = middleware(req);
+      const res = await middleware(req);
       expect(res.status).toBe(307);
       expect(res.headers.get('location')).toBe('http://localhost:3000/');
     });
 
-    it('should allow protected routes with a token', () => {
+    it('should allow protected routes with a token', async () => {
       const req = createRequest('/api/sessions', { token: 'valid-jwt-token' });
-      const res = middleware(req);
+      const res = await middleware(req);
       expect(res.status).toBe(200);
     });
 
-    it('should allow protected page routes with a token', () => {
+    it('should allow protected page routes with a token', async () => {
       const req = createRequest('/dashboard', { token: 'valid-jwt-token' });
-      const res = middleware(req);
+      const res = await middleware(req);
       expect(res.status).toBe(200);
     });
   });
 
   describe('rate limiting - auth routes', () => {
-    it('should apply AUTH_LOGIN rate limit on POST /api/auth/login', () => {
+    it('should apply AUTH_LOGIN rate limit on POST /api/auth/login', async () => {
       const req = createRequest('/api/auth/login', { method: 'POST' });
-      middleware(req);
+      await middleware(req);
 
       expect(mockRateLimit).toHaveBeenCalledWith(
         '127.0.0.1',
@@ -157,9 +164,9 @@ describe('middleware', () => {
       );
     });
 
-    it('should apply AUTH_REGISTER rate limit on POST /api/auth/register', () => {
+    it('should apply AUTH_REGISTER rate limit on POST /api/auth/register', async () => {
       const req = createRequest('/api/auth/register', { method: 'POST' });
-      middleware(req);
+      await middleware(req);
 
       expect(mockRateLimit).toHaveBeenCalledWith(
         '127.0.0.1',
@@ -168,9 +175,9 @@ describe('middleware', () => {
       );
     });
 
-    it('should apply AUTH_PASSWORD rate limit on POST /api/auth/password', () => {
+    it('should apply AUTH_PASSWORD rate limit on POST /api/auth/password', async () => {
       const req = createRequest('/api/auth/password', { method: 'POST', token: 'valid-jwt' });
-      middleware(req);
+      await middleware(req);
 
       expect(mockRateLimit).toHaveBeenCalledWith(
         '127.0.0.1',
@@ -179,7 +186,7 @@ describe('middleware', () => {
       );
     });
 
-    it('should return 429 when auth rate limit is exceeded', () => {
+    it('should return 429 when auth rate limit is exceeded', async () => {
       mockRateLimit.mockReturnValueOnce({
         success: false,
         remaining: 0,
@@ -187,7 +194,7 @@ describe('middleware', () => {
       });
 
       const req = createRequest('/api/auth/login', { method: 'POST' });
-      const res = middleware(req);
+      const res = await middleware(req);
 
       expect(res.status).toBe(429);
       expect(res.headers.get('Retry-After')).toBeTruthy();
@@ -196,9 +203,9 @@ describe('middleware', () => {
   });
 
   describe('rate limiting - general', () => {
-    it('should apply general read rate limit to GET API routes', () => {
+    it('should apply general read rate limit to GET API routes', async () => {
       const req = createRequest('/api/sessions', { token: 'valid-jwt' });
-      middleware(req);
+      await middleware(req);
 
       expect(mockRateLimit).toHaveBeenCalledWith(
         '127.0.0.1',
@@ -207,9 +214,9 @@ describe('middleware', () => {
       );
     });
 
-    it('should apply general write rate limit to non-GET API routes', () => {
+    it('should apply general write rate limit to non-GET API routes', async () => {
       const req = createRequest('/api/sessions', { method: 'POST', token: 'valid-jwt' });
-      middleware(req);
+      await middleware(req);
 
       expect(mockRateLimit).toHaveBeenCalledWith(
         '127.0.0.1',
@@ -218,7 +225,7 @@ describe('middleware', () => {
       );
     });
 
-    it('should return 429 when general rate limit is exceeded', () => {
+    it('should return 429 when general rate limit is exceeded', async () => {
       mockRateLimit.mockReturnValue({
         success: false,
         remaining: 0,
@@ -226,15 +233,15 @@ describe('middleware', () => {
       });
 
       const req = createRequest('/api/sessions', { token: 'valid-jwt' });
-      const res = middleware(req);
+      const res = await middleware(req);
 
       expect(res.status).toBe(429);
       expect(res.headers.get('Retry-After')).toBeTruthy();
     });
 
-    it('should not apply rate limiting to non-API page routes', () => {
+    it('should not apply rate limiting to non-API page routes', async () => {
       const req = createRequest('/dashboard', { token: 'valid-jwt' });
-      middleware(req);
+      await middleware(req);
 
       // rateLimit should NOT have been called with general API stores
       const generalCalls = mockRateLimit.mock.calls.filter(
@@ -254,7 +261,7 @@ describe('middleware', () => {
       });
 
       const req = createRequest('/api/auth/login', { method: 'POST' });
-      const res = middleware(req);
+      const res = await middleware(req);
 
       const retryAfter = Number(res.headers.get('Retry-After'));
       expect(retryAfter).toBeGreaterThan(0);
