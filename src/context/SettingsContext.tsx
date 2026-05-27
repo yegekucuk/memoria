@@ -12,6 +12,7 @@ const inflightSettingsRequests = new Map<string, Promise<Settings>>();
 interface SettingsContextType {
   settings: Settings;
   toggleExcludeWeekends: () => Promise<void>;
+  updateFocusGoals: (dailyGoalMinutes: number | null, weeklyGoalMinutes: number | null) => Promise<void>;
   isLoading: boolean;
 }
 
@@ -46,7 +47,11 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
             }
             throw new Error('Failed to fetch settings');
           })
-          .then((data) => ({ excludeWeekends: data.excludeWeekends as boolean }))
+          .then((data) => ({
+            excludeWeekends: data.excludeWeekends as boolean,
+            dailyGoalMinutes: data.dailyGoalMinutes ?? null,
+            weeklyGoalMinutes: data.weeklyGoalMinutes ?? null,
+          }))
           .finally(() => {
             inflightSettingsRequests.delete(cacheKey);
           });
@@ -110,11 +115,46 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user, settings]);
 
+  const updateFocusGoals = useCallback(async (dailyGoalMinutes: number | null, weeklyGoalMinutes: number | null) => {
+    if (!user) return;
+
+    // Optimistic update
+    const previousSettings = settings;
+    const nextSettings = { ...settings, dailyGoalMinutes, weeklyGoalMinutes };
+    setSettings(nextSettings);
+    
+    // Persist locally in cache
+    writeCacheEntry(`${CACHE_SETTINGS_KEY}:${user.id}`, nextSettings);
+
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          excludeWeekends: settings.excludeWeekends,
+          dailyGoalMinutes,
+          weeklyGoalMinutes,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to update focus goals');
+      }
+    } catch (err) {
+      console.error(err);
+      // Revert on failure
+      setSettings(previousSettings);
+      writeCacheEntry(`${CACHE_SETTINGS_KEY}:${user.id}`, previousSettings);
+      throw err;
+    }
+  }, [user, settings]);
+
   const value = useMemo(() => ({
     settings,
     toggleExcludeWeekends,
+    updateFocusGoals,
     isLoading,
-  }), [settings, toggleExcludeWeekends, isLoading]);
+  }), [settings, toggleExcludeWeekends, updateFocusGoals, isLoading]);
 
   return (
     <SettingsContext.Provider value={value}>
